@@ -4,31 +4,61 @@ import { isAbsolute, resolve } from "node:path";
 import { execa } from "execa";
 import { renderBanner } from "./banner.js";
 import { writeEnvExample } from "./env.js";
-import { initGitRepo } from "./git.js";
+import { initGitRepo, type InitGitResult } from "./git.js";
 import { detectPackageManager, installCommand } from "./pm.js";
 import { interactivePrompts, validateProjectName } from "./prompts.js";
 import { TEMPLATES, fetchTemplate, isValidTemplateName } from "./templates.js";
 import type { CreateOptions, Network, PackageManager, TemplateName } from "./types.js";
 
+export type { CreateOptions, Network, PackageManager, TemplateName };
+
+/**
+ * Dependency-injection seam. Tests inject fakes here so the orchestrator can
+ * be exercised offline (no giget download, no install, no git on disk).
+ * Production runs use the real implementations as defaults.
+ */
 export interface RunDeps {
   cwd?: string;
   log?: (m: string) => void;
   err?: (m: string) => void;
+  fetchTemplate?: (opts: { name: TemplateName; dest: string }) => Promise<void>;
+  runInstall?: (opts: {
+    packageManager: PackageManager;
+    dest: string;
+  }) => Promise<void>;
+  initGit?: (opts: { dest: string }) => Promise<InitGitResult>;
+  prompts?: (seed: Partial<CreateOptions>) => Promise<CreateOptions | null>;
 }
 
-export type { CreateOptions, Network, PackageManager, TemplateName };
+const defaultFetchTemplate = (opts: { name: TemplateName; dest: string }) =>
+  fetchTemplate(opts);
+
+const defaultRunInstall = async (opts: {
+  packageManager: PackageManager;
+  dest: string;
+}) => {
+  const [bin, ...rest] = installCommand(opts.packageManager);
+  await execa(bin, rest, { cwd: opts.dest, stdio: "inherit" });
+};
+
+const defaultInitGit = (opts: { dest: string }) => initGitRepo(opts);
 
 /**
  * The full `create-0g-app` orchestrator. Returns a process exit code.
  *
  * @param argv full `process.argv`-shaped array (must include node + bin path
  *             at positions 0+1; commander.parse strips them).
- * @param deps injection seam for tests (cwd, log, err).
+ * @param deps injection seam for tests (cwd, log, err, and the side-effectful
+ *             template fetcher / installer / git initialiser / prompts).
  */
 export async function run(argv: string[], deps: RunDeps = {}): Promise<number> {
   const log = deps.log ?? ((m: string) => process.stdout.write(m + "\n"));
   const err = deps.err ?? ((m: string) => process.stderr.write(m + "\n"));
   const cwd = deps.cwd ?? process.cwd();
+  const fetchTpl = deps.fetchTemplate ?? defaultFetchTemplate;
+  const runInstall = deps.runInstall ?? defaultRunInstall;
+  const initGit = deps.initGit ?? defaultInitGit;
+  const prompts = deps.prompts ?? interactivePrompts;
 
   const program = new Command("create-0g-app")
     .exitOverride()
@@ -116,7 +146,7 @@ export async function run(argv: string[], deps: RunDeps = {}): Promise<number> {
         return 1;
       }
     }
-    final = await interactivePrompts({
+    final = await prompts({
       name: seedName,
       template: opts.template as TemplateName | undefined,
       network: opts.network as Network | undefined,
@@ -140,7 +170,7 @@ export async function run(argv: string[], deps: RunDeps = {}): Promise<number> {
   // 1. fetch template
   log(`→ Fetching template ${final.template}`);
   try {
-    await fetchTemplate({ name: final.template, dest });
+    await fetchTpl({ name: final.template, dest });
   } catch (e) {
     err(`Template fetch failed: ${(e as Error).message}`);
     return 1;
@@ -152,9 +182,8 @@ export async function run(argv: string[], deps: RunDeps = {}): Promise<number> {
   // 3. install
   if (final.install) {
     log(`→ Installing dependencies with ${final.packageManager}`);
-    const [bin, ...rest] = installCommand(final.packageManager);
     try {
-      await execa(bin, rest, { cwd: dest, stdio: "inherit" });
+      await runInstall({ packageManager: final.packageManager, dest });
     } catch (e) {
       err(`(warn) install failed: ${(e as Error).message}`);
     }
@@ -163,7 +192,7 @@ export async function run(argv: string[], deps: RunDeps = {}): Promise<number> {
   // 4. git init
   if (final.git) {
     log(`→ Initialising git repository`);
-    const r = await initGitRepo({ dest });
+    const r = await initGit({ dest });
     if (!r.ok) err(`(warn) git init skipped: ${r.reason}`);
   }
 

@@ -25,27 +25,27 @@ This is the spec — the **what** and **why**. Implementation plans (the **how**
 
 These survive every sub-project. They are non-negotiable.
 
-| # | Invariant | Enforcement |
-|---|-----------|-------------|
-| I1 | **Protocol neutrality.** No `@foundryprotocol/0gkit-*` package may import any `@foundryprotocol/*` non-0gkit package (e.g. the Foundry SDK), statically or dynamically with a literal specifier. | `pnpm boundary:check` (dependency-cruiser); a `boundary.test.ts` in each surface package |
-| I2 | **Layering.** Layer 0 = `0gkit-core`. Layer 1 = `0gkit-{chain,storage,compute,da,attestation}`. Layer 2 = surfaces (`0gkit-cli`, `0gkit-mcp`, `0gkit-react`, `0gkit-wallet`, `0gkit-contracts`, `0gkit-indexer`, `0gkit-testing`, `0gkit-jobs`, `0gkit-observability`). Layer 3 = `apps/*`, `templates/*`, `create-0g-app`. Lower layers never import higher ones. | depcruise rule + CI |
-| I3 | **One thing per package.** A package gets split, not bloated. We'd rather ship `0gkit-wallet` + `0gkit-wallet-react` than have a wallet folder inside `0gkit-react`. | Code review |
-| I4 | **MIT license, public.** Everything ships under MIT. No `dependencies: { "@foundryprotocol/proprietary": "*" }`. | `LICENSE` + `package.json` check |
-| I5 | **Every public API has a docs page.** A package without a `docs/packages/<name>` page is incomplete. | `pnpm docs:check` (new — added in SP12) |
-| I6 | **Every published package has tests.** 80/70 line/branch gate (the existing standard). | `vitest --coverage` + CI |
-| I7 | **Every change ships through changesets.** No silent releases. | `changeset` enforced in PR template |
-| I8 | **No raw `privateKey: string` in any new surface API.** Existing primitives keep their `privateKey` constructor for back-compat, but every new surface (templates, hooks, CLI commands, MCP tools) takes a `Signer`/`Wallet` abstraction from `0gkit-wallet`. | API review (SP3 lands the abstraction; SPs after SP3 follow it) |
+| #   | Invariant                                                                                                                                                                                                                                                                                                                                                          | Enforcement                                                                              |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| I1  | **Protocol neutrality.** No `@foundryprotocol/0gkit-*` package may import any `@foundryprotocol/*` non-0gkit package (e.g. the Foundry SDK), statically or dynamically with a literal specifier.                                                                                                                                                                   | `pnpm boundary:check` (dependency-cruiser); a `boundary.test.ts` in each surface package |
+| I2  | **Layering.** Layer 0 = `0gkit-core`. Layer 1 = `0gkit-{chain,storage,compute,da,attestation}`. Layer 2 = surfaces (`0gkit-cli`, `0gkit-mcp`, `0gkit-react`, `0gkit-wallet`, `0gkit-contracts`, `0gkit-indexer`, `0gkit-testing`, `0gkit-jobs`, `0gkit-observability`). Layer 3 = `apps/*`, `templates/*`, `create-0g-app`. Lower layers never import higher ones. | depcruise rule + CI                                                                      |
+| I3  | **One thing per package.** A package gets split, not bloated. We'd rather ship `0gkit-wallet` + `0gkit-wallet-react` than have a wallet folder inside `0gkit-react`.                                                                                                                                                                                               | Code review                                                                              |
+| I4  | **MIT license, public.** Everything ships under MIT. No `dependencies: { "@foundryprotocol/proprietary": "*" }`.                                                                                                                                                                                                                                                   | `LICENSE` + `package.json` check                                                         |
+| I5  | **Every public API has a docs page.** A package without a `docs/packages/<name>` page is incomplete.                                                                                                                                                                                                                                                               | `pnpm docs:check` (new — added in SP12)                                                  |
+| I6  | **Every published package has tests.** 80/70 line/branch gate (the existing standard).                                                                                                                                                                                                                                                                             | `vitest --coverage` + CI                                                                 |
+| I7  | **Every change ships through changesets.** No silent releases.                                                                                                                                                                                                                                                                                                     | `changeset` enforced in PR template                                                      |
+| I8  | **No raw `privateKey: string` in any new surface API.** Existing primitives keep their `privateKey` constructor for back-compat, but every new surface (templates, hooks, CLI commands, MCP tools) takes a `Signer`/`Wallet` abstraction from `0gkit-wallet`.                                                                                                      | API review (SP3 lands the abstraction; SPs after SP3 follow it)                          |
 
 ---
 
 ## 2. Phase Overview
 
-| Phase | Sub-projects | Duration target | Developer-visible milestone |
-|-------|-------------|------------------|------------------------------|
-| **Phase 1 — The Front Door** | SP1 `create-0g-app` v1, SP2 `0g dev` local stack | ~2 weeks | `npm create 0g-app my-app && cd my-app && pnpm dev` opens a working app against a local 0G stack in under 60 seconds. **No faucet, no .env archaeology, no testnet.** |
-| **Phase 2 — Production-Grade Foundation** | SP3 `0gkit-wallet`, SP4 `0gkit-contracts`, SP5 `0gkit-testing` | ~3 weeks | The same scaffolded app uses wagmi-style wallet connect, typed contract clients, and ships with a vitest suite that passes against the local stack. No more raw `privateKey` strings; no more hand-written ABIs. |
-| **Phase 3 — Second-Day Developer Wins** | SP6 `0gkit-indexer`, SP7 cost estimator + dry-run, SP8 expanded template library | ~3 weeks | The five canonical archetypes (`chat`, `storage-app`, `ai-agent`, `tee-attested-api`, `nft-with-storage`) all ship; `0g estimate` and `.dryRun()` save users from surprise bills; event subscriptions are one hook. |
-| **Phase 4 — Ecosystem Moat** | SP9 error taxonomy, SP10 `0gkit-jobs`, SP11 `0gkit-observability`, SP12 community + CI templates + docs polish | ~3 weeks | Every `ZeroGError` links to a docs page that fixes it; long-running compute jobs are durable; production apps emit OTel spans; CI/CD workflows are one copy-paste away. |
+| Phase                                     | Sub-projects                                                                                                   | Duration target | Developer-visible milestone                                                                                                                                                                                         |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Phase 1 — The Front Door**              | SP1 `create-0g-app` v1, SP2 `0g dev` local stack                                                               | ~2 weeks        | `npm create 0g-app my-app && cd my-app && pnpm dev` opens a working app against a local 0G stack in under 60 seconds. **No faucet, no .env archaeology, no testnet.**                                               |
+| **Phase 2 — Production-Grade Foundation** | SP3 `0gkit-wallet`, SP4 `0gkit-contracts`, SP5 `0gkit-testing`                                                 | ~3 weeks        | The same scaffolded app uses wagmi-style wallet connect, typed contract clients, and ships with a vitest suite that passes against the local stack. No more raw `privateKey` strings; no more hand-written ABIs.    |
+| **Phase 3 — Second-Day Developer Wins**   | SP6 `0gkit-indexer`, SP7 cost estimator + dry-run, SP8 expanded template library                               | ~3 weeks        | The five canonical archetypes (`chat`, `storage-app`, `ai-agent`, `tee-attested-api`, `nft-with-storage`) all ship; `0g estimate` and `.dryRun()` save users from surprise bills; event subscriptions are one hook. |
+| **Phase 4 — Ecosystem Moat**              | SP9 error taxonomy, SP10 `0gkit-jobs`, SP11 `0gkit-observability`, SP12 community + CI templates + docs polish | ~3 weeks        | Every `ZeroGError` links to a docs page that fixes it; long-running compute jobs are durable; production apps emit OTel spans; CI/CD workflows are one copy-paste away.                                             |
 
 **Total target:** ~11 weeks of focused work to graduate from "primitives shipped" to "default starting point for 0G."
 
@@ -66,6 +66,7 @@ Each sub-project below lists: **Goal · Why this matters · Package(s) · Public
 **Package:** `create-0g-app` (published at root of npm scope so `npm create 0g-app` resolves correctly).
 
 **Public surface:**
+
 ```
 npm create 0g-app@latest <name>
   [--template <storage|inference|chat|ai-agent|tee-api|nft-storage|blank>]
@@ -79,11 +80,13 @@ npm create 0g-app@latest <name>
 Interactive mode (no `--template`): prompts for name → template → package manager → network → git? → install?
 
 Outputs:
+
 - A new directory `<name>/` with the chosen template, deps installed, git initialised, a `.env.example` filled with sensible defaults for the chosen network, and a one-line "next step" banner that says exactly what to run.
 
 **Depends on:** Existing templates under `templates/*`. (SP8 will expand the template set; SP1 ships with the 5 we already have.)
 
 **Success criteria:**
+
 - `npx create-0g-app@latest demo --template storage-app --network local --install` completes in ≤ 45s on a clean machine with a warm npm cache; the scaffolded `demo/` runs `pnpm start` successfully against the local stack from SP2.
 - `npm create 0g-app demo`, `pnpm create 0g-app demo`, `yarn create 0g-app demo` all work (use [`giget`](https://github.com/unjs/giget) for degit; avoid `create-` package quirks by following the [npm-init spec](https://docs.npmjs.com/cli/v10/commands/npm-init) — the binary is `create-0g-app` not `0g-app`).
 - Templates are fetched from the same monorepo `templates/<name>` via a [pinned git ref](https://github.com/rajkaria/0G-ai-kit/tree/v0.2.x/templates) so we don't serve broken templates from `main`.
@@ -103,6 +106,7 @@ Outputs:
 **Package:** `@foundryprotocol/0gkit-cli` (extend with `dev` command) + a new internal `@foundryprotocol/0gkit-devnet` package that owns the mock services.
 
 **Public surface:**
+
 ```
 0g dev                                  # start everything on localhost
   [--port-chain 8545]                   # anvil
@@ -122,6 +126,7 @@ Outputs:
 ```
 
 Internals:
+
 - **Chain:** `anvil` (we shell out; it's the established devnet for EVM chains, and 0G is EVM-compatible). We don't reinvent.
 - **Storage mock:** Local Node HTTP server that implements the `@0gfoundation/0g-storage-ts-sdk` upload/download API surface against a filesystem-backed CAS at `.0g-dev/storage/<merkle-root>`. Computes the same Merkle root the real network would (we already have the impl in `0gkit-storage`).
 - **Compute mock:** Local OpenAI-compatible HTTP server that proxies to either (a) an actual local model via Ollama if detected, or (b) a deterministic stub that echoes the prompt with a `[MOCK]` prefix. Same provider-discovery + broker shape as the real compute network so client code is identical.
@@ -131,6 +136,7 @@ Internals:
 **Depends on:** SP1 ships with a `--network local` flag that wires the scaffolded `.env.example` to localhost. The two land together.
 
 **Success criteria:**
+
 - `0g dev` starts in ≤ 5s on a developer laptop and prints the 10 funded accounts + mnemonic.
 - `0gkit-storage`, `0gkit-compute`, `0gkit-da` clients work against the local stack with **zero code changes** — only the network preset differs.
 - A new vitest fixture `setupLocalDevnet()` in `0gkit-testing` (SP5) starts/stops the devnet per test file.
@@ -154,10 +160,18 @@ Internals:
 **Package:** `@foundryprotocol/0gkit-wallet` + thin React adapter at `@foundryprotocol/0gkit-wallet-react`.
 
 **Public surface (Node/universal):**
-```ts
-import { Signer, WalletProvider, fromPrivateKey, fromEnv, fromKMS, fromFile } from "@foundryprotocol/0gkit-wallet";
 
-const signer: Signer = await fromEnv();             // reads PRIVATE_KEY or KEY_FILE etc.
+```ts
+import {
+  Signer,
+  WalletProvider,
+  fromPrivateKey,
+  fromEnv,
+  fromKMS,
+  fromFile,
+} from "@foundryprotocol/0gkit-wallet";
+
+const signer: Signer = await fromEnv(); // reads PRIVATE_KEY or KEY_FILE etc.
 const signer: Signer = await fromKMS({ keyId: "..." });
 const signer: Signer = await fromPrivateKey("0x...");
 const signer: Signer = await fromFile("./key.json", { password: "..." });
@@ -169,10 +183,18 @@ await signer.sendTransaction(tx);
 ```
 
 **Public surface (React):**
-```tsx
-import { ZeroGWalletProvider, useWallet, useConnect, useSwitchNetwork } from "@foundryprotocol/0gkit-wallet-react";
 
-<ZeroGWalletProvider config={{ network: "galileo", connectors: ["injected", "walletConnect"] }}>
+```tsx
+import {
+  ZeroGWalletProvider,
+  useWallet,
+  useConnect,
+  useSwitchNetwork,
+} from "@foundryprotocol/0gkit-wallet-react";
+
+<ZeroGWalletProvider
+  config={{ network: "galileo", connectors: ["injected", "walletConnect"] }}
+>
   <App />
 </ZeroGWalletProvider>;
 
@@ -182,6 +204,7 @@ const { switchNetwork } = useSwitchNetwork();
 ```
 
 **Public surface (SIWE):**
+
 ```ts
 import { siwe } from "@foundryprotocol/0gkit-wallet";
 
@@ -192,12 +215,14 @@ const isValid = await siwe.verify({ message, signature, expectedNonce: nonce });
 ```
 
 **Refactors required:**
+
 - Every primitive (`0gkit-storage`, `0gkit-compute`, `0gkit-da`, `0gkit-attestation`, `0gkit-chain`) gets a new constructor signature: `new StorageClient({ signer: Signer })` in addition to the existing `{ privateKey }`. Old surface stays for one minor version with a deprecation warning, then removed.
 - All Phase 3+ surfaces (templates, React hooks, CLI commands, MCP tools) take `Signer`, not `privateKey`.
 
 **Depends on:** Layer 1 packages (already shipped) — pure additive on top.
 
 **Success criteria:**
+
 - A scaffolded `react-app` template connects MetaMask, signs a SIWE message, and uses the resulting signer for an upload — no `privateKey` anywhere in user code.
 - `fromKMS` works against AWS KMS (a smoke test gated on credentials in CI).
 - The five existing templates compile against both old (`privateKey`) and new (`signer`) constructor for one release cycle.
@@ -216,6 +241,7 @@ const isValid = await siwe.verify({ message, signature, expectedNonce: nonce });
 **Package:** `@foundryprotocol/0gkit-contracts` + CLI subcommands under `0g contracts`.
 
 **Public surface (built-in standard contracts):**
+
 ```ts
 import { standardContracts } from "@foundryprotocol/0gkit-contracts";
 
@@ -225,6 +251,7 @@ const tx = await registry.write.registerProvider({ ... });
 ```
 
 **Public surface (custom codegen):**
+
 ```bash
 0g contracts generate \
   --abi ./out/MyContract.sol/MyContract.json \    # Foundry artifact
@@ -233,22 +260,25 @@ const tx = await registry.write.registerProvider({ ... });
 ```
 
 Emits one `.ts` per contract with read methods, write methods, event types, and a typed factory:
+
 ```ts
 import { MyContract } from "./contracts/MyContract";
 
 const c = MyContract.attach({ address: "0x...", signer });
-const value = await c.read.totalSupply();              // typed bigint
-const tx = await c.write.transfer(to, amount);          // typed tx
+const value = await c.read.totalSupply(); // typed bigint
+const tx = await c.write.transfer(to, amount); // typed tx
 const events = await c.events.Transfer({ fromBlock: 0n });
 ```
 
 **Refactors required:**
+
 - `0gkit-cli`: add `contracts` subcommand group.
 - `0gkit-react` (later): a `useContract({ abi, address })` hook (lands in SP6 with indexer).
 
 **Depends on:** SP3 (`Signer` abstraction). Pure additive otherwise.
 
 **Success criteria:**
+
 - The five standard 0G contracts ship with typed clients out of the box.
 - `0g contracts generate` produces compilable, fully-typed TS from a real Foundry artifact in a fixture test.
 - A `nft-with-storage` template (SP8) uses `0g contracts generate` in its `predev` script.
@@ -267,14 +297,15 @@ const events = await c.events.Transfer({ fromBlock: 0n });
 **Package:** `@foundryprotocol/0gkit-testing`.
 
 **Public surface:**
+
 ```ts
 import {
-  setupLocalDevnet,         // starts/stops SP2's `0g dev` per test file
-  mockStorageClient,        // in-memory StorageClient
-  mockComputeClient,        // deterministic LLM responses
-  fixtureReceipt,           // a synthesised Receipt for unit tests
-  fixtureAttestation,       // a valid signed attestation
-  testWallet,               // deterministic Signer (HD-derived)
+  setupLocalDevnet, // starts/stops SP2's `0g dev` per test file
+  mockStorageClient, // in-memory StorageClient
+  mockComputeClient, // deterministic LLM responses
+  fixtureReceipt, // a synthesised Receipt for unit tests
+  fixtureAttestation, // a valid signed attestation
+  testWallet, // deterministic Signer (HD-derived)
 } from "@foundryprotocol/0gkit-testing";
 
 import { expect } from "vitest";
@@ -287,6 +318,7 @@ expect(error).toBeZeroGError("STORAGE_QUOTA_EXCEEDED");
 ```
 
 Vitest matchers:
+
 - `toBeConfirmedOn0G()` — checks status, block, and confirmations.
 - `toHaveRootMatching(regex)` — root format + Merkle validity.
 - `toBeValidAttestation()` — signature recover + signer match.
@@ -295,6 +327,7 @@ Vitest matchers:
 **Depends on:** SP2 (`0g dev`), SP3 (`Signer` for `testWallet`).
 
 **Success criteria:**
+
 - The vitest suites in every `0gkit-*` package migrate at least one suite to use `0gkit-testing` mocks (proving the API is real, not just demo'd).
 - Test runs that previously took ~30s (with real network calls) drop to ~3s using mocks.
 - `setupLocalDevnet({ autoStart: true })` in a vitest `globalSetup` works.
@@ -317,20 +350,25 @@ Vitest matchers:
 **Package:** `@foundryprotocol/0gkit-indexer` + React adapter in `0gkit-react`.
 
 **Public surface (Node/universal):**
+
 ```ts
 import { Indexer } from "@foundryprotocol/0gkit-indexer";
 
 const indexer = new Indexer({
   network: "galileo",
-  cursor: { kind: "sqlite", path: "./.cursors.db" },   // or "redis" | "memory"
+  cursor: { kind: "sqlite", path: "./.cursors.db" }, // or "redis" | "memory"
 });
 
 await indexer.subscribe({
-  contract: registry,                                   // typed contract from SP4
+  contract: registry, // typed contract from SP4
   event: "ProviderRegistered",
   fromBlock: "latest" | "earliest" | 12345n,
-  onEvent: async (event) => { /* ... */ },
-  onReorg: async (rolledBack) => { /* ... */ },
+  onEvent: async (event) => {
+    /* ... */
+  },
+  onReorg: async (rolledBack) => {
+    /* ... */
+  },
 });
 
 await indexer.start();
@@ -338,6 +376,7 @@ await indexer.stop();
 ```
 
 **Public surface (React):**
+
 ```tsx
 import { useEvent, useLogs } from "@foundryprotocol/0gkit-react";
 
@@ -349,6 +388,7 @@ const { events, isLoading } = useEvent({
 ```
 
 Internals:
+
 - Backoff with jitter on RPC errors.
 - Reorg-safe: tracks last N blocks; emits a roll-back event on reorg.
 - Cursor persistence (sqlite default, redis adapter, in-memory for tests).
@@ -357,6 +397,7 @@ Internals:
 **Depends on:** SP4 (`Signer` + typed contracts), SP5 (testing fixtures for synthetic events).
 
 **Success criteria:**
+
 - A `chat` template (SP8) uses `useEvent` to render new messages live.
 - A test that simulates a 3-block reorg correctly rolls back and re-emits.
 - Cursor survives restart: stop, restart, no missed events.
@@ -375,6 +416,7 @@ Internals:
 **Surface lives across:** `0gkit-cli`, `0gkit-core` (the `.estimate()` method on each primitive), docs.
 
 **Public surface (CLI):**
+
 ```bash
 0g estimate storage ./big-file.bin
   # Prints: ~12 KB segments, ~$0.0003 native gas, ~$0.0021 storage fee, est. confirm 8s
@@ -389,6 +431,7 @@ Internals:
 ```
 
 **Public surface (programmatic):**
+
 ```ts
 const est = await storage.estimate(bytes);
 // { sizeBytes, segments, gasNative, feeNative, expectedConfirmSeconds }
@@ -403,6 +446,7 @@ const { receipt, dryRun } = await storage.upload(bytes, { dryRun: true });
 **Depends on:** SP3 (signer; estimates depend on gas which depends on account). Otherwise additive across existing primitives.
 
 **Success criteria:**
+
 - All 4 primitives (`storage`, `compute`, `da`, attestation registration) implement `.estimate()` returning a typed `Estimate`.
 - All write paths accept `{ dryRun: true }`.
 - `0g estimate` snapshot tests confirm output stability.
@@ -417,15 +461,16 @@ const { receipt, dryRun } = await storage.upload(bytes, { dryRun: true });
 
 **Why this matters:** Today's templates (`storage-app`, `inference-app`, `attestation-verify`, `mcp-agent`, `react-app`) are correct but minimal. The five archetypes builders actually want to start from are:
 
-| Template | What it shows | New primitives demoed |
-|----------|---------------|------------------------|
-| `chat` | Real-time chat UI; messages stored on 0G Storage; events indexed live | wallet + storage + indexer + React |
-| `storage-app` (refresh) | File uploader with progress, dedup, retrieval | wallet + storage + estimator |
-| `ai-agent` | Multi-step LangChain agent calling 0G Compute, with TEE attestation per step | wallet + compute + attestation + jobs (SP10) |
-| `tee-attested-api` | Express/Hono API where every response carries a TEE attestation header | wallet + attestation + observability (SP11) |
-| `nft-with-storage` | ERC-721 minter where metadata + media live on 0G Storage; uses typed contract codegen | wallet + storage + contracts |
+| Template                | What it shows                                                                         | New primitives demoed                        |
+| ----------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `chat`                  | Real-time chat UI; messages stored on 0G Storage; events indexed live                 | wallet + storage + indexer + React           |
+| `storage-app` (refresh) | File uploader with progress, dedup, retrieval                                         | wallet + storage + estimator                 |
+| `ai-agent`              | Multi-step LangChain agent calling 0G Compute, with TEE attestation per step          | wallet + compute + attestation + jobs (SP10) |
+| `tee-attested-api`      | Express/Hono API where every response carries a TEE attestation header                | wallet + attestation + observability (SP11)  |
+| `nft-with-storage`      | ERC-721 minter where metadata + media live on 0G Storage; uses typed contract codegen | wallet + storage + contracts                 |
 
 Each template:
+
 - Built fresh on top of SP3–SP7.
 - Ships with vitest tests using `0gkit-testing`.
 - Has a `pnpm dev` script that starts SP2's `0g dev` first.
@@ -435,6 +480,7 @@ Each template:
 **Depends on:** SP1, SP2, SP3, SP4, SP5, SP6, SP7.
 
 **Success criteria:**
+
 - `npx create-0g-app demo --template chat --network local --install && cd demo && pnpm dev` shows a working chat in the browser end-to-end.
 - All five templates have ≥ 80% test coverage on their own code (not the libraries).
 - Each template's README is reviewed by a teammate or AI critic with the prompt "would a junior dev be unblocked by this?".
@@ -457,11 +503,13 @@ Each template:
 **Surface:** Updates `0gkit-core`'s `ZeroGError` to require `{ code: ErrorCode, helpUrl: string }`. Updates every package that throws to use a code from the canonical enum.
 
 **Public surface:**
+
 ```ts
 import { ZeroGError, ErrorCode } from "@foundryprotocol/0gkit-core";
 
-try { /* ... */ }
-catch (e) {
+try {
+  /* ... */
+} catch (e) {
   if (e instanceof ZeroGError) {
     console.error(`${e.code} — ${e.message}\nFix: ${e.helpUrl}`);
     // e.g. "STORAGE_QUOTA_EXCEEDED — Account 0x... is over its quota.
@@ -471,12 +519,14 @@ catch (e) {
 ```
 
 **Constraints:**
+
 - Error codes are stable identifiers (SCREAMING_SNAKE). Adding a code is fine; renaming one is a semver-major change.
 - Every code MUST have a docs page; CI fails if a thrown code is missing its page (`pnpm docs:check`).
 
 **Depends on:** All other SPs (so the taxonomy reflects real, shipped errors).
 
 **Success criteria:**
+
 - All thrown errors across `0gkit-*` carry a code from the canonical enum (~30–50 codes total).
 - `apps/docs/app/errors/<code>/page.mdx` exists for every code.
 - `pnpm docs:check` is wired into CI and catches missing pages.
@@ -495,11 +545,12 @@ catch (e) {
 **Package:** `@foundryprotocol/0gkit-jobs`.
 
 **Public surface:**
+
 ```ts
 import { JobRunner, jobs } from "@foundryprotocol/0gkit-jobs";
 
 const runner = new JobRunner({
-  backend: { kind: "redis", url: process.env.REDIS_URL },  // or "sqlite" | "memory"
+  backend: { kind: "redis", url: process.env.REDIS_URL }, // or "sqlite" | "memory"
   webhook: { url: "https://my-app.com/api/jobs/webhook", secret: "..." },
 });
 
@@ -527,6 +578,7 @@ const status = await runner.status(jobId);
 ```
 
 Backends:
+
 - `memory` (dev/test)
 - `sqlite` (single-node prod)
 - `redis` (multi-node prod)
@@ -535,6 +587,7 @@ Backends:
 **Depends on:** SP3 (`Signer`), SP5 (testing).
 
 **Success criteria:**
+
 - `ai-agent` template (SP8) uses `0gkit-jobs` for a multi-step compute call that exceeds Vercel's 30s edge timeout, and the demo works on Vercel Fluid Compute (the default-Node.js runtime).
 - Redis and sqlite backends both pass the same conformance test suite.
 - Webhook signature verification has a documented example.
@@ -553,6 +606,7 @@ Backends:
 **Package:** `@foundryprotocol/0gkit-observability`.
 
 **Public surface:**
+
 ```ts
 import { instrument0g } from "@foundryprotocol/0gkit-observability";
 
@@ -580,6 +634,7 @@ A `0g cost` CLI subcommand reads OTel-format traces (or a local sqlite buffer) a
 **Depends on:** All primitives. Mostly a code-generation-style pass that wraps every public method with `withSpan(...)`.
 
 **Success criteria:**
+
 - Adding `instrument0g({...})` to any app immediately produces traces; no other code change.
 - The OTel attribute names follow [semantic conventions](https://opentelemetry.io/docs/specs/semconv/) and a new `0gkit.*` namespace (documented).
 - Docs page: how to wire up Honeycomb, Tempo, Datadog, Vercel Otel.
@@ -594,6 +649,7 @@ A `0g cost` CLI subcommand reads OTel-format traces (or a local sqlite buffer) a
 **Goal:** Close the gaps that turn "a great toolkit" into "the obvious default."
 
 **Includes:**
+
 - **CI/CD templates:** `.github/workflows/0gkit-ci.yml` (test + boundary + typecheck), `.github/workflows/0gkit-deploy-vercel.yml`, GitLab equivalents, `.circleci/config.yml`. `create-0g-app` offers `--ci github|gitlab|circle|none`.
 - **Vercel one-click deploy:** Every template has a `Deploy to Vercel` button in its README. The Vercel project is pre-configured with the right env-var prompts (NETWORK, PRIVATE_KEY or KMS_KEY_ID, OTEL_ENDPOINT).
 - **GitHub Discussions** turned on in `0G-ai-kit`; pinned categories: Show-and-tell, Help, RFCs.
@@ -606,6 +662,7 @@ A `0g cost` CLI subcommand reads OTel-format traces (or a local sqlite buffer) a
 **Depends on:** Everything. SP12 is the polish pass.
 
 **Success criteria:**
+
 - A new builder going from `npm create 0g-app` to "deployed to Vercel with CI on every push" takes < 10 minutes.
 - The docs site has 100% public-export coverage (asserted by `docs:check`).
 - The `0G-ai-kit` Discussions has the founder team plus at least one community responder actively answering.
@@ -644,14 +701,14 @@ A `0g cost` CLI subcommand reads OTel-format traces (or a local sqlite buffer) a
 
 ## 4. Risks and mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|-----------|
-| `anvil` doesn't faithfully emulate 0G chain quirks (precompiles, gas model) | Medium | High | Phase 1 ships with `anvil --hardfork shanghai` + a documented "known divergences" list; SP2's mock storage/compute/DA are 0G-specific and don't depend on `anvil` quirks. If a quirk bites, we pin to a specific `anvil` build or fork. |
-| `@foundryprotocol/0gkit-wallet` ends up reimplementing wagmi | High | Medium | We **don't** reimplement wagmi — we **wrap** it. The 0gkit-wallet package depends on `wagmi` and `viem`, and adds (a) 0G chain configs, (b) SIWE-for-0G helpers, (c) server-side key loaders that wagmi doesn't ship. This is explicitly called out in the SP3 plan. |
-| Codegen for contracts duplicates wagmi-cli or abitype | Medium | Low | We build on top of `abitype` and emit thin wrappers; we do **not** roll our own ABI parser. |
-| `0g dev` storage mock diverges from real network behaviour | Medium | High | Conformance tests: a `0gkit-storage` test suite runs against BOTH the local mock and a Galileo testnet endpoint (the latter gated on a CI secret), and they must agree on observable behaviour. |
-| Scope creep — sub-projects start absorbing tangential features | High | Medium | The "out of scope" section above. Each SP's `Goal` line is one sentence; if a PR is doing something not implied by that sentence, it becomes a new SP. |
-| 0G mainnet launches mid-roadmap and shifts priorities | Low | High | This roadmap is the right roadmap regardless: every sub-project applies equally on Galileo or mainnet. Mainnet launch triggers a marketing pass (a blog post, a `1.0.0` release, a Vercel deploy template refresh), not a re-plan. |
+| Risk                                                                        | Likelihood | Impact | Mitigation                                                                                                                                                                                                                                                           |
+| --------------------------------------------------------------------------- | ---------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `anvil` doesn't faithfully emulate 0G chain quirks (precompiles, gas model) | Medium     | High   | Phase 1 ships with `anvil --hardfork shanghai` + a documented "known divergences" list; SP2's mock storage/compute/DA are 0G-specific and don't depend on `anvil` quirks. If a quirk bites, we pin to a specific `anvil` build or fork.                              |
+| `@foundryprotocol/0gkit-wallet` ends up reimplementing wagmi                | High       | Medium | We **don't** reimplement wagmi — we **wrap** it. The 0gkit-wallet package depends on `wagmi` and `viem`, and adds (a) 0G chain configs, (b) SIWE-for-0G helpers, (c) server-side key loaders that wagmi doesn't ship. This is explicitly called out in the SP3 plan. |
+| Codegen for contracts duplicates wagmi-cli or abitype                       | Medium     | Low    | We build on top of `abitype` and emit thin wrappers; we do **not** roll our own ABI parser.                                                                                                                                                                          |
+| `0g dev` storage mock diverges from real network behaviour                  | Medium     | High   | Conformance tests: a `0gkit-storage` test suite runs against BOTH the local mock and a Galileo testnet endpoint (the latter gated on a CI secret), and they must agree on observable behaviour.                                                                      |
+| Scope creep — sub-projects start absorbing tangential features              | High       | Medium | The "out of scope" section above. Each SP's `Goal` line is one sentence; if a PR is doing something not implied by that sentence, it becomes a new SP.                                                                                                               |
+| 0G mainnet launches mid-roadmap and shifts priorities                       | Low        | High   | This roadmap is the right roadmap regardless: every sub-project applies equally on Galileo or mainnet. Mainnet launch triggers a marketing pass (a blog post, a `1.0.0` release, a Vercel deploy template refresh), not a re-plan.                                   |
 
 ---
 

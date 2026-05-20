@@ -17,6 +17,7 @@
 ## File Structure
 
 **Create:**
+
 - `packages/0gkit-devnet/package.json`
 - `packages/0gkit-devnet/tsup.config.ts`
 - `packages/0gkit-devnet/tsconfig.json`
@@ -47,6 +48,7 @@
 - `apps/docs/app/cli/dev/page.mdx`
 
 **Modify:**
+
 - `packages/0gkit-core/src/networks.ts` — add `local` preset
 - `packages/0gkit-core/src/networks.test.ts` — assert local preset shape
 - `packages/0gkit-cli/src/program.ts` — register `dev` subcommand group
@@ -62,6 +64,7 @@
 ### Task 1: Bootstrap `@foundryprotocol/0gkit-devnet` package
 
 **Files:**
+
 - Create: `packages/0gkit-devnet/package.json`
 - Create: `packages/0gkit-devnet/tsconfig.json`
 - Create: `packages/0gkit-devnet/tsup.config.ts`
@@ -113,6 +116,7 @@
 
 `tsconfig.json` (copy of `packages/0gkit-storage/tsconfig.json`).
 `tsup.config.ts`:
+
 ```ts
 import { defineConfig } from "tsup";
 export default defineConfig({
@@ -124,13 +128,18 @@ export default defineConfig({
   treeshake: true,
 });
 ```
+
 `vitest.config.ts`:
+
 ```ts
 import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     globals: false,
-    coverage: { provider: "v8", thresholds: { lines: 80, branches: 70, statements: 80, functions: 80 } },
+    coverage: {
+      provider: "v8",
+      thresholds: { lines: 80, branches: 70, statements: 80, functions: 80 },
+    },
   },
 });
 ```
@@ -158,6 +167,7 @@ git commit -m "feat(devnet): bootstrap @foundryprotocol/0gkit-devnet package"
 ### Task 2: `anvil` detection + spawn helper
 
 **Files:**
+
 - Create: `packages/0gkit-devnet/src/anvil.ts`
 - Create: `packages/0gkit-devnet/src/__tests__/anvil.test.ts`
 
@@ -174,8 +184,12 @@ describe("detectAnvil", () => {
   });
 
   it("throws AnvilNotInstalledError with install hint when missing", async () => {
-    await expect(detectAnvil({ pathOverride: "/nope/anvil" })).rejects.toBeInstanceOf(AnvilNotInstalledError);
-    await expect(detectAnvil({ pathOverride: "/nope/anvil" })).rejects.toThrow(/curl -L https:\/\/foundry.paradigm.xyz/);
+    await expect(detectAnvil({ pathOverride: "/nope/anvil" })).rejects.toBeInstanceOf(
+      AnvilNotInstalledError
+    );
+    await expect(detectAnvil({ pathOverride: "/nope/anvil" })).rejects.toThrow(
+      /curl -L https:\/\/foundry.paradigm.xyz/
+    );
   });
 });
 ```
@@ -203,7 +217,9 @@ export class AnvilNotInstalledError extends ZeroGError {
   }
 }
 
-export async function detectAnvil(opts: { pathOverride?: string } = {}): Promise<string> {
+export async function detectAnvil(
+  opts: { pathOverride?: string } = {}
+): Promise<string> {
   const candidate = opts.pathOverride ?? "anvil";
   try {
     const { stdout } = await execa(candidate, ["--version"], { reject: false });
@@ -221,18 +237,26 @@ export interface AnvilProcess {
   stop(): Promise<void>;
 }
 
-export async function spawnAnvil(opts: { port: number; mnemonic: string; accounts: number }): Promise<AnvilProcess> {
+export async function spawnAnvil(opts: {
+  port: number;
+  mnemonic: string;
+  accounts: number;
+}): Promise<AnvilProcess> {
   await detectAnvil();
   const child = execa(
     "anvil",
     [
-      "--port", String(opts.port),
-      "--mnemonic", opts.mnemonic,
-      "--accounts", String(opts.accounts),
-      "--block-time", "1",
+      "--port",
+      String(opts.port),
+      "--mnemonic",
+      opts.mnemonic,
+      "--accounts",
+      String(opts.accounts),
+      "--block-time",
+      "1",
       "--silent",
     ],
-    { stdio: "ignore", detached: false },
+    { stdio: "ignore", detached: false }
   );
   // Wait for RPC to be ready (poll).
   const url = `http://127.0.0.1:${opts.port}`;
@@ -240,7 +264,12 @@ export async function spawnAnvil(opts: { port: number; mnemonic: string; account
     try {
       const r = await fetch(url, {
         method: "POST",
-        body: JSON.stringify({ jsonrpc: "2.0", method: "eth_chainId", params: [], id: 1 }),
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          method: "eth_chainId",
+          params: [],
+          id: 1,
+        }),
         headers: { "content-type": "application/json" },
       });
       if (r.ok) {
@@ -249,10 +278,14 @@ export async function spawnAnvil(opts: { port: number; mnemonic: string; account
           url,
           chainId: parseInt(result, 16),
           pid: child.pid!,
-          stop: async () => { child.kill("SIGTERM"); },
+          stop: async () => {
+            child.kill("SIGTERM");
+          },
         };
       }
-    } catch { /* keep polling */ }
+    } catch {
+      /* keep polling */
+    }
     await new Promise((r) => setTimeout(r, 100));
   }
   child.kill("SIGTERM");
@@ -281,6 +314,7 @@ git commit -m "feat(devnet): anvil binary detection + spawn helper"
 ### Task 3: Deterministic dev accounts (HD mnemonic → 10 funded keys)
 
 **Files:**
+
 - Create: `packages/0gkit-devnet/src/accounts.ts`
 - Create: `packages/0gkit-devnet/src/__tests__/accounts.test.ts`
 
@@ -301,7 +335,10 @@ describe("deriveAccounts", () => {
   });
 
   it("respects custom mnemonic", () => {
-    const a = deriveAccounts({ count: 2, mnemonic: "test test test test test test test test test test test junk" });
+    const a = deriveAccounts({
+      count: 2,
+      mnemonic: "test test test test test test test test test test test junk",
+    });
     const b = deriveAccounts({ count: 2, mnemonic: DEFAULT_DEV_MNEMONIC });
     expect(a[0].address).not.toEqual(b[0].address);
   });
@@ -327,7 +364,9 @@ export interface DevAccount {
   privateKey: `0x${string}`;
 }
 
-export function deriveAccounts(opts: { count: number; mnemonic?: string } = { count: 10 }): DevAccount[] {
+export function deriveAccounts(
+  opts: { count: number; mnemonic?: string } = { count: 10 }
+): DevAccount[] {
   const m = opts.mnemonic ?? DEFAULT_DEV_MNEMONIC;
   const out: DevAccount[] = [];
   for (let i = 0; i < opts.count; i++) {
@@ -335,9 +374,14 @@ export function deriveAccounts(opts: { count: number; mnemonic?: string } = { co
     out.push({
       index: i,
       address: acct.address,
-      privateKey: (acct as unknown as { getHdKey(): { privateKey: Uint8Array } }).getHdKey().privateKey
-        ? ("0x" + Buffer.from((acct as any).getHdKey().privateKey).toString("hex")) as `0x${string}`
-        : ("0x" + "00".repeat(32)) as `0x${string}`, // placeholder; replaced below
+      privateKey: (
+        acct as unknown as { getHdKey(): { privateKey: Uint8Array } }
+      ).getHdKey().privateKey
+        ? (("0x" +
+            Buffer.from((acct as any).getHdKey().privateKey).toString(
+              "hex"
+            )) as `0x${string}`)
+        : (("0x" + "00".repeat(32)) as `0x${string}`), // placeholder; replaced below
     });
   }
   return out;
@@ -363,6 +407,7 @@ git commit -m "feat(devnet): deterministic dev accounts from HD mnemonic"
 ### Task 4: Storage mock — HTTP server + filesystem CAS
 
 **Files:**
+
 - Create: `packages/0gkit-devnet/src/storage-mock.ts`
 - Create: `packages/0gkit-devnet/src/__tests__/storage-mock.test.ts`
 
@@ -432,7 +477,10 @@ export interface StorageMockHandle {
   stop(): Promise<void>;
 }
 
-export async function startStorageMock(opts: { port: number; stateDir: string }): Promise<StorageMockHandle> {
+export async function startStorageMock(opts: {
+  port: number;
+  stateDir: string;
+}): Promise<StorageMockHandle> {
   mkdirSync(opts.stateDir, { recursive: true });
 
   const server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
@@ -450,12 +498,17 @@ export async function startStorageMock(opts: { port: number; stateDir: string })
       if (req.method === "GET" && req.url?.startsWith("/download/")) {
         const root = req.url.slice("/download/".length);
         const path = join(opts.stateDir, root);
-        if (!existsSync(path)) { res.writeHead(404); res.end(); return; }
+        if (!existsSync(path)) {
+          res.writeHead(404);
+          res.end();
+          return;
+        }
         res.writeHead(200, { "content-type": "application/octet-stream" });
         res.end(readFileSync(path));
         return;
       }
-      res.writeHead(404); res.end();
+      res.writeHead(404);
+      res.end();
     } catch (e) {
       res.writeHead(500, { "content-type": "application/json" });
       res.end(JSON.stringify({ error: (e as Error).message }));
@@ -464,7 +517,8 @@ export async function startStorageMock(opts: { port: number; stateDir: string })
 
   await new Promise<void>((r) => server.listen(opts.port, "127.0.0.1", r));
   const addr = server.address();
-  if (!addr || typeof addr === "string") throw new Error("server.address() returned unexpected");
+  if (!addr || typeof addr === "string")
+    throw new Error("server.address() returned unexpected");
   const port = addr.port;
 
   return {
@@ -494,6 +548,7 @@ git commit -m "feat(devnet): storage mock HTTP server with filesystem CAS"
 ### Task 5: Compute mock — OpenAI-compatible HTTP + Ollama detect
 
 **Files:**
+
 - Create: `packages/0gkit-devnet/src/compute-mock.ts`
 - Create: `packages/0gkit-devnet/src/__tests__/compute-mock.test.ts`
 
@@ -505,8 +560,12 @@ import { startComputeMock, ComputeMockHandle } from "../compute-mock.js";
 
 describe("compute-mock", () => {
   let mock: ComputeMockHandle;
-  beforeEach(async () => { mock = await startComputeMock({ port: 0, mode: "stub" }); });
-  afterEach(async () => { await mock.stop(); });
+  beforeEach(async () => {
+    mock = await startComputeMock({ port: 0, mode: "stub" });
+  });
+  afterEach(async () => {
+    await mock.stop();
+  });
 
   it("serves /v1/chat/completions in OpenAI shape (stub mode)", async () => {
     const r = await fetch(`${mock.url}/v1/chat/completions`, {
@@ -518,7 +577,9 @@ describe("compute-mock", () => {
       }),
     });
     expect(r.status).toBe(200);
-    const json = (await r.json()) as { choices: { message: { role: string; content: string } }[] };
+    const json = (await r.json()) as {
+      choices: { message: { role: string; content: string } }[];
+    };
     expect(json.choices[0].message.role).toBe("assistant");
     expect(json.choices[0].message.content).toContain("[MOCK]");
     expect(json.choices[0].message.content).toContain("ping");
@@ -542,14 +603,22 @@ Run: `pnpm --filter @foundryprotocol/0gkit-devnet test compute-mock`
 ```ts
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
 
-export interface ComputeMockHandle { url: string; port: number; stop(): Promise<void>; }
+export interface ComputeMockHandle {
+  url: string;
+  port: number;
+  stop(): Promise<void>;
+}
 export type ComputeMockMode = "stub" | "ollama";
 
 async function detectOllama(): Promise<string | null> {
   try {
-    const r = await fetch("http://127.0.0.1:11434/api/tags", { signal: AbortSignal.timeout(500) });
+    const r = await fetch("http://127.0.0.1:11434/api/tags", {
+      signal: AbortSignal.timeout(500),
+    });
     return r.ok ? "http://127.0.0.1:11434" : null;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 async function readJson<T = unknown>(req: IncomingMessage): Promise<T> {
@@ -558,8 +627,12 @@ async function readJson<T = unknown>(req: IncomingMessage): Promise<T> {
   return JSON.parse(Buffer.concat(chunks).toString("utf8")) as T;
 }
 
-export async function startComputeMock(opts: { port: number; mode?: ComputeMockMode }): Promise<ComputeMockHandle> {
-  const mode: ComputeMockMode = opts.mode ?? ((await detectOllama()) ? "ollama" : "stub");
+export async function startComputeMock(opts: {
+  port: number;
+  mode?: ComputeMockMode;
+}): Promise<ComputeMockHandle> {
+  const mode: ComputeMockMode =
+    opts.mode ?? ((await detectOllama()) ? "ollama" : "stub");
 
   const server = createServer(async (req, res) => {
     try {
@@ -569,23 +642,38 @@ export async function startComputeMock(opts: { port: number; mode?: ComputeMockM
         return;
       }
       if (req.method === "POST" && req.url === "/v1/chat/completions") {
-        const body = await readJson<{ model: string; messages: { role: string; content: string }[] }>(req);
+        const body = await readJson<{
+          model: string;
+          messages: { role: string; content: string }[];
+        }>(req);
         const last = body.messages[body.messages.length - 1]?.content ?? "";
-        const content = mode === "stub"
-          ? `[MOCK] echoing: ${last}`
-          : await callOllama(last);
+        const content =
+          mode === "stub" ? `[MOCK] echoing: ${last}` : await callOllama(last);
         res.writeHead(200, { "content-type": "application/json" });
-        res.end(JSON.stringify({
-          id: `mock-${Date.now()}`,
-          object: "chat.completion",
-          created: Math.floor(Date.now() / 1000),
-          model: body.model,
-          choices: [{ index: 0, message: { role: "assistant", content }, finish_reason: "stop" }],
-          usage: { prompt_tokens: last.length, completion_tokens: content.length, total_tokens: last.length + content.length },
-        }));
+        res.end(
+          JSON.stringify({
+            id: `mock-${Date.now()}`,
+            object: "chat.completion",
+            created: Math.floor(Date.now() / 1000),
+            model: body.model,
+            choices: [
+              {
+                index: 0,
+                message: { role: "assistant", content },
+                finish_reason: "stop",
+              },
+            ],
+            usage: {
+              prompt_tokens: last.length,
+              completion_tokens: content.length,
+              total_tokens: last.length + content.length,
+            },
+          })
+        );
         return;
       }
-      res.writeHead(404); res.end();
+      res.writeHead(404);
+      res.end();
     } catch (e) {
       res.writeHead(500, { "content-type": "application/json" });
       res.end(JSON.stringify({ error: (e as Error).message }));
@@ -594,7 +682,8 @@ export async function startComputeMock(opts: { port: number; mode?: ComputeMockM
 
   await new Promise<void>((r) => server.listen(opts.port, "127.0.0.1", r));
   const addr = server.address();
-  if (!addr || typeof addr === "string") throw new Error("server.address() returned unexpected");
+  if (!addr || typeof addr === "string")
+    throw new Error("server.address() returned unexpected");
   const port = addr.port;
 
   return {
@@ -633,6 +722,7 @@ git commit -m "feat(devnet): compute mock OpenAI-compatible HTTP server"
 ### Task 6: DA mock — in-memory canonical-digest store
 
 **Files:**
+
 - Create: `packages/0gkit-devnet/src/da-mock.ts`
 - Create: `packages/0gkit-devnet/src/__tests__/da-mock.test.ts`
 
@@ -644,18 +734,28 @@ import { startDaMock, DaMockHandle } from "../da-mock.js";
 
 describe("da-mock", () => {
   let mock: DaMockHandle;
-  beforeEach(async () => { mock = await startDaMock({ port: 0 }); });
-  afterEach(async () => { await mock.stop(); });
+  beforeEach(async () => {
+    mock = await startDaMock({ port: 0 });
+  });
+  afterEach(async () => {
+    await mock.stop();
+  });
 
   it("publish returns a digest", async () => {
-    const r = await fetch(`${mock.url}/publish`, { method: "POST", body: new Uint8Array([1, 2, 3]) });
+    const r = await fetch(`${mock.url}/publish`, {
+      method: "POST",
+      body: new Uint8Array([1, 2, 3]),
+    });
     expect(r.status).toBe(200);
     const { digest } = (await r.json()) as { digest: string };
     expect(digest).toMatch(/^0x[0-9a-f]{64}$/);
   });
 
   it("verify returns true for known digest", async () => {
-    const up = await fetch(`${mock.url}/publish`, { method: "POST", body: new Uint8Array([9, 8, 7]) });
+    const up = await fetch(`${mock.url}/publish`, {
+      method: "POST",
+      body: new Uint8Array([9, 8, 7]),
+    });
     const { digest } = (await up.json()) as { digest: string };
     const v = await fetch(`${mock.url}/verify/${digest}`);
     expect(v.status).toBe(200);
@@ -679,7 +779,11 @@ Run: `pnpm --filter @foundryprotocol/0gkit-devnet test da-mock`
 import { createServer } from "node:http";
 import { createHash } from "node:crypto";
 
-export interface DaMockHandle { url: string; port: number; stop(): Promise<void>; }
+export interface DaMockHandle {
+  url: string;
+  port: number;
+  stop(): Promise<void>;
+}
 
 export async function startDaMock(opts: { port: number }): Promise<DaMockHandle> {
   const store = new Map<string, Buffer>();
@@ -702,16 +806,23 @@ export async function startDaMock(opts: { port: number }): Promise<DaMockHandle>
         res.end(JSON.stringify({ available: store.has(digest) }));
         return;
       }
-      res.writeHead(404); res.end();
+      res.writeHead(404);
+      res.end();
     } catch (e) {
-      res.writeHead(500); res.end((e as Error).message);
+      res.writeHead(500);
+      res.end((e as Error).message);
     }
   });
 
   await new Promise<void>((r) => server.listen(opts.port, "127.0.0.1", r));
   const addr = server.address();
-  if (!addr || typeof addr === "string") throw new Error("server.address() returned unexpected");
-  return { url: `http://127.0.0.1:${addr.port}`, port: addr.port, stop: () => new Promise<void>((r) => server.close(() => r())) };
+  if (!addr || typeof addr === "string")
+    throw new Error("server.address() returned unexpected");
+  return {
+    url: `http://127.0.0.1:${addr.port}`,
+    port: addr.port,
+    stop: () => new Promise<void>((r) => server.close(() => r())),
+  };
 }
 ```
 
@@ -728,6 +839,7 @@ git commit -m "feat(devnet): DA mock in-memory canonical-digest store"
 ### Task 7: PID + ports state file (`~/.0g-dev/devnet.json`)
 
 **Files:**
+
 - Create: `packages/0gkit-devnet/src/state.ts`
 - Create: `packages/0gkit-devnet/src/__tests__/state.test.ts`
 
@@ -742,7 +854,9 @@ import { writeState, readState, clearState, DevnetState } from "../state.js";
 
 describe("devnet state file", () => {
   let dir: string;
-  beforeEach(() => { dir = mkdtempSync(join(tmpdir(), "devnet-state-")); });
+  beforeEach(() => {
+    dir = mkdtempSync(join(tmpdir(), "devnet-state-"));
+  });
 
   it("round-trips a state object", () => {
     const s: DevnetState = {
@@ -752,7 +866,13 @@ describe("devnet state file", () => {
       storage: { url: "http://127.0.0.1:5678", port: 5678 },
       compute: { url: "http://127.0.0.1:5679", port: 5679 },
       da: { url: "http://127.0.0.1:5680", port: 5680 },
-      accounts: [{ index: 0, address: "0xabc", privateKey: "0xdef" } as DevnetState["accounts"][number]],
+      accounts: [
+        {
+          index: 0,
+          address: "0xabc",
+          privateKey: "0xdef",
+        } as DevnetState["accounts"][number],
+      ],
       mnemonic: "test test test test test test test test test test test junk",
       stateDir: dir,
     };
@@ -781,9 +901,19 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node
 import { homedir } from "node:os";
 import { join } from "node:path";
 
-export interface DevnetService { url: string; port: number; }
-export interface DevnetChainService extends DevnetService { chainId: number; pid: number; }
-export interface DevnetAccount { index: number; address: `0x${string}`; privateKey: `0x${string}`; }
+export interface DevnetService {
+  url: string;
+  port: number;
+}
+export interface DevnetChainService extends DevnetService {
+  chainId: number;
+  pid: number;
+}
+export interface DevnetAccount {
+  index: number;
+  address: `0x${string}`;
+  privateKey: `0x${string}`;
+}
 export interface DevnetState {
   pid: number;
   startedAt: string;
@@ -796,7 +926,9 @@ export interface DevnetState {
   stateDir: string;
 }
 
-function file(dir?: string) { return join(dir ?? join(homedir(), ".0g-dev"), "devnet.json"); }
+function file(dir?: string) {
+  return join(dir ?? join(homedir(), ".0g-dev"), "devnet.json");
+}
 
 export function writeState(s: DevnetState, opts: { dir?: string } = {}) {
   const p = file(opts.dir);
@@ -824,6 +956,7 @@ git commit -m "feat(devnet): PID + ports state file at ~/.0g-dev/devnet.json"
 ### Task 8: Orchestrator — `startDevnet()` / `stopDevnet()`
 
 **Files:**
+
 - Create/extend: `packages/0gkit-devnet/src/index.ts`
 - Create: `packages/0gkit-devnet/src/__tests__/orchestrator.test.ts`
 
@@ -835,7 +968,10 @@ import { startDevnet, stopDevnet, isRunning } from "../index.js";
 
 describe.skipIf(!process.env.CI_HAS_ANVIL)("devnet orchestrator", () => {
   it("starts and stops the full stack", async () => {
-    const handle = await startDevnet({ accounts: 3, ports: { chain: 0, storage: 0, compute: 0, da: 0 } });
+    const handle = await startDevnet({
+      accounts: 3,
+      ports: { chain: 0, storage: 0, compute: 0, da: 0 },
+    });
     expect(handle.chain.url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
     expect(handle.accounts).toHaveLength(3);
     expect(await isRunning()).toBe(true);
@@ -858,7 +994,7 @@ import { writeState, readState, clearState, DevnetState } from "./state.js";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
-export * from "./types.js";  // (Task 9 creates types.ts; for now inline)
+export * from "./types.js"; // (Task 9 creates types.ts; for now inline)
 export { deriveAccounts, DEFAULT_DEV_MNEMONIC } from "./accounts.js";
 
 export const VERSION = "0.1.0";
@@ -874,20 +1010,34 @@ export interface DevnetHandle extends DevnetState {
   stop(): Promise<void>;
 }
 
-export async function startDevnet(opts: DevnetStartOptions = {}): Promise<DevnetHandle> {
+export async function startDevnet(
+  opts: DevnetStartOptions = {}
+): Promise<DevnetHandle> {
   const stateDir = opts.stateDir ?? join(homedir(), ".0g-dev");
   const mnemonic = opts.mnemonic ?? DEFAULT_DEV_MNEMONIC;
   const accountsList = deriveAccounts({ count: opts.accounts ?? 10, mnemonic });
 
-  const chain = await spawnAnvil({ port: opts.ports?.chain ?? 8545, mnemonic, accounts: opts.accounts ?? 10 });
-  const storage = await startStorageMock({ port: opts.ports?.storage ?? 5678, stateDir: join(stateDir, "storage") });
+  const chain = await spawnAnvil({
+    port: opts.ports?.chain ?? 8545,
+    mnemonic,
+    accounts: opts.accounts ?? 10,
+  });
+  const storage = await startStorageMock({
+    port: opts.ports?.storage ?? 5678,
+    stateDir: join(stateDir, "storage"),
+  });
   const compute = await startComputeMock({ port: opts.ports?.compute ?? 5679 });
   const da = await startDaMock({ port: opts.ports?.da ?? 5680 });
 
   const state: DevnetState = {
     pid: process.pid,
     startedAt: new Date().toISOString(),
-    chain: { url: chain.url, port: parseInt(new URL(chain.url).port), chainId: chain.chainId, pid: chain.pid },
+    chain: {
+      url: chain.url,
+      port: parseInt(new URL(chain.url).port),
+      chainId: chain.chainId,
+      pid: chain.pid,
+    },
     storage: { url: storage.url, port: storage.port },
     compute: { url: compute.url, port: compute.port },
     da: { url: da.url, port: da.port },
@@ -900,7 +1050,12 @@ export async function startDevnet(opts: DevnetStartOptions = {}): Promise<Devnet
   return {
     ...state,
     stop: async () => {
-      await Promise.allSettled([chain.stop(), storage.stop(), compute.stop(), da.stop()]);
+      await Promise.allSettled([
+        chain.stop(),
+        storage.stop(),
+        compute.stop(),
+        da.stop(),
+      ]);
       clearState({ dir: stateDir });
     },
   };
@@ -910,16 +1065,29 @@ export async function stopDevnet(opts: { stateDir?: string } = {}): Promise<void
   const s = readState({ dir: opts.stateDir });
   if (!s) return;
   // Signal the parent process to terminate gracefully
-  try { process.kill(s.pid, "SIGTERM"); } catch { /* already dead */ }
+  try {
+    process.kill(s.pid, "SIGTERM");
+  } catch {
+    /* already dead */
+  }
   // Anvil child
-  try { process.kill(s.chain.pid, "SIGTERM"); } catch { /* already dead */ }
+  try {
+    process.kill(s.chain.pid, "SIGTERM");
+  } catch {
+    /* already dead */
+  }
   clearState({ dir: opts.stateDir });
 }
 
 export async function isRunning(opts: { stateDir?: string } = {}): Promise<boolean> {
   const s = readState({ dir: opts.stateDir });
   if (!s) return false;
-  try { process.kill(s.pid, 0); return true; } catch { return false; }
+  try {
+    process.kill(s.pid, 0);
+    return true;
+  } catch {
+    return false;
+  }
 }
 ```
 
@@ -934,6 +1102,7 @@ git commit -m "feat(devnet): orchestrator startDevnet/stopDevnet/isRunning"
 ### Task 9: `local` network preset in `@foundryprotocol/0gkit-core`
 
 **Files:**
+
 - Modify: `packages/0gkit-core/src/networks.ts`
 - Modify: `packages/0gkit-core/src/__tests__/networks.test.ts`
 
@@ -959,7 +1128,9 @@ Run: `pnpm --filter @foundryprotocol/0gkit-core test networks`
 
 ```ts
 export const networks = {
-  galileo: { /* existing */ },
+  galileo: {
+    /* existing */
+  },
   local: {
     name: "0g-local",
     chainId: 31337,
@@ -986,6 +1157,7 @@ git commit -m "feat(core): add 'local' network preset for 0g dev"
 ### Task 10: CLI command `0g dev` (start)
 
 **Files:**
+
 - Create: `packages/0gkit-cli/src/commands/dev.ts`
 - Modify: `packages/0gkit-cli/src/program.ts`
 - Modify: `packages/0gkit-cli/package.json` (add `@foundryprotocol/0gkit-devnet` dep)
@@ -1011,7 +1183,11 @@ describe("0g dev (start)", () => {
     });
     const program = buildProgram({
       log: (m) => out.push(m),
-      devnet: { startDevnet, stopDevnet: vi.fn(), isRunning: vi.fn().mockResolvedValue(false) },
+      devnet: {
+        startDevnet,
+        stopDevnet: vi.fn(),
+        isRunning: vi.fn().mockResolvedValue(false),
+      },
     });
     await program.parseAsync(["node", "0g", "dev", "--accounts", "1", "--detach"]);
     expect(startDevnet).toHaveBeenCalledWith(expect.objectContaining({ accounts: 1 }));
@@ -1032,7 +1208,9 @@ describe("0g dev (start)", () => {
       },
     });
     program.exitOverride();
-    await expect(program.parseAsync(["node", "0g", "dev"])).rejects.toThrow(/exitCode: 1/);
+    await expect(program.parseAsync(["node", "0g", "dev"])).rejects.toThrow(
+      /exitCode: 1/
+    );
   });
 });
 ```
@@ -1045,12 +1223,19 @@ import type { Command } from "commander";
 import type { ProgramDeps } from "../program.js";
 
 export function registerDevCommand(parent: Command, deps: ProgramDeps): void {
-  const dev = parent.command("dev").description("Local 0G devnet (chain + storage + compute + DA)");
+  const dev = parent
+    .command("dev")
+    .description("Local 0G devnet (chain + storage + compute + DA)");
 
   dev
     .command("start", { isDefault: true })
     .description("Start the local devnet")
-    .option("--accounts <n>", "Number of prefunded dev accounts", (v) => parseInt(v, 10), 10)
+    .option(
+      "--accounts <n>",
+      "Number of prefunded dev accounts",
+      (v) => parseInt(v, 10),
+      10
+    )
     .option("--mnemonic <phrase>", "Custom HD mnemonic")
     .option("--port-chain <n>", "anvil port", (v) => parseInt(v, 10), 8545)
     .option("--port-storage <n>", "storage mock port", (v) => parseInt(v, 10), 5678)
@@ -1066,7 +1251,12 @@ export function registerDevCommand(parent: Command, deps: ProgramDeps): void {
       const handle = await deps.devnet.startDevnet({
         accounts: opts.accounts,
         mnemonic: opts.mnemonic,
-        ports: { chain: opts.portChain, storage: opts.portStorage, compute: opts.portCompute, da: opts.portDa },
+        ports: {
+          chain: opts.portChain,
+          storage: opts.portStorage,
+          compute: opts.portCompute,
+          da: opts.portDa,
+        },
         stateDir: opts.stateDir,
       });
       deps.log(`0g dev — local stack up`);
@@ -1077,13 +1267,20 @@ export function registerDevCommand(parent: Command, deps: ProgramDeps): void {
       deps.log(``);
       deps.log(`Mnemonic: ${handle.mnemonic}`);
       deps.log(`Accounts (${handle.accounts.length}, 10,000 ETH each):`);
-      for (const a of handle.accounts) deps.log(`  [${a.index}] ${a.address}  ${a.privateKey}`);
+      for (const a of handle.accounts)
+        deps.log(`  [${a.index}] ${a.address}  ${a.privateKey}`);
       deps.log(``);
       deps.log(`Stop with: 0g dev stop`);
       if (opts.detach) return;
       await new Promise<void>((resolve) => {
-        process.on("SIGINT", async () => { await handle.stop(); resolve(); });
-        process.on("SIGTERM", async () => { await handle.stop(); resolve(); });
+        process.on("SIGINT", async () => {
+          await handle.stop();
+          resolve();
+        });
+        process.on("SIGTERM", async () => {
+          await handle.stop();
+          resolve();
+        });
       });
     });
 
@@ -1106,6 +1303,7 @@ git commit -m "feat(cli): 0g dev start — orchestrate local stack, print accoun
 ### Task 11: CLI `0g dev stop|status|reset|fund`
 
 **Files:**
+
 - Extend: `packages/0gkit-cli/src/commands/dev.ts` (or split into `dev-stop.ts` etc. per file structure)
 - Extend: `packages/0gkit-cli/src/__tests__/dev.test.ts`
 
@@ -1130,6 +1328,7 @@ git commit -m "feat(cli): 0g dev stop, status, reset, fund subcommands"
 ### Task 12: Conformance test — storage primitive against mock matches galileo-shape
 
 **Files:**
+
 - Create: `packages/0gkit-devnet/src/__tests__/conformance.test.ts`
 
 - [ ] **Step 1: Write the conformance test**
@@ -1140,28 +1339,40 @@ import { StorageClient } from "@foundryprotocol/0gkit-storage";
 import { networks } from "@foundryprotocol/0gkit-core";
 import { startDevnet, stopDevnet } from "../index.js";
 
-describe.skipIf(!process.env.CI_HAS_ANVIL)("conformance: storage primitive ↔ local mock", () => {
-  it("upload returns same Receipt shape as galileo path", async () => {
-    const handle = await startDevnet({ accounts: 1, ports: { chain: 0, storage: 0, compute: 0, da: 0 } });
-    try {
-      const storage = new StorageClient({
-        network: { ...networks.local, storageUrl: handle.storage.url, rpcUrl: handle.chain.url },
-        privateKey: handle.accounts[0].privateKey,
+describe.skipIf(!process.env.CI_HAS_ANVIL)(
+  "conformance: storage primitive ↔ local mock",
+  () => {
+    it("upload returns same Receipt shape as galileo path", async () => {
+      const handle = await startDevnet({
+        accounts: 1,
+        ports: { chain: 0, storage: 0, compute: 0, da: 0 },
       });
-      const { root, receipt } = await storage.upload(new TextEncoder().encode("conformance"));
-      expect(root).toMatch(/^0x[0-9a-f]{64}$/);
-      expect(receipt).toMatchObject({
-        status: expect.any(String),
-        txHash: expect.stringMatching(/^0x/),
-        blockNumber: expect.any(BigInt),
-      });
-      const bytes = await storage.download(root);
-      expect(new TextDecoder().decode(bytes)).toBe("conformance");
-    } finally {
-      await stopDevnet();
-    }
-  }, 30_000);
-});
+      try {
+        const storage = new StorageClient({
+          network: {
+            ...networks.local,
+            storageUrl: handle.storage.url,
+            rpcUrl: handle.chain.url,
+          },
+          privateKey: handle.accounts[0].privateKey,
+        });
+        const { root, receipt } = await storage.upload(
+          new TextEncoder().encode("conformance")
+        );
+        expect(root).toMatch(/^0x[0-9a-f]{64}$/);
+        expect(receipt).toMatchObject({
+          status: expect.any(String),
+          txHash: expect.stringMatching(/^0x/),
+          blockNumber: expect.any(BigInt),
+        });
+        const bytes = await storage.download(root);
+        expect(new TextDecoder().decode(bytes)).toBe("conformance");
+      } finally {
+        await stopDevnet();
+      }
+    }, 30_000);
+  }
+);
 ```
 
 - [ ] **Step 2: Run → Step 3: Iterate until pass → Step 4: Commit**
@@ -1179,6 +1390,7 @@ git commit -m "test(devnet): storage primitive conformance against local mock"
 ### Task 13: CI integration
 
 **Files:**
+
 - Modify: `.github/workflows/ci.yml`
 
 - [ ] **Step 1: Add anvil install step + extend coverage filter**
@@ -1207,6 +1419,7 @@ git commit -m "ci: install foundry for devnet conformance tests"
 ### Task 14: Docs page + changeset
 
 **Files:**
+
 - Create: `apps/docs/app/cli/dev/page.mdx`
 - Modify: `apps/docs/app/cli/page.mdx` (add link)
 - Create: `.changeset/sp2-0g-dev.md`
@@ -1269,15 +1482,15 @@ Expected: prints 3 accounts + mnemonic, status reports running, stop tears every
 
 ## Spec Coverage Self-Review
 
-| Spec requirement (SP2) | Task |
-|------------------------|------|
-| `0g dev` starts in ≤5s, prints 10 funded accounts + mnemonic | Tasks 8, 10 |
-| Mock storage with same client API as real network | Tasks 4, 12 |
-| Mock compute (Ollama if detected, stub otherwise) | Task 5 |
-| Mock DA (canonical digest) | Task 6 |
-| `local` network preset in `0gkit-core` | Task 9 |
-| `0g dev stop/status/reset/fund` | Task 11 |
-| Conformance: real storage primitive talks to mock unchanged | Task 12 |
-| Coverage thresholds (80/70 lines/branches) | All tasks (vitest config in Task 1) |
-| Anvil install hint when missing | Task 2 (`AnvilNotInstalledError`) |
-| Apps zero-code-change between `local` and `galileo` | Tasks 9, 12 (proven by conformance test) |
+| Spec requirement (SP2)                                       | Task                                     |
+| ------------------------------------------------------------ | ---------------------------------------- |
+| `0g dev` starts in ≤5s, prints 10 funded accounts + mnemonic | Tasks 8, 10                              |
+| Mock storage with same client API as real network            | Tasks 4, 12                              |
+| Mock compute (Ollama if detected, stub otherwise)            | Task 5                                   |
+| Mock DA (canonical digest)                                   | Task 6                                   |
+| `local` network preset in `0gkit-core`                       | Task 9                                   |
+| `0g dev stop/status/reset/fund`                              | Task 11                                  |
+| Conformance: real storage primitive talks to mock unchanged  | Task 12                                  |
+| Coverage thresholds (80/70 lines/branches)                   | All tasks (vitest config in Task 1)      |
+| Anvil install hint when missing                              | Task 2 (`AnvilNotInstalledError`)        |
+| Apps zero-code-change between `local` and `galileo`          | Tasks 9, 12 (proven by conformance test) |

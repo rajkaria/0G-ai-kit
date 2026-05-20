@@ -17,6 +17,7 @@
 ## File Structure
 
 **Create:**
+
 - `packages/create-0g-app/package.json`
 - `packages/create-0g-app/tsup.config.ts`
 - `packages/create-0g-app/tsconfig.json`
@@ -43,6 +44,7 @@
 - `apps/docs/app/getting-started/create-0g-app/page.mdx`
 
 **Modify:**
+
 - `README.md` (root) — replace current "Quick start" with `npm create 0g-app demo` as the first thing
 - `apps/docs/app/getting-started/page.mdx` — same
 - `pnpm-workspace.yaml` — already globs `packages/*`
@@ -54,6 +56,7 @@
 ### Task 1: Bootstrap `create-0g-app` package
 
 **Files:**
+
 - Create: `packages/create-0g-app/package.json`
 - Create: `packages/create-0g-app/tsconfig.json`
 - Create: `packages/create-0g-app/tsup.config.ts`
@@ -153,6 +156,7 @@ git commit -m "feat(create): bootstrap create-0g-app package skeleton"
 ### Task 2: Template catalogue + giget fetcher
 
 **Files:**
+
 - Create: `packages/create-0g-app/src/templates.ts`
 - Create: `packages/create-0g-app/src/__tests__/templates.test.ts`
 - Create: `packages/create-0g-app/src/types.ts`
@@ -181,13 +185,17 @@ describe("templates catalogue", () => {
     expect(isValidTemplateName("storage-app")).toBe(true);
   });
 
-  it.skipIf(!process.env.CI_HAS_NET)("fetches storage-app into a tmpdir", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "cga-"));
-    await fetchTemplate({ name: "storage-app", dest: dir });
-    expect(existsSync(join(dir, "package.json"))).toBe(true);
-    const pkg = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
-    expect(pkg.name).toBe("storage-app");
-  }, 30_000);
+  it.skipIf(!process.env.CI_HAS_NET)(
+    "fetches storage-app into a tmpdir",
+    async () => {
+      const dir = mkdtempSync(join(tmpdir(), "cga-"));
+      await fetchTemplate({ name: "storage-app", dest: dir });
+      expect(existsSync(join(dir, "package.json"))).toBe(true);
+      const pkg = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
+      expect(pkg.name).toBe("storage-app");
+    },
+    30_000
+  );
 });
 ```
 
@@ -199,7 +207,12 @@ Run: `pnpm --filter create-0g-app test templates`
 
 ```ts
 // src/types.ts
-export type TemplateName = "storage-app" | "inference-app" | "attestation-verify" | "mcp-agent" | "react-app";
+export type TemplateName =
+  | "storage-app"
+  | "inference-app"
+  | "attestation-verify"
+  | "mcp-agent"
+  | "react-app";
 export type Network = "local" | "galileo";
 export type PackageManager = "pnpm" | "npm" | "yarn" | "bun";
 
@@ -210,8 +223,8 @@ export interface CreateOptions {
   packageManager: PackageManager;
   install: boolean;
   git: boolean;
-  dest: string;            // absolute path where the app will be created
-  example: boolean;        // true if interactive picker was used
+  dest: string; // absolute path where the app will be created
+  example: boolean; // true if interactive picker was used
 }
 ```
 
@@ -221,11 +234,14 @@ import { downloadTemplate } from "giget";
 import { TemplateName } from "./types.js";
 
 export const TEMPLATES: { name: TemplateName; description: string }[] = [
-  { name: "storage-app",       description: "Upload + download a file, verify Merkle root." },
-  { name: "inference-app",     description: "OpenAI-shaped chat against 0G Compute." },
-  { name: "attestation-verify", description: "Parse + verify a TEE attestation report." },
-  { name: "mcp-agent",         description: "Expose 0G primitives as MCP tools." },
-  { name: "react-app",         description: "Next.js app using 0gkit React hooks." },
+  { name: "storage-app", description: "Upload + download a file, verify Merkle root." },
+  { name: "inference-app", description: "OpenAI-shaped chat against 0G Compute." },
+  {
+    name: "attestation-verify",
+    description: "Parse + verify a TEE attestation report.",
+  },
+  { name: "mcp-agent", description: "Expose 0G primitives as MCP tools." },
+  { name: "react-app", description: "Next.js app using 0gkit React hooks." },
 ];
 
 export function isValidTemplateName(s: string): s is TemplateName {
@@ -234,10 +250,13 @@ export function isValidTemplateName(s: string): s is TemplateName {
 
 const TEMPLATE_REF = process.env.OGKIT_TEMPLATE_REF ?? "v0.2.x";
 
-export async function fetchTemplate(opts: { name: TemplateName; dest: string }): Promise<void> {
+export async function fetchTemplate(opts: {
+  name: TemplateName;
+  dest: string;
+}): Promise<void> {
   await downloadTemplate(
     `github:rajkaria/0G-ai-kit/templates/${opts.name}#${TEMPLATE_REF}`,
-    { dir: opts.dest, force: false, install: false },
+    { dir: opts.dest, force: false, install: false }
   );
 }
 ```
@@ -255,6 +274,7 @@ git commit -m "feat(create): template catalogue + giget fetcher"
 ### Task 3: Package manager detection
 
 **Files:**
+
 - Create: `packages/create-0g-app/src/pm.ts`
 - Create: `packages/create-0g-app/src/__tests__/pm.test.ts`
 
@@ -266,13 +286,23 @@ import { detectPackageManager } from "../pm.js";
 
 describe("detectPackageManager", () => {
   it("returns pnpm when npm_config_user_agent indicates pnpm", () => {
-    expect(detectPackageManager({ env: { npm_config_user_agent: "pnpm/9.12.0 npm/? node/v22.0.0" } })).toBe("pnpm");
+    expect(
+      detectPackageManager({
+        env: { npm_config_user_agent: "pnpm/9.12.0 npm/? node/v22.0.0" },
+      })
+    ).toBe("pnpm");
   });
   it("returns yarn when yarn", () => {
-    expect(detectPackageManager({ env: { npm_config_user_agent: "yarn/4.0.0 npm/? node/v22.0.0" } })).toBe("yarn");
+    expect(
+      detectPackageManager({
+        env: { npm_config_user_agent: "yarn/4.0.0 npm/? node/v22.0.0" },
+      })
+    ).toBe("yarn");
   });
   it("returns bun when bun", () => {
-    expect(detectPackageManager({ env: { npm_config_user_agent: "bun/1.1.0" } })).toBe("bun");
+    expect(detectPackageManager({ env: { npm_config_user_agent: "bun/1.1.0" } })).toBe(
+      "bun"
+    );
   });
   it("falls back to npm", () => {
     expect(detectPackageManager({ env: {} })).toBe("npm");
@@ -286,7 +316,9 @@ describe("detectPackageManager", () => {
 // pm.ts
 import type { PackageManager } from "./types.js";
 
-export function detectPackageManager(opts: { env?: NodeJS.ProcessEnv } = {}): PackageManager {
+export function detectPackageManager(
+  opts: { env?: NodeJS.ProcessEnv } = {}
+): PackageManager {
   const ua = opts.env?.npm_config_user_agent ?? process.env.npm_config_user_agent ?? "";
   if (ua.startsWith("pnpm")) return "pnpm";
   if (ua.startsWith("yarn")) return "yarn";
@@ -322,6 +354,7 @@ git commit -m "feat(create): package manager detection from npm user-agent"
 ### Task 4: `.env.example` writer per network
 
 **Files:**
+
 - Create: `packages/create-0g-app/src/env.ts`
 - Create: `packages/create-0g-app/src/__tests__/env.test.ts`
 
@@ -395,17 +428,13 @@ export function envFor(network: Network): Record<string, string> {
 
 export function writeEnvExample(opts: { network: Network; dest: string }): void {
   const env = envFor(opts.network);
-  const lines: string[] = [
-    "# 0g app — environment",
-    `# Network: ${opts.network}`,
-    "",
-  ];
+  const lines: string[] = ["# 0g app — environment", `# Network: ${opts.network}`, ""];
   for (const [k, v] of Object.entries(env)) {
     if (k === "PRIVATE_KEY") {
       lines.push(
         opts.network === "local"
           ? "# Paste a private key from `0g dev` output. Never use this key in production."
-          : "# Paste a Galileo-funded private key. Use a secure key loader (e.g. fromKMS) in prod.",
+          : "# Paste a Galileo-funded private key. Use a secure key loader (e.g. fromKMS) in prod."
       );
     }
     lines.push(`${k}=${v}`);
@@ -427,6 +456,7 @@ git commit -m "feat(create): .env.example writer per network"
 ### Task 5: `git init` + first commit
 
 **Files:**
+
 - Create: `packages/create-0g-app/src/git.ts`
 - Create: `packages/create-0g-app/src/__tests__/git.test.ts`
 
@@ -462,18 +492,31 @@ describe("initGitRepo", () => {
 // git.ts
 import { execa } from "execa";
 
-export interface InitGitResult { ok: boolean; reason?: string; }
+export interface InitGitResult {
+  ok: boolean;
+  reason?: string;
+}
 
-export async function initGitRepo(opts: { dest: string; gitBin?: string }): Promise<InitGitResult> {
+export async function initGitRepo(opts: {
+  dest: string;
+  gitBin?: string;
+}): Promise<InitGitResult> {
   const git = opts.gitBin ?? "git";
   try {
     await execa(git, ["init", "--initial-branch=main"], { cwd: opts.dest });
     await execa(git, ["add", "."], { cwd: opts.dest });
     await execa(
       git,
-      ["-c", "user.email=hello@0gkit.dev", "-c", "user.name=create-0g-app",
-       "commit", "-m", "chore: bootstrap from create-0g-app"],
-      { cwd: opts.dest },
+      [
+        "-c",
+        "user.email=hello@0gkit.dev",
+        "-c",
+        "user.name=create-0g-app",
+        "commit",
+        "-m",
+        "chore: bootstrap from create-0g-app",
+      ],
+      { cwd: opts.dest }
     );
     return { ok: true };
   } catch (e) {
@@ -495,6 +538,7 @@ git commit -m "feat(create): git init + first commit"
 ### Task 6: ANSI helper + final "next step" banner
 
 **Files:**
+
 - Create: `packages/create-0g-app/src/ansi.ts`
 - Create: `packages/create-0g-app/src/banner.ts`
 - Create: `packages/create-0g-app/src/__tests__/banner.test.ts`
@@ -537,7 +581,7 @@ describe("renderBanner", () => {
 ```ts
 // ansi.ts (15-line internal helper per D4)
 const isTTY = process.stdout.isTTY && !process.env.NO_COLOR;
-const wrap = (code: string) => (s: string) => isTTY ? `\x1b[${code}m${s}\x1b[0m` : s;
+const wrap = (code: string) => (s: string) => (isTTY ? `\x1b[${code}m${s}\x1b[0m` : s);
 export const bold = wrap("1");
 export const dim = wrap("2");
 export const green = wrap("32");
@@ -559,18 +603,25 @@ export function renderBanner(opts: {
 }): string {
   const out: string[] = [
     "",
-    green(bold("✓")) + ` Created ${bold(opts.name)} from template ${cyan(opts.template)}`,
+    green(bold("✓")) +
+      ` Created ${bold(opts.name)} from template ${cyan(opts.template)}`,
     "",
     bold("Next steps:"),
     `  ${cyan("cd")} ${opts.name}`,
   ];
   if (opts.network === "local") {
-    out.push(`  ${cyan("0g dev")}                      ${dim("# start local devnet (separate terminal)")}`);
+    out.push(
+      `  ${cyan("0g dev")}                      ${dim("# start local devnet (separate terminal)")}`
+    );
   }
-  out.push(`  ${cyan(devCommand(opts.packageManager))}              ${dim("# run the app")}`);
+  out.push(
+    `  ${cyan(devCommand(opts.packageManager))}              ${dim("# run the app")}`
+  );
   out.push("");
   if (opts.network === "local") {
-    out.push(dim("Tip: 0g dev prints 10 funded accounts. Copy one PRIVATE_KEY into .env."));
+    out.push(
+      dim("Tip: 0g dev prints 10 funded accounts. Copy one PRIVATE_KEY into .env.")
+    );
   } else {
     out.push(dim("Tip: visit https://faucet.0g.ai to fund your Galileo account."));
   }
@@ -592,6 +643,7 @@ git commit -m "feat(create): next-step banner + ANSI helper"
 ### Task 7: Interactive prompts (clack)
 
 **Files:**
+
 - Create: `packages/create-0g-app/src/prompts.ts`
 - (No vitest for clack interactive flow — covered by e2e in Task 9. We DO unit-test the validation helpers.)
 
@@ -609,9 +661,9 @@ describe("validateProjectName", () => {
     ["", false],
     [".", false],
     ["..", false],
-    ["my app", false],          // no spaces
-    ["a/b", false],              // no slashes
-    ["my-very-long-".repeat(20), false],  // 200+ chars rejected
+    ["my app", false], // no spaces
+    ["a/b", false], // no slashes
+    ["my-very-long-".repeat(20), false], // 200+ chars rejected
   ])("'%s' → %s", (input, expected) => {
     expect(validateProjectName(input).ok).toBe(expected);
   });
@@ -629,43 +681,79 @@ import { detectPackageManager } from "./pm.js";
 
 export function validateProjectName(name: string): { ok: boolean; reason?: string } {
   if (!name) return { ok: false, reason: "Project name is required" };
-  if (name === "." || name === "..") return { ok: false, reason: "Name cannot be . or .." };
-  if (!/^[a-zA-Z0-9_-]+$/.test(name)) return { ok: false, reason: "Only letters, digits, _ and - allowed" };
+  if (name === "." || name === "..")
+    return { ok: false, reason: "Name cannot be . or .." };
+  if (!/^[a-zA-Z0-9_-]+$/.test(name))
+    return { ok: false, reason: "Only letters, digits, _ and - allowed" };
   if (name.length > 64) return { ok: false, reason: "Name too long (max 64)" };
   return { ok: true };
 }
 
-export async function interactivePrompts(seed: Partial<CreateOptions>): Promise<CreateOptions | null> {
+export async function interactivePrompts(
+  seed: Partial<CreateOptions>
+): Promise<CreateOptions | null> {
   p.intro("create-0g-app");
-  const name = seed.name ?? await p.text({
-    message: "Project name?",
-    placeholder: "my-0g-app",
-    validate: (v) => { const r = validateProjectName(v); return r.ok ? undefined : r.reason; },
-  });
-  if (p.isCancel(name)) { p.cancel("Cancelled."); return null; }
+  const name =
+    seed.name ??
+    (await p.text({
+      message: "Project name?",
+      placeholder: "my-0g-app",
+      validate: (v) => {
+        const r = validateProjectName(v);
+        return r.ok ? undefined : r.reason;
+      },
+    }));
+  if (p.isCancel(name)) {
+    p.cancel("Cancelled.");
+    return null;
+  }
 
-  const template = seed.template ?? await p.select({
-    message: "Template?",
-    options: TEMPLATES.map((t) => ({ value: t.name, label: t.name, hint: t.description })),
-    initialValue: "storage-app",
-  });
-  if (p.isCancel(template)) { p.cancel("Cancelled."); return null; }
+  const template =
+    seed.template ??
+    (await p.select({
+      message: "Template?",
+      options: TEMPLATES.map((t) => ({
+        value: t.name,
+        label: t.name,
+        hint: t.description,
+      })),
+      initialValue: "storage-app",
+    }));
+  if (p.isCancel(template)) {
+    p.cancel("Cancelled.");
+    return null;
+  }
 
-  const network = seed.network ?? await p.select({
-    message: "Network?",
-    options: [
-      { value: "local",   label: "local",   hint: "Use 0g dev — recommended" },
-      { value: "galileo", label: "galileo", hint: "0G testnet" },
-    ],
-    initialValue: "local",
-  });
-  if (p.isCancel(network)) { p.cancel("Cancelled."); return null; }
+  const network =
+    seed.network ??
+    (await p.select({
+      message: "Network?",
+      options: [
+        { value: "local", label: "local", hint: "Use 0g dev — recommended" },
+        { value: "galileo", label: "galileo", hint: "0G testnet" },
+      ],
+      initialValue: "local",
+    }));
+  if (p.isCancel(network)) {
+    p.cancel("Cancelled.");
+    return null;
+  }
 
-  const install = seed.install ?? await p.confirm({ message: "Install dependencies?", initialValue: true });
-  if (p.isCancel(install)) { p.cancel("Cancelled."); return null; }
+  const install =
+    seed.install ??
+    (await p.confirm({ message: "Install dependencies?", initialValue: true }));
+  if (p.isCancel(install)) {
+    p.cancel("Cancelled.");
+    return null;
+  }
 
-  const git = seed.git ?? await p.confirm({ message: "Initialize a git repository?", initialValue: true });
-  if (p.isCancel(git)) { p.cancel("Cancelled."); return null; }
+  const git =
+    seed.git ??
+    (await p.confirm({ message: "Initialize a git repository?", initialValue: true }));
+  if (p.isCancel(git)) {
+    p.cancel("Cancelled.");
+    return null;
+  }
 
   return {
     name: name as string,
@@ -674,7 +762,7 @@ export async function interactivePrompts(seed: Partial<CreateOptions>): Promise<
     packageManager: (seed.packageManager ?? detectPackageManager()) as PackageManager,
     install: install as boolean,
     git: git as boolean,
-    dest: "",      // filled by run()
+    dest: "", // filled by run()
     example: true,
   };
 }
@@ -693,6 +781,7 @@ git commit -m "feat(create): interactive prompts with clack"
 ### Task 8: Wire `run()` — the full orchestrator
 
 **Files:**
+
 - Modify: `packages/create-0g-app/src/index.ts`
 
 - [ ] **Step 1: Replace placeholder `run()` with the real one**
@@ -726,7 +815,10 @@ export async function run(argv: string[], deps: RunDeps = {}): Promise<number> {
     .version("0.1.0")
     .description("Scaffold a 0G app in seconds.")
     .argument("[name]", "Project name (interactive prompt if omitted)")
-    .option("-t, --template <name>", `Template (${TEMPLATES.map((t) => t.name).join("|")})`)
+    .option(
+      "-t, --template <name>",
+      `Template (${TEMPLATES.map((t) => t.name).join("|")})`
+    )
     .option("-n, --network <name>", "Network: local | galileo", "local")
     .option("--package-manager <pm>", "Package manager: pnpm | npm | yarn | bun")
     .option("--no-install", "Skip dependency install")
@@ -734,14 +826,20 @@ export async function run(argv: string[], deps: RunDeps = {}): Promise<number> {
     .exitOverride();
 
   let parsed;
-  try { parsed = program.parse(argv); } catch (e: any) { return e.exitCode ?? 1; }
+  try {
+    parsed = program.parse(argv);
+  } catch (e: any) {
+    return e.exitCode ?? 1;
+  }
   const args = parsed.processedArgs;
   const opts = parsed.opts();
   const seedName = args[0] as string | undefined;
 
   // Validate template flag early
   if (opts.template && !isValidTemplateName(opts.template)) {
-    err(`Unknown template: ${opts.template}. Valid: ${TEMPLATES.map((t) => t.name).join(", ")}`);
+    err(
+      `Unknown template: ${opts.template}. Valid: ${TEMPLATES.map((t) => t.name).join(", ")}`
+    );
     return 1;
   }
 
@@ -749,7 +847,10 @@ export async function run(argv: string[], deps: RunDeps = {}): Promise<number> {
   let final: CreateOptions | null;
   if (seedName && opts.template) {
     const v = validateProjectName(seedName);
-    if (!v.ok) { err(`Invalid name: ${v.reason}`); return 1; }
+    if (!v.ok) {
+      err(`Invalid name: ${v.reason}`);
+      return 1;
+    }
     final = {
       name: seedName,
       template: opts.template as TemplateName,
@@ -775,7 +876,8 @@ export async function run(argv: string[], deps: RunDeps = {}): Promise<number> {
   // Resolve dest
   const dest = isAbsolute(final.name) ? final.name : resolve(cwd, final.name);
   if (existsSync(dest) && readdirSync(dest).length > 0) {
-    err(`Directory ${dest} is not empty.`); return 1;
+    err(`Directory ${dest} is not empty.`);
+    return 1;
   }
   mkdirSync(dest, { recursive: true });
   final.dest = dest;
@@ -802,12 +904,14 @@ export async function run(argv: string[], deps: RunDeps = {}): Promise<number> {
   }
 
   // 5. banner
-  log(renderBanner({
-    name: final.name,
-    packageManager: final.packageManager,
-    network: final.network,
-    template: final.template,
-  }));
+  log(
+    renderBanner({
+      name: final.name,
+      packageManager: final.packageManager,
+      network: final.network,
+      template: final.template,
+    })
+  );
 
   return 0;
 }
@@ -841,6 +945,7 @@ git commit -m "feat(create): wire up full create-0g-app orchestrator"
 ### Task 9: e2e smoke test (happy path)
 
 **Files:**
+
 - Create: `packages/create-0g-app/src/__tests__/e2e.test.ts`
 
 - [ ] **Step 1: Write the e2e test**
@@ -852,19 +957,32 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { run } from "../index.js";
 
-describe.skipIf(!process.env.CI_HAS_NET)("create-0g-app e2e (storage-app, local, no install)", () => {
-  it("scaffolds a complete project", async () => {
-    const cwd = mkdtempSync(join(tmpdir(), "cga-e2e-"));
-    const code = await run(
-      ["node", "create-0g-app", "demo", "--template", "storage-app", "--network", "local", "--no-install", "--no-git"],
-      { cwd },
-    );
-    expect(code).toBe(0);
-    expect(existsSync(join(cwd, "demo", "package.json"))).toBe(true);
-    expect(existsSync(join(cwd, "demo", ".env.example"))).toBe(true);
-    expect(existsSync(join(cwd, "demo", "src"))).toBe(true);
-  }, 60_000);
-});
+describe.skipIf(!process.env.CI_HAS_NET)(
+  "create-0g-app e2e (storage-app, local, no install)",
+  () => {
+    it("scaffolds a complete project", async () => {
+      const cwd = mkdtempSync(join(tmpdir(), "cga-e2e-"));
+      const code = await run(
+        [
+          "node",
+          "create-0g-app",
+          "demo",
+          "--template",
+          "storage-app",
+          "--network",
+          "local",
+          "--no-install",
+          "--no-git",
+        ],
+        { cwd }
+      );
+      expect(code).toBe(0);
+      expect(existsSync(join(cwd, "demo", "package.json"))).toBe(true);
+      expect(existsSync(join(cwd, "demo", ".env.example"))).toBe(true);
+      expect(existsSync(join(cwd, "demo", "src"))).toBe(true);
+    }, 60_000);
+  }
+);
 ```
 
 - [ ] **Step 2: Run** (gated by `CI_HAS_NET=1`):
@@ -885,6 +1003,7 @@ git commit -m "test(create): e2e smoke for happy-path scaffolding"
 ### Task 10: `create-0gkit-app` defensive shim package
 
 **Files:**
+
 - Create: `packages/create-0gkit-app/package.json`
 - Create: `packages/create-0gkit-app/src/bin.ts`
 - Create: `packages/create-0gkit-app/tsup.config.ts`
@@ -908,7 +1027,9 @@ git commit -m "test(create): e2e smoke for happy-path scaffolding"
 
 ```ts
 // src/bin.ts
-console.error("\nuse `npm create 0g-app` instead — `create-0gkit-app` is a defensive alias.\n");
+console.error(
+  "\nuse `npm create 0g-app` instead — `create-0gkit-app` is a defensive alias.\n"
+);
 process.exit(1);
 ```
 
@@ -916,7 +1037,10 @@ process.exit(1);
 // tsup.config.ts
 import { defineConfig } from "tsup";
 export default defineConfig({
-  entry: ["src/bin.ts"], format: ["esm"], banner: { js: "#!/usr/bin/env node" }, clean: true,
+  entry: ["src/bin.ts"],
+  format: ["esm"],
+  banner: { js: "#!/usr/bin/env node" },
+  clean: true,
 });
 ```
 
@@ -933,6 +1057,7 @@ git commit -m "feat(create): defensive create-0gkit-app shim → redirects to cr
 ### Task 11: CI smoke + publish wiring
 
 **Files:**
+
 - Modify: `.github/workflows/ci.yml`
 - Modify: `.github/workflows/release.yml` (changeset publish picks up new packages automatically; verify the matrix includes them)
 
@@ -970,6 +1095,7 @@ git commit -m "ci: smoke test create-0g-app scaffolding"
 ### Task 12: Docs + changeset + README
 
 **Files:**
+
 - Create: `apps/docs/app/getting-started/create-0g-app/page.mdx`
 - Modify: `apps/docs/app/getting-started/page.mdx`
 - Modify: `README.md` (root) — promote `npm create 0g-app` to the top of Quick start
@@ -1038,16 +1164,16 @@ time (cd /tmp && node $REPO/packages/create-0g-app/dist/bin.js demo \
 
 ## Spec Coverage Self-Review
 
-| Spec requirement (SP1) | Task |
-|------------------------|------|
-| `npm create 0g-app <name>` works under npm/pnpm/yarn/bun | Tasks 1, 3, 8 |
-| All 5 templates available via `--template` | Task 2 |
-| `--network <local|galileo>` wires `.env.example` correctly | Task 4 |
-| Interactive mode prompts for name → template → network → install? → git? | Task 7 |
-| Validates name against `../` / absolute path escape | Task 7 (`validateProjectName`) |
-| Final banner tells user exactly what to run next | Task 6 |
-| e2e smoke runs in CI | Task 9, 11 |
-| Coverage 85% | All test tasks (vitest config in Task 1) |
-| Templates fetched from pinned git ref | Task 2 (`TEMPLATE_REF`) |
-| Defensive `create-0gkit-app` registered | Task 10 |
-| Docs page + README quick-start updated | Task 12 |
+| Spec requirement (SP1)                                                   | Task                                     |
+| ------------------------------------------------------------------------ | ---------------------------------------- | ------ |
+| `npm create 0g-app <name>` works under npm/pnpm/yarn/bun                 | Tasks 1, 3, 8                            |
+| All 5 templates available via `--template`                               | Task 2                                   |
+| `--network <local                                                        | galileo>`wires`.env.example` correctly   | Task 4 |
+| Interactive mode prompts for name → template → network → install? → git? | Task 7                                   |
+| Validates name against `../` / absolute path escape                      | Task 7 (`validateProjectName`)           |
+| Final banner tells user exactly what to run next                         | Task 6                                   |
+| e2e smoke runs in CI                                                     | Task 9, 11                               |
+| Coverage 85%                                                             | All test tasks (vitest config in Task 1) |
+| Templates fetched from pinned git ref                                    | Task 2 (`TEMPLATE_REF`)                  |
+| Defensive `create-0gkit-app` registered                                  | Task 10                                  |
+| Docs page + README quick-start updated                                   | Task 12                                  |

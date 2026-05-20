@@ -20,10 +20,9 @@ function makeDeps(
 ): RunDeps & { logs: string[]; errs: string[] } {
   const logs: string[] = [];
   const errs: string[] = [];
-  return {
+  const base: RunDeps = {
     log: (m) => logs.push(m),
     err: (m) => errs.push(m),
-    cwd: extra.cwd,
     fetchTemplate: async ({ dest }) => {
       // Write a minimal "template" so writeEnvExample has a real dir.
       writeFileSync(join(dest, "package.json"), '{"name":"x"}');
@@ -33,10 +32,8 @@ function makeDeps(
     runInstall: async () => {},
     initGit: async () => ({ ok: true }),
     prompts: async () => null,
-    ...extra,
-    logs,
-    errs,
   };
+  return { ...base, ...extra, logs, errs };
 }
 
 const argv = (...rest: string[]) => ["node", "create-0g-app", ...rest];

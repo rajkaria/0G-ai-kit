@@ -1,6 +1,7 @@
 import { Command, CommanderError } from "commander";
-import { existsSync, mkdirSync, readdirSync } from "node:fs";
-import { isAbsolute, resolve } from "node:path";
+import { existsSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
+import { dirname, isAbsolute, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { execa } from "execa";
 import { renderBanner } from "./banner.js";
 import { writeEnvExample } from "./env.js";
@@ -19,6 +20,8 @@ export type { CreateOptions, Network, PackageManager, TemplateName };
  */
 export interface RunDeps {
   cwd?: string;
+  programName?: string;
+  programVersion?: string;
   log?: (m: string) => void;
   err?: (m: string) => void;
   fetchTemplate?: (opts: { name: TemplateName; dest: string }) => Promise<void>;
@@ -43,6 +46,22 @@ const defaultRunInstall = async (opts: {
 
 const defaultInitGit = (opts: { dest: string }) => initGitRepo(opts);
 
+function readPackageVersion(): string {
+  try {
+    const packageJsonPath = join(
+      dirname(fileURLToPath(import.meta.url)),
+      "..",
+      "package.json"
+    );
+    const pkg = JSON.parse(readFileSync(packageJsonPath, "utf8")) as {
+      version?: string;
+    };
+    return pkg.version ?? "0.0.0";
+  } catch {
+    return "0.0.0";
+  }
+}
+
 /**
  * The full `create-0g-app` orchestrator. Returns a process exit code.
  *
@@ -55,14 +74,16 @@ export async function run(argv: string[], deps: RunDeps = {}): Promise<number> {
   const log = deps.log ?? ((m: string) => process.stdout.write(m + "\n"));
   const err = deps.err ?? ((m: string) => process.stderr.write(m + "\n"));
   const cwd = deps.cwd ?? process.cwd();
+  const programName = deps.programName ?? "create-0g-app";
+  const programVersion = deps.programVersion ?? readPackageVersion();
   const fetchTpl = deps.fetchTemplate ?? defaultFetchTemplate;
   const runInstall = deps.runInstall ?? defaultRunInstall;
   const initGit = deps.initGit ?? defaultInitGit;
   const prompts = deps.prompts ?? interactivePrompts;
 
-  const program = new Command("create-0g-app")
+  const program = new Command(programName)
     .exitOverride()
-    .version("0.1.0")
+    .version(programVersion)
     .description("Scaffold a 0G app in seconds.")
     .argument("[name]", "Project name (interactive prompt if omitted)")
     .option(

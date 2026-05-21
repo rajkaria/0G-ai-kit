@@ -1,10 +1,31 @@
 # create-0gkit-app
 
-Defensive name registration. **Please use [`create-0g-app`](https://www.npmjs.com/package/create-0g-app) instead.**
+Scaffold a [0G](https://0g.ai) app in seconds.
 
 ```bash
-npm create 0g-app@latest my-app
+npm create 0gkit-app@latest my-app
 ```
 
-This package exists only so the `npm create 0gkit-app` typo doesn't get
-squatted by someone else. It prints an error and exits.
+`create-0gkit-app` clones a starter template, installs dependencies, writes a
+network-aware `.env.example`, optionally `git init`s the project, and prints a
+"next step" banner.
+
+## Templates
+
+| Name                 | Use case                                                           |
+| -------------------- | ------------------------------------------------------------------ |
+| `storage-app`        | Upload + download a file, verify the Merkle root.                  |
+| `inference-app`      | OpenAI-shaped chat against 0G Compute.                             |
+| `attestation-verify` | Parse + verify a TEE attestation report.                           |
+| `mcp-agent`          | Expose every 0G primitive as MCP tools for agent runtimes.         |
+| `react-app`          | Next.js App Router app using `@foundryprotocol/0gkit-react` hooks. |
+
+## Usage
+
+```bash
+npm create 0gkit-app@latest my-app --template storage-app --network local
+```
+
+## License
+
+MIT

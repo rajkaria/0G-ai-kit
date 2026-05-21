@@ -1,7 +1,7 @@
 # 0gkit Essentials Roadmap — the CRA-grade builder kit for 0G
 
 > **Status:** Draft v1 · **Owner:** Raj · **Date:** 2026-05-20
-> **Scope:** Everything needed for `npm create 0g-app` to be the obvious starting point for any developer building on 0G — and for that app to scale to production without ripping out the toolkit.
+> **Scope:** Everything needed for `npm create 0gkit-app` to be the obvious starting point for any developer building on 0G — and for that app to scale to production without ripping out the toolkit.
 
 ## 0. North Star
 
@@ -25,16 +25,16 @@ This is the spec — the **what** and **why**. Implementation plans (the **how**
 
 These survive every sub-project. They are non-negotiable.
 
-| #   | Invariant                                                                                                                                                                                                                                                                                                                                                          | Enforcement                                                                              |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| I1  | **Protocol neutrality.** No `@foundryprotocol/0gkit-*` package may import any `@foundryprotocol/*` non-0gkit package (e.g. the Foundry SDK), statically or dynamically with a literal specifier.                                                                                                                                                                   | `pnpm boundary:check` (dependency-cruiser); a `boundary.test.ts` in each surface package |
-| I2  | **Layering.** Layer 0 = `0gkit-core`. Layer 1 = `0gkit-{chain,storage,compute,da,attestation}`. Layer 2 = surfaces (`0gkit-cli`, `0gkit-mcp`, `0gkit-react`, `0gkit-wallet`, `0gkit-contracts`, `0gkit-indexer`, `0gkit-testing`, `0gkit-jobs`, `0gkit-observability`). Layer 3 = `apps/*`, `templates/*`, `create-0g-app`. Lower layers never import higher ones. | depcruise rule + CI                                                                      |
-| I3  | **One thing per package.** A package gets split, not bloated. We'd rather ship `0gkit-wallet` + `0gkit-wallet-react` than have a wallet folder inside `0gkit-react`.                                                                                                                                                                                               | Code review                                                                              |
-| I4  | **MIT license, public.** Everything ships under MIT. No `dependencies: { "@foundryprotocol/proprietary": "*" }`.                                                                                                                                                                                                                                                   | `LICENSE` + `package.json` check                                                         |
-| I5  | **Every public API has a docs page.** A package without a `docs/packages/<name>` page is incomplete.                                                                                                                                                                                                                                                               | `pnpm docs:check` (new — added in SP12)                                                  |
-| I6  | **Every published package has tests.** 80/70 line/branch gate (the existing standard).                                                                                                                                                                                                                                                                             | `vitest --coverage` + CI                                                                 |
-| I7  | **Every change ships through changesets.** No silent releases.                                                                                                                                                                                                                                                                                                     | `changeset` enforced in PR template                                                      |
-| I8  | **No raw `privateKey: string` in any new surface API.** Existing primitives keep their `privateKey` constructor for back-compat, but every new surface (templates, hooks, CLI commands, MCP tools) takes a `Signer`/`Wallet` abstraction from `0gkit-wallet`.                                                                                                      | API review (SP3 lands the abstraction; SPs after SP3 follow it)                          |
+| #   | Invariant                                                                                                                                                                                                                                                                                                                                                             | Enforcement                                                                              |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| I1  | **Protocol neutrality.** No `@foundryprotocol/0gkit-*` package may import any `@foundryprotocol/*` non-0gkit package (e.g. the Foundry SDK), statically or dynamically with a literal specifier.                                                                                                                                                                      | `pnpm boundary:check` (dependency-cruiser); a `boundary.test.ts` in each surface package |
+| I2  | **Layering.** Layer 0 = `0gkit-core`. Layer 1 = `0gkit-{chain,storage,compute,da,attestation}`. Layer 2 = surfaces (`0gkit-cli`, `0gkit-mcp`, `0gkit-react`, `0gkit-wallet`, `0gkit-contracts`, `0gkit-indexer`, `0gkit-testing`, `0gkit-jobs`, `0gkit-observability`). Layer 3 = `apps/*`, `templates/*`, `create-0gkit-app`. Lower layers never import higher ones. | depcruise rule + CI                                                                      |
+| I3  | **One thing per package.** A package gets split, not bloated. We'd rather ship `0gkit-wallet` + `0gkit-wallet-react` than have a wallet folder inside `0gkit-react`.                                                                                                                                                                                                  | Code review                                                                              |
+| I4  | **MIT license, public.** Everything ships under MIT. No `dependencies: { "@foundryprotocol/proprietary": "*" }`.                                                                                                                                                                                                                                                      | `LICENSE` + `package.json` check                                                         |
+| I5  | **Every public API has a docs page.** A package without a `docs/packages/<name>` page is incomplete.                                                                                                                                                                                                                                                                  | `pnpm docs:check` (new — added in SP12)                                                  |
+| I6  | **Every published package has tests.** 80/70 line/branch gate (the existing standard).                                                                                                                                                                                                                                                                                | `vitest --coverage` + CI                                                                 |
+| I7  | **Every change ships through changesets.** No silent releases.                                                                                                                                                                                                                                                                                                        | `changeset` enforced in PR template                                                      |
+| I8  | **No raw `privateKey: string` in any new surface API.** Existing primitives keep their `privateKey` constructor for back-compat, but every new surface (templates, hooks, CLI commands, MCP tools) takes a `Signer`/`Wallet` abstraction from `0gkit-wallet`.                                                                                                         | API review (SP3 lands the abstraction; SPs after SP3 follow it)                          |
 
 ---
 
@@ -42,7 +42,7 @@ These survive every sub-project. They are non-negotiable.
 
 | Phase                                     | Sub-projects                                                                                                   | Duration target | Developer-visible milestone                                                                                                                                                                                         |
 | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Phase 1 — The Front Door**              | SP1 `create-0g-app` v1, SP2 `0g dev` local stack                                                               | ~2 weeks        | `npm create 0g-app my-app && cd my-app && pnpm dev` opens a working app against a local 0G stack in under 60 seconds. **No faucet, no .env archaeology, no testnet.**                                               |
+| **Phase 1 — The Front Door**              | SP1 `create-0gkit-app` v1, SP2 `0g dev` local stack                                                            | ~2 weeks        | `npm create 0gkit-app my-app && cd my-app && pnpm dev` opens a working app against a local 0G stack in under 60 seconds. **No faucet, no .env archaeology, no testnet.**                                            |
 | **Phase 2 — Production-Grade Foundation** | SP3 `0gkit-wallet`, SP4 `0gkit-contracts`, SP5 `0gkit-testing`                                                 | ~3 weeks        | The same scaffolded app uses wagmi-style wallet connect, typed contract clients, and ships with a vitest suite that passes against the local stack. No more raw `privateKey` strings; no more hand-written ABIs.    |
 | **Phase 3 — Second-Day Developer Wins**   | SP6 `0gkit-indexer`, SP7 cost estimator + dry-run, SP8 expanded template library                               | ~3 weeks        | The five canonical archetypes (`chat`, `storage-app`, `ai-agent`, `tee-attested-api`, `nft-with-storage`) all ship; `0g estimate` and `.dryRun()` save users from surprise bills; event subscriptions are one hook. |
 | **Phase 4 — Ecosystem Moat**              | SP9 error taxonomy, SP10 `0gkit-jobs`, SP11 `0gkit-observability`, SP12 community + CI templates + docs polish | ~3 weeks        | Every `ZeroGError` links to a docs page that fixes it; long-running compute jobs are durable; production apps emit OTel spans; CI/CD workflows are one copy-paste away.                                             |
@@ -57,18 +57,18 @@ Each sub-project below lists: **Goal · Why this matters · Package(s) · Public
 
 > Without this phase, the rest is invisible. The initializer + local devnet are symbiotic: the initializer drops you into a project, the local devnet makes that project run instantly. Neither alone delivers the "wow" moment; together they do.
 
-### SP1 — `create-0g-app` (the npm initializer)
+### SP1 — `create-0gkit-app` (the npm initializer)
 
-**Goal:** `npm create 0g-app@latest my-app` (or `pnpm create 0g-app my-app`, `yarn create 0g-app my-app`) scaffolds a runnable 0G app in under 30 seconds.
+**Goal:** `npm create 0gkit-app@latest my-app` (or `pnpm create 0gkit-app my-app`, `yarn create 0gkit-app my-app`) scaffolds a runnable 0G app in under 30 seconds.
 
 **Why this matters:** Modern web developers reach for `npm create <thing>`, not "install this binary, then run `0g init`". The current `0g init` works but is invisible to anyone who hasn't already discovered our CLI. The npm initializer is the universally-discoverable front door. Frameworks that don't have one (looking at you, raw libraries) lose the default position to ones that do (Next.js, SvelteKit, Astro, Vite).
 
-**Package:** `create-0g-app` (published at root of npm scope so `npm create 0g-app` resolves correctly).
+**Package:** `create-0gkit-app` (published at root of npm scope so `npm create 0gkit-app` resolves correctly). `create-0g-app` is private because the npm name is held by another publisher.
 
 **Public surface:**
 
 ```
-npm create 0g-app@latest <name>
+npm create 0gkit-app@latest <name>
   [--template <storage|inference|chat|ai-agent|tee-api|nft-storage|blank>]
   [--package-manager <pnpm|npm|yarn|bun>]
   [--network <galileo|local>]   # default: local (SP2)
@@ -87,11 +87,11 @@ Outputs:
 
 **Success criteria:**
 
-- `npx create-0g-app@latest demo --template storage-app --network local --install` completes in ≤ 45s on a clean machine with a warm npm cache; the scaffolded `demo/` runs `pnpm start` successfully against the local stack from SP2.
-- `npm create 0g-app demo`, `pnpm create 0g-app demo`, `yarn create 0g-app demo` all work (use [`giget`](https://github.com/unjs/giget) for degit; avoid `create-` package quirks by following the [npm-init spec](https://docs.npmjs.com/cli/v10/commands/npm-init) — the binary is `create-0g-app` not `0g-app`).
-- Templates are fetched from the same monorepo `templates/<name>` via a [pinned git ref](https://github.com/rajkaria/0G-ai-kit/tree/v0.2.x/templates) so we don't serve broken templates from `main`.
-- Coverage 85% on `create-0g-app` package (it's small and critical).
-- An e2e smoke test in CI runs `create-0g-app blank` in a tmpdir and asserts `pnpm build` exits 0.
+- `npx create-0gkit-app@latest demo --template storage-app --network local --install` completes in ≤ 45s on a clean machine with a warm npm cache; the scaffolded `demo/` runs `pnpm start` successfully against the local stack from SP2.
+- `npm create 0gkit-app demo`, `pnpm create 0gkit-app demo`, `yarn create 0gkit-app demo` all work (use [`giget`](https://github.com/unjs/giget) for degit; avoid `create-` package quirks by following the [npm-init spec](https://docs.npmjs.com/cli/v10/commands/npm-init) — the binary is `create-0gkit-app` not `0gkit-app`).
+- Templates are fetched from the same monorepo `templates/<name>` via a [pinned git ref](https://github.com/rajkaria/0g-ai-kit/tree/v0.2.x/templates) so we don't serve broken templates from `main`.
+- Coverage 85% on `create-0gkit-app` package (it's small and critical).
+- An e2e smoke test in CI runs `create-0gkit-app storage-app` in a tmpdir and asserts `pnpm build` exits 0.
 
 **Value shipped:** The 30-second on-ramp. A developer who has never heard of 0G can type one command and have a running app. This is the moment the toolkit becomes the default.
 
@@ -475,13 +475,13 @@ Each template:
 - Ships with vitest tests using `0gkit-testing`.
 - Has a `pnpm dev` script that starts SP2's `0g dev` first.
 - Has a `README.md` that walks through what each file does (so the template doubles as a tutorial).
-- Is wired into `create-0g-app` as a first-class `--template` option.
+- Is wired into `create-0gkit-app` as a first-class `--template` option.
 
 **Depends on:** SP1, SP2, SP3, SP4, SP5, SP6, SP7.
 
 **Success criteria:**
 
-- `npx create-0g-app demo --template chat --network local --install && cd demo && pnpm dev` shows a working chat in the browser end-to-end.
+- `npx create-0gkit-app demo --template chat --network local --install && cd demo && pnpm dev` shows a working chat in the browser end-to-end.
 - All five templates have ≥ 80% test coverage on their own code (not the libraries).
 - Each template's README is reviewed by a teammate or AI critic with the prompt "would a junior dev be unblocked by this?".
 - The docs site (`apps/docs`) generates one `docs/templates/<name>` page per template from the template README.
@@ -650,7 +650,7 @@ A `0g cost` CLI subcommand reads OTel-format traces (or a local sqlite buffer) a
 
 **Includes:**
 
-- **CI/CD templates:** `.github/workflows/0gkit-ci.yml` (test + boundary + typecheck), `.github/workflows/0gkit-deploy-vercel.yml`, GitLab equivalents, `.circleci/config.yml`. `create-0g-app` offers `--ci github|gitlab|circle|none`.
+- **CI/CD templates:** `.github/workflows/0gkit-ci.yml` (test + boundary + typecheck), `.github/workflows/0gkit-deploy-vercel.yml`, GitLab equivalents, `.circleci/config.yml`. `create-0gkit-app` offers `--ci github|gitlab|circle|none`.
 - **Vercel one-click deploy:** Every template has a `Deploy to Vercel` button in its README. The Vercel project is pre-configured with the right env-var prompts (NETWORK, PRIVATE_KEY or KMS_KEY_ID, OTEL_ENDPOINT).
 - **GitHub Discussions** turned on in `0G-ai-kit`; pinned categories: Show-and-tell, Help, RFCs.
 - **Issue + PR templates:** bug report, feature request, security issue, RFC. PR template enforces changeset.
@@ -663,7 +663,7 @@ A `0g cost` CLI subcommand reads OTel-format traces (or a local sqlite buffer) a
 
 **Success criteria:**
 
-- A new builder going from `npm create 0g-app` to "deployed to Vercel with CI on every push" takes < 10 minutes.
+- A new builder going from `npm create 0gkit-app` to "deployed to Vercel with CI on every push" takes < 10 minutes.
 - The docs site has 100% public-export coverage (asserted by `docs:check`).
 - The `0G-ai-kit` Discussions has the founder team plus at least one community responder actively answering.
 - Lighthouse on `apps/docs` ≥ 95 across the board.
@@ -714,7 +714,7 @@ A `0g cost` CLI subcommand reads OTel-format traces (or a local sqlite buffer) a
 
 ## 5. Open questions (answer before SP1 plan is written)
 
-1. **Initializer package name:** `create-0g-app` (preferred) vs `create-0gkit-app`. The former matches `npm create <thing>` muscle memory but is at the root npm scope, not `@foundryprotocol`. Need to register both names defensively before SP1 plan lands.
+1. **Initializer package name:** resolved after SP1 release. `create-0g-app` was preferred but is held on npm; `create-0gkit-app` is the canonical public package.
 2. **`0g dev` storage CAS layout:** filesystem (`.0g-dev/storage/<root>`) or sqlite-backed? Filesystem is simpler; sqlite is more portable across OSes. Recommend **filesystem** for v1.
 3. **`0gkit-wallet` SSR strategy:** ship with React Server Components support out of the box, or document a Pages Router fallback? Next.js 16 is RSC-default; we should optimise for that.
 4. **`0gkit-jobs` default backend:** sqlite (zero-deps) or memory (zero-deps + zero-disk)? Recommend **memory** as the default for `0g dev` story; sqlite as the documented choice for "I want a single-machine production app."

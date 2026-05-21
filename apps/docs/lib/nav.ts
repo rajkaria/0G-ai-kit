@@ -18,7 +18,7 @@ export const NAV: NavSection[] = [
     links: [
       { title: "Introduction", href: "/" },
       { title: "Getting started", href: "/getting-started" },
-      { title: "create-0g-app", href: "/getting-started/create-0g-app" },
+      { title: "create-0gkit-app", href: "/getting-started/create-0gkit-app" },
       { title: "Concepts", href: "/concepts" },
     ],
   },

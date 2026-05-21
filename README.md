@@ -1,6 +1,6 @@
 # 0gkit — the neutral 0G builder toolkit
 
-[![CI](https://github.com/rajkaria/0G-ai-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/rajkaria/0G-ai-kit/actions/workflows/ci.yml)
+[![CI](https://github.com/rajkaria/0g-ai-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/rajkaria/0g-ai-kit/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 **0gkit** is the fastest way to build on the [0G](https://0g.ai) network —
@@ -17,13 +17,13 @@ framework or protocol. Install only what you need.
 ## Quick start
 
 ```bash
-npm create 0g-app@latest my-app
+npm create 0gkit-app@latest my-app
 cd my-app
 0g dev          # in another terminal — starts the local devnet
 npm run dev
 ```
 
-That is the whole thing. `create-0g-app` clones a template, writes a
+That is the whole thing. `create-0gkit-app` clones a template, writes a
 network-aware `.env.example`, runs install, and `git init`s — so the only
 thing left for you is `cd` + run.
 

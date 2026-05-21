@@ -3,7 +3,7 @@ import type { PackageManager } from "./types.js";
 /**
  * Detect the package manager that invoked us by inspecting
  * `npm_config_user_agent`. Both `npm`/`npx`/`pnpm dlx`/`yarn dlx`/`bun create`
- * set this — so when a user runs `pnpm create 0g-app`, we install with pnpm.
+ * set this — so when a user runs `pnpm create 0gkit-app`, we install with pnpm.
  */
 export function detectPackageManager(
   opts: { env?: NodeJS.ProcessEnv } = {}

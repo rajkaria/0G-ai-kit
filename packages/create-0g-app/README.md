@@ -1,12 +1,15 @@
 # create-0g-app
 
-Scaffold a [0G](https://0g.ai) app in seconds.
+Internal source package for the public
+[`create-0gkit-app`](https://www.npmjs.com/package/create-0gkit-app) initializer.
+The npm name `create-0g-app` is held by another publisher, so this package is
+private in the monorepo.
 
 ```bash
-npm create 0g-app@latest my-app
+npm create 0gkit-app@latest my-app
 ```
 
-`create-0g-app` clones a starter template, installs dependencies, writes a
+`create-0gkit-app` clones a starter template, installs dependencies, writes a
 network-aware `.env.example`, optionally `git init`s the project, and prints
 a "next step" banner — so the only thing left for you is `cd my-app` and
 running it.
@@ -25,10 +28,10 @@ running it.
 
 ```bash
 # Interactive (default — picks template, network, etc.)
-npm create 0g-app@latest
+npm create 0gkit-app@latest
 
 # Non-interactive — pick everything from flags
-npm create 0g-app@latest my-app \
+npm create 0gkit-app@latest my-app \
   --template storage-app \
   --network  local        \
   --no-install            \
@@ -48,7 +51,7 @@ npm create 0g-app@latest my-app \
 ## Pairs with `0g dev`
 
 `--network local` writes a `.env.example` that points at the local devnet
-ports started by [`0g dev`](https://github.com/rajkaria/0G-ai-kit/tree/main/packages/0gkit-cli):
+ports started by [`0g dev`](https://github.com/rajkaria/0g-ai-kit/tree/main/packages/0gkit-cli):
 
 ```bash
 0g dev                # starts anvil + storage/compute/DA mocks

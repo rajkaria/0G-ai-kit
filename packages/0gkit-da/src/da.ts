@@ -2,9 +2,11 @@ import {
   ConfigError,
   NetworkError,
   canonicalJsonStringify,
+  type DryRunResult,
   type Signer,
 } from "@foundryprotocol/0gkit-core";
 import { keccak256, toHex, type Hex } from "viem";
+import { estimateBytes, type DAEstimate } from "./estimate.js";
 
 const ENCODERS = {
   aristotle: "https://da-encoder.0g.network",
@@ -71,7 +73,30 @@ export class DA {
     return this.digestOf(payload);
   }
 
-  async publish(payload: unknown): Promise<DAPublishResult> {
+  async estimate(payload: unknown): Promise<DAEstimate> {
+    const bytes = this.toBytes(payload);
+    return estimateBytes(bytes.length, undefined, this.encoderUrl ? "live" : "local");
+  }
+
+  async publish(payload: unknown): Promise<DAPublishResult>;
+  async publish(
+    payload: unknown,
+    opts: { dryRun: true }
+  ): Promise<DryRunResult<DAPublishResult>>;
+  async publish(
+    payload: unknown,
+    opts?: { dryRun?: boolean }
+  ): Promise<DAPublishResult | DryRunResult<DAPublishResult>> {
+    if (opts?.dryRun) {
+      const estimate = await this.estimate(payload);
+      const digest = this.digestOf(payload);
+      const result: DAPublishResult = {
+        digest,
+        mode: this.encoderUrl ? "live" : "local",
+        latencyMs: 0,
+      };
+      return { dryRun: true, estimate, result };
+    }
     const startedAt = Date.now();
     const digest = this.digestOf(payload);
     if (!this.encoderUrl) {

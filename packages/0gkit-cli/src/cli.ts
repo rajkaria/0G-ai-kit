@@ -26,8 +26,10 @@ import {
 import {
   standardContractsMeta,
   KNOWN_ADDRESSES,
+  createTypedContract,
 } from "@foundryprotocol/0gkit-contracts";
 import { generate as generateContract } from "@foundryprotocol/0gkit-contracts/codegen";
+import { ConfigError } from "@foundryprotocol/0gkit-core";
 import { buildProgram, type ProgramDeps } from "./program.js";
 import { loadFoundry } from "./foundry-loader.js";
 
@@ -82,6 +84,50 @@ const deps: ProgramDeps = {
         methods: meta.methods,
         events: meta.events,
       };
+    },
+    estimate: async (opts) => {
+      const raw = await readFile(opts.abiPath);
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(new TextDecoder().decode(raw));
+      } catch (err) {
+        throw new ConfigError(
+          `Could not parse ${opts.abiPath} as JSON: ${
+            err instanceof Error ? err.message : String(err)
+          }`,
+          `Pass --abi to a Foundry artifact (forge build output) or a raw ABI array JSON file.`
+        );
+      }
+      // Accept either a raw ABI array or a Foundry artifact `{ abi }`.
+      const abi = Array.isArray(parsed)
+        ? parsed
+        : ((parsed as { abi?: unknown[] }).abi ?? []);
+      if (!Array.isArray(abi) || abi.length === 0) {
+        throw new ConfigError(
+          `No ABI found in ${opts.abiPath}.`,
+          `The file must be a JSON array (raw ABI) or an object with an 'abi' field (Foundry artifact).`
+        );
+      }
+      const network: NetworkKey =
+        opts.network === "aristotle" ||
+        opts.network === "galileo" ||
+        opts.network === "local"
+          ? (opts.network as NetworkKey)
+          : "galileo";
+      const tc = createTypedContract({
+        abi: abi as never,
+        address: opts.address,
+        network,
+        rpcUrl: opts.rpcUrl,
+      });
+      const fn = tc.estimate[opts.method];
+      if (!fn) {
+        throw new ConfigError(
+          `Method '${opts.method}' is not a non-view function in this ABI.`,
+          `Pass --method <writeMethod> where writeMethod is one of: ${Object.keys(tc.estimate).join(", ")}`
+        );
+      }
+      return fn(...opts.args);
     },
   },
   fs: {

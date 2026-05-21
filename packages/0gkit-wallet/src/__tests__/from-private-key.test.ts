@@ -41,7 +41,7 @@ describe("fromPrivateKey", () => {
     const args = {
       domain: { name: "0gkit", version: "1", chainId: 16602 },
       types: { Mail: [{ name: "body", type: "string" }] },
-      primaryType: "Mail",
+      primaryType: "Mail" as const,
       message: { body: "hello" },
     };
     const sig = await s.signTypedData(args);

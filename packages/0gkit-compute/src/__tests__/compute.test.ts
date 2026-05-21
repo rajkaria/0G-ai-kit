@@ -19,7 +19,8 @@ function fakeBrokerMod(over: Record<string, unknown> = {}) {
   };
 }
 
-const ANVIL_KEY = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+const ANVIL_KEY =
+  "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" as `0x${string}`;
 
 const baseCfg = {
   brokerKey: ANVIL_KEY,
@@ -35,9 +36,11 @@ describe("Compute", () => {
     const mod = fakeBrokerMod();
     const signer = {
       privateKey: ANVIL_KEY,
-      address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" as `0x${string}`,
       signMessage: vi.fn(),
       signTypedData: vi.fn(),
+      sendTransaction: vi.fn(),
+      source: "private-key" as const,
     };
     const c = new Compute({
       signer,
@@ -69,11 +72,13 @@ describe("Compute", () => {
 
   it("accepts a KMS-style signer (no privateKey) and throws ConfigError on getBroker", async () => {
     const kmsSigner = {
-      address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" as `0x${string}`,
       signMessage: vi.fn(),
       signTypedData: vi.fn(),
+      sendTransaction: vi.fn(),
+      source: "kms" as const,
     };
-    const c = new Compute({ signer: kmsSigner as never, provider: "0xprov" });
+    const c = new Compute({ signer: kmsSigner, provider: "0xprov" });
     await expect(c.listProviders()).rejects.toMatchObject({ code: "CONFIG" });
   });
 

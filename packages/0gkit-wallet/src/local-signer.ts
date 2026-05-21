@@ -27,12 +27,8 @@ export function buildLocalSigner(pk: string, source: Signer["source"]): Signer {
       return account.signMessage({ message: input });
     },
     async signTypedData(args) {
-      return account.signTypedData({
-        domain: args.domain,
-        types: args.types as never,
-        primaryType: args.primaryType,
-        message: args.message as never,
-      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return account.signTypedData(args as any);
     },
     async sendTransaction(_tx: SignableTx) {
       throw new ConfigError(

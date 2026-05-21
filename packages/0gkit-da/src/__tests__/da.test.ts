@@ -5,10 +5,13 @@ import { ConfigError, NetworkError, type Signer } from "@foundryprotocol/0gkit-c
 describe("DA signer symmetry", () => {
   it("accepts { signer } and constructs without throwing; digest() still works", () => {
     const signer: Signer = {
-      address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-      privateKey: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+      address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" as `0x${string}`,
+      privateKey:
+        "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" as `0x${string}`,
       signMessage: vi.fn() as unknown as Signer["signMessage"],
       signTypedData: vi.fn() as unknown as Signer["signTypedData"],
+      sendTransaction: vi.fn() as unknown as Signer["sendTransaction"],
+      source: "private-key",
     };
     const da = new DA({ signer });
     expect(da.signer).toBe(signer);

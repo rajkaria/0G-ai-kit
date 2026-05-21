@@ -1,0 +1,87 @@
+{
+  "name": "@foundryprotocol/0gkit-indexer",
+  "version": "0.0.0",
+  "description": "Reorg-safe, persisted-cursor event subscriptions on 0G. Memory / SQLite / Redis cursor backends. Built on @foundryprotocol/0gkit-contracts typed contracts.",
+  "license": "MIT",
+  "homepage": "https://github.com/rajkaria/0gkit/tree/main/packages/0gkit-indexer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rajkaria/0gkit.git",
+    "directory": "packages/0gkit-indexer"
+  },
+  "bugs": {
+    "url": "https://github.com/rajkaria/0gkit/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./cursors/sqlite": {
+      "types": "./dist/cursors/sqlite.d.ts",
+      "import": "./dist/cursors/sqlite.js"
+    },
+    "./cursors/redis": {
+      "types": "./dist/cursors/redis.d.ts",
+      "import": "./dist/cursors/redis.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "lint": "depcruise src --config ../../.dependency-cruiser.cjs",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@foundryprotocol/0gkit-core": "workspace:*",
+    "@foundryprotocol/0gkit-contracts": "workspace:*",
+    "better-sqlite3": "^11.5.0",
+    "viem": "^2.21.0"
+  },
+  "peerDependencies": {
+    "ioredis": "^5.4.1",
+    "viem": "^2.21.0"
+  },
+  "peerDependenciesMeta": {
+    "ioredis": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@foundryprotocol/0gkit-testing": "workspace:*",
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.2",
+    "@vitest/coverage-v8": "^2.1.8",
+    "dependency-cruiser": "^16.0.0",
+    "ioredis": "^5.4.1",
+    "rimraf": "^6.0.1",
+    "tsup": "^8.3.5",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  },
+  "keywords": [
+    "0g",
+    "0g-network",
+    "indexer",
+    "events",
+    "reorg",
+    "subscription",
+    "viem",
+    "toolkit"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

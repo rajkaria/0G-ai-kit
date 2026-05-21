@@ -137,7 +137,7 @@ describe("siwe.buildMessage + siwe.verify", () => {
     // Pass a garbage signature that can't be recovered
     const r = await siwe.verify({
       message,
-      signature: "0x" + "00".repeat(65),
+      signature: `0x${"00".repeat(65)}` as `0x${string}`,
       expectedNonce: nonce,
     });
     expect(r.ok).toBe(false);

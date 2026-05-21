@@ -362,7 +362,11 @@ export default defineConfig({
 
 ```ts
 // packages/0gkit-wallet/src/types.ts
-export type { Signer, SignTypedDataArgs, SignableTx } from "@foundryprotocol/0gkit-core";
+export type {
+  Signer,
+  SignTypedDataArgs,
+  SignableTx,
+} from "@foundryprotocol/0gkit-core";
 
 export interface FromFileOptions {
   password: string;
@@ -408,7 +412,10 @@ in subsequent tasks; this lets `pnpm typecheck` stay green.
 ```ts
 // packages/0gkit-wallet/src/local-signer.ts
 import type { Signer } from "@foundryprotocol/0gkit-core";
-export function buildLocalSigner(_pk: `0x${string}`, _source: Signer["source"]): Signer {
+export function buildLocalSigner(
+  _pk: `0x${string}`,
+  _source: Signer["source"]
+): Signer {
   throw new Error("buildLocalSigner: implemented in task 3");
 }
 ```
@@ -877,11 +884,7 @@ bytes, take the last 20 — that's the address). For ECDSA recovery we try both
 ```ts
 import { describe, it, expect, beforeEach } from "vitest";
 import { mockClient } from "aws-sdk-client-mock";
-import {
-  KMSClient,
-  GetPublicKeyCommand,
-  SignCommand,
-} from "@aws-sdk/client-kms";
+import { KMSClient, GetPublicKeyCommand, SignCommand } from "@aws-sdk/client-kms";
 import {
   recoverMessageAddress,
   recoverTypedDataAddress,
@@ -983,7 +986,9 @@ describe("fromKMS (mocked)", () => {
   it("propagates KMS errors as ConfigError", async () => {
     kmsMock.reset();
     kmsMock.on(GetPublicKeyCommand).rejects(new Error("AccessDeniedException"));
-    await expect(fromKMS({ keyId: "arn:bad" })).rejects.toMatchObject({ code: "CONFIG" });
+    await expect(fromKMS({ keyId: "arn:bad" })).rejects.toMatchObject({
+      code: "CONFIG",
+    });
   });
 });
 ```
@@ -1125,7 +1130,7 @@ function addressFromSpki(spki: Uint8Array): `0x${string}` {
   }
   const xy = point.slice(1);
   const hash = keccak256(bytesToHex(xy));
-  return (`0x${hash.slice(-40)}`) as `0x${string}`;
+  return `0x${hash.slice(-40)}` as `0x${string}`;
 }
 
 function decodeDerEcdsa(der: Uint8Array): { r: bigint; s: bigint } {
@@ -1142,8 +1147,9 @@ function decodeDerEcdsa(der: Uint8Array): { r: bigint; s: bigint } {
   return { r, s };
 }
 
-const SECP_N =
-  BigInt("0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141");
+const SECP_N = BigInt(
+  "0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141"
+);
 function normaliseLowS(s: bigint): bigint {
   return s > SECP_N / 2n ? SECP_N - s : s;
 }
@@ -1152,7 +1158,7 @@ function encodeSignature(r: bigint, s: bigint, v: bigint): `0x${string}` {
   const rh = r.toString(16).padStart(64, "0");
   const sh = s.toString(16).padStart(64, "0");
   const vh = v.toString(16).padStart(2, "0");
-  return (`0x${rh}${sh}${vh}`) as `0x${string}`;
+  return `0x${rh}${sh}${vh}` as `0x${string}`;
 }
 
 function hexToBytes(hex: `0x${string}`): Uint8Array {
@@ -1351,11 +1357,16 @@ export interface ParsedSiwe {
 /** EIP-4361 nonce: 17+ alphanumeric chars from a CSPRNG. */
 export function generateNonce(): string {
   const bytes = randomBytes(13);
-  const alphabet =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let out = "";
   for (const b of bytes) out += alphabet[b % alphabet.length];
-  return out + alphabet[(bytes[0] ^ bytes[12]) % alphabet.length] + alphabet[Date.now() % alphabet.length] + alphabet[(Date.now() >> 8) % alphabet.length] + alphabet[(Date.now() >> 16) % alphabet.length];
+  return (
+    out +
+    alphabet[(bytes[0] ^ bytes[12]) % alphabet.length] +
+    alphabet[Date.now() % alphabet.length] +
+    alphabet[(Date.now() >> 8) % alphabet.length] +
+    alphabet[(Date.now() >> 16) % alphabet.length]
+  );
 }
 
 /** EIP-4361 message body (exact byte layout). */
@@ -1373,7 +1384,8 @@ export function buildMessage(args: BuildMessageArgs): string {
   lines.push(`Chain ID: ${args.chainId}`);
   lines.push(`Nonce: ${args.nonce}`);
   lines.push(`Issued At: ${(args.issuedAt ?? new Date()).toISOString()}`);
-  if (args.expirationTime) lines.push(`Expiration Time: ${args.expirationTime.toISOString()}`);
+  if (args.expirationTime)
+    lines.push(`Expiration Time: ${args.expirationTime.toISOString()}`);
   if (args.notBefore) lines.push(`Not Before: ${args.notBefore.toISOString()}`);
   if (args.requestId) lines.push(`Request ID: ${args.requestId}`);
   if (args.resources && args.resources.length > 0) {
@@ -1733,7 +1745,13 @@ export function ZeroGWalletProvider(props: {
 "use client";
 
 import { useMemo } from "react";
-import { useAccount, useDisconnect, useSignMessage, useSignTypedData, useSendTransaction } from "wagmi";
+import {
+  useAccount,
+  useDisconnect,
+  useSignMessage,
+  useSignTypedData,
+  useSendTransaction,
+} from "wagmi";
 import type { Signer } from "@foundryprotocol/0gkit-core";
 import { adaptWagmi } from "./wagmi-signer.js";
 
@@ -1916,7 +1934,10 @@ const mockState = {
 };
 
 vi.mock("wagmi", () => ({
-  useAccount: () => ({ address: mockState.address, isConnected: mockState.isConnected }),
+  useAccount: () => ({
+    address: mockState.address,
+    isConnected: mockState.isConnected,
+  }),
   useDisconnect: () => ({ disconnect: mockState.disconnect }),
   useSignMessage: () => ({ signMessageAsync: mockState.signMessageAsync }),
   useSignTypedData: () => ({ signTypedDataAsync: mockState.signTypedDataAsync }),
@@ -2074,7 +2095,10 @@ export class Storage {
       }
       this.privateKey = config.privateKey;
     }
-    this.loadSdk = config.loadSdk ?? (() => import("@0gfoundation/0g-storage-ts-sdk" as string) as Promise<StorageSdk>);
+    this.loadSdk =
+      config.loadSdk ??
+      (() =>
+        import("@0gfoundation/0g-storage-ts-sdk" as string) as Promise<StorageSdk>);
   }
   // signer() unchanged — uses this.privateKey
 }
@@ -2180,7 +2204,7 @@ need to consume a `Signer` type. If that type lived in `0gkit-wallet`, every
 primitive would have to peerDepend on the wallet package — creating a
 fan-out the dep-cruiser rule can flag as suspicious AND a real install-time
 weight problem (KMS, wagmi, etc. would tunnel into every storage user). By
-defining the interface in `0gkit-core` (the package every other 0gkit-* already
+defining the interface in `0gkit-core` (the package every other 0gkit-\* already
 depends on), primitives consume only a type and stay weightless. Wallet
 implements; primitives consume; no cycle, no extra installs.
 ```
@@ -2307,15 +2331,15 @@ gh pr merge --squash --auto --delete-branch
 
 ## Spec Coverage Self-Review
 
-| Spec requirement (SP3)                                                          | Task              |
-| ------------------------------------------------------------------------------- | ----------------- |
-| `Signer` interface + `WalletProvider` / loaders                                 | T1, T3, T4, T5, T6 |
-| `fromPrivateKey`, `fromEnv`, `fromFile`, `fromKMS`                              | T3, T4, T5, T6     |
-| SIWE `generateNonce` + `verify`                                                 | T7                 |
-| React: `ZeroGWalletProvider`, `useWallet`, `useConnect`, `useSwitchNetwork`     | T8                 |
-| Every primitive accepts `{ signer }` ctor + legacy `{ privateKey }` stays      | T9, T10            |
-| Deprecation `console.warn` on `{ privateKey }`                                  | T9, T10            |
-| Coverage 85% on wallet                                                          | T13                |
-| Docs page per public surface                                                    | T11                |
-| Changeset cut for affected packages                                             | T12                |
-| Self-review + gauntlet + PR + auto-squash                                       | T13                |
+| Spec requirement (SP3)                                                      | Task               |
+| --------------------------------------------------------------------------- | ------------------ |
+| `Signer` interface + `WalletProvider` / loaders                             | T1, T3, T4, T5, T6 |
+| `fromPrivateKey`, `fromEnv`, `fromFile`, `fromKMS`                          | T3, T4, T5, T6     |
+| SIWE `generateNonce` + `verify`                                             | T7                 |
+| React: `ZeroGWalletProvider`, `useWallet`, `useConnect`, `useSwitchNetwork` | T8                 |
+| Every primitive accepts `{ signer }` ctor + legacy `{ privateKey }` stays   | T9, T10            |
+| Deprecation `console.warn` on `{ privateKey }`                              | T9, T10            |
+| Coverage 85% on wallet                                                      | T13                |
+| Docs page per public surface                                                | T11                |
+| Changeset cut for affected packages                                         | T12                |
+| Self-review + gauntlet + PR + auto-squash                                   | T13                |

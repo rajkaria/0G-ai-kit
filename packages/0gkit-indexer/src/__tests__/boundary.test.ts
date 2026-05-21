@@ -1,11 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { execSync } from "node:child_process";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const repoRoot = resolve(here, "../../../..");
 const pkgSrc = resolve(here, "..");
 
 function walk(dir: string, out: string[] = []): string[] {
@@ -17,22 +15,12 @@ function walk(dir: string, out: string[] = []): string[] {
   return out;
 }
 
+// NOTE: The global `pnpm boundary:check` is already validated by
+// `packages/0gkit-chain/src/__tests__/boundary.test.ts`. Running it again here
+// races with that test under turbo's parallel runner (it temporarily writes
+// `packages/0gkit-chain/src/__boundary_violation__.ts` while asserting that
+// depcruise catches violations). This test stays scoped to the indexer source.
 describe("0gkit-indexer neutrality boundary", () => {
-  it("pnpm boundary:check passes", () => {
-    let ok = true;
-    let out = "";
-    try {
-      out = execSync("pnpm boundary:check", {
-        cwd: repoRoot,
-        stdio: "pipe",
-      }).toString();
-    } catch (e: any) {
-      ok = false;
-      out = (e.stdout?.toString() ?? "") + (e.stderr?.toString() ?? "");
-    }
-    expect(ok, `boundary:check failed:\n${out}`).toBe(true);
-  });
-
   it("no source file imports a non-0gkit @foundryprotocol package", () => {
     const files = walk(pkgSrc).filter((f) => !f.includes("__tests__"));
     const offenders: string[] = [];

@@ -95,4 +95,48 @@ describe("fromKMS (mocked)", () => {
       code: "CONFIG",
     });
   });
+
+  it("throws ConfigError when KMS returns SPKI with wrong length", async () => {
+    kmsMock.reset();
+    // Return a SPKI buffer that is too short (not 23 + 65 = 88 bytes)
+    kmsMock.on(GetPublicKeyCommand).resolves({ PublicKey: new Uint8Array(10) });
+    await expect(
+      fromKMS({ keyId: "arn:aws:kms:us-east-1:000:key/bad-len" })
+    ).rejects.toMatchObject({
+      code: "CONFIG",
+    });
+  });
+
+  it("throws ConfigError when KMS SPKI point is not uncompressed (0x04)", async () => {
+    kmsMock.reset();
+    const SPKI_HEADER_LEN = 23;
+    // Build a correctly-sized SPKI but with 0x02 (compressed prefix) instead of 0x04
+    const badSpki = new Uint8Array(SPKI_HEADER_LEN + 65);
+    badSpki[SPKI_HEADER_LEN] = 0x02; // compressed, not 0x04
+    kmsMock.on(GetPublicKeyCommand).resolves({ PublicKey: badSpki });
+    await expect(
+      fromKMS({ keyId: "arn:aws:kms:us-east-1:000:key/compressed" })
+    ).rejects.toMatchObject({
+      code: "CONFIG",
+    });
+  });
+
+  it("sendTransaction throws ConfigError", async () => {
+    const s = await fromKMS({ keyId: "arn:aws:kms:us-east-1:000:key/abc" });
+    await expect(s.sendTransaction({})).rejects.toMatchObject({ code: "CONFIG" });
+  });
+
+  it("signMessage accepts a Uint8Array input", async () => {
+    const s = await fromKMS({ keyId: "arn:aws:kms:us-east-1:000:key/abc" });
+    const bytes = new TextEncoder().encode("gm");
+    const sig = await s.signMessage(bytes);
+    expect(sig).toMatch(/^0x[0-9a-f]{130}$/i);
+  });
+
+  it("signMessage accepts a { raw } object input", async () => {
+    const s = await fromKMS({ keyId: "arn:aws:kms:us-east-1:000:key/abc" });
+    const raw = "0xdeadbeef01020304" as `0x${string}`;
+    const sig = await s.signMessage({ raw });
+    expect(sig).toMatch(/^0x[0-9a-f]{130}$/i);
+  });
 });

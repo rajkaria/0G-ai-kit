@@ -49,6 +49,19 @@ describe("fromPrivateKey", () => {
     expect(recovered.toLowerCase()).toBe(s.address.toLowerCase());
   });
 
+  it("signMessage accepts a { raw } object overload", async () => {
+    const s = await fromPrivateKey(PK);
+    const raw = "0xdeadbeef01020304" as `0x${string}`;
+    const sig = await s.signMessage({ raw });
+    // signature must be 65-byte hex (130 hex chars + 0x prefix)
+    expect(sig).toMatch(/^0x[0-9a-f]{130}$/i);
+  });
+
+  it("sendTransaction throws ConfigError", async () => {
+    const s = await fromPrivateKey(PK);
+    await expect(s.sendTransaction({})).rejects.toMatchObject({ code: "CONFIG" });
+  });
+
   it("rejects garbage", async () => {
     await expect(fromPrivateKey("0xnotahex")).rejects.toThrow(/private key/i);
     await expect(fromPrivateKey("")).rejects.toThrow(/private key/i);

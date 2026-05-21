@@ -99,4 +99,88 @@ describe("siwe.buildMessage + siwe.verify", () => {
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.reason).toMatch(/expired/i);
   });
+
+  it("returns ok:false when notBefore is in the future", async () => {
+    const signer = await fromPrivateKey(PK);
+    const nonce = siwe.generateNonce();
+    const message = siwe.buildMessage({
+      domain: "0gkit.dev",
+      address: signer.address,
+      uri: "https://0gkit.dev/login",
+      nonce,
+      chainId: 16602,
+      issuedAt: new Date("2026-05-01T00:00:00Z"),
+      notBefore: new Date("2026-05-30T00:00:00Z"),
+    });
+    const signature = await signer.signMessage(message);
+    const r = await siwe.verify({
+      message,
+      signature,
+      expectedNonce: nonce,
+      now: new Date("2026-05-20T00:00:00Z"),
+    });
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.reason).toMatch(/not valid before/i);
+  });
+
+  it("returns ok:false when signature recovery fails (garbage signature)", async () => {
+    const signer = await fromPrivateKey(PK);
+    const nonce = siwe.generateNonce();
+    const message = siwe.buildMessage({
+      domain: "0gkit.dev",
+      address: signer.address,
+      uri: "https://0gkit.dev/login",
+      nonce,
+      chainId: 16602,
+      issuedAt: new Date("2026-05-21T00:00:00Z"),
+    });
+    // Pass a garbage signature that can't be recovered
+    const r = await siwe.verify({
+      message,
+      signature: "0x" + "00".repeat(65),
+      expectedNonce: nonce,
+    });
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.reason).toMatch(/recovery failed/i);
+  });
+
+  it("buildMessage and verify round-trips with resources", async () => {
+    const signer = await fromPrivateKey(PK);
+    const nonce = siwe.generateNonce();
+    const message = siwe.buildMessage({
+      domain: "0gkit.dev",
+      address: signer.address,
+      uri: "https://0gkit.dev/login",
+      nonce,
+      chainId: 16602,
+      issuedAt: new Date("2026-05-21T00:00:00Z"),
+      resources: ["https://0gkit.dev/resource1", "https://0gkit.dev/resource2"],
+    });
+    // message should include the Resources section
+    expect(message).toContain("Resources:");
+    const signature = await signer.signMessage(message);
+    const r = await siwe.verify({ message, signature, expectedNonce: nonce });
+    expect(r.ok).toBe(true);
+  });
+
+  it("returns ok:false when signer address does not match declared address", async () => {
+    const signer = await fromPrivateKey(PK);
+    const otherSigner = await fromPrivateKey(
+      "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+    );
+    const nonce = siwe.generateNonce();
+    // Build message with otherSigner's address, but sign with signer
+    const message = siwe.buildMessage({
+      domain: "0gkit.dev",
+      address: otherSigner.address,
+      uri: "https://0gkit.dev/login",
+      nonce,
+      chainId: 16602,
+      issuedAt: new Date("2026-05-21T00:00:00Z"),
+    });
+    const signature = await signer.signMessage(message);
+    const r = await siwe.verify({ message, signature, expectedNonce: nonce });
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.reason).toMatch(/does not match/i);
+  });
 });

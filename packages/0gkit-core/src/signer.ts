@@ -14,10 +14,10 @@ export interface Signer {
 
   /**
    * EIP-191 personal-sign over arbitrary bytes (or a pre-hashed `{raw}`
-   * structure that matches viem's hashMessage shape).
+   * structure that matches viem's `SignableMessage` type).
    */
   signMessage(
-    bytes: Uint8Array | { raw: `0x${string}` } | string
+    bytes: string | { raw: `0x${string}` | Uint8Array }
   ): Promise<`0x${string}`>;
 
   /** EIP-712 typed-data sign. */
@@ -35,7 +35,15 @@ export interface Signer {
   readonly privateKey?: `0x${string}`;
 
   /** Loader provenance tag — useful for logging/observability. */
-  readonly source: "private-key" | "file" | "env" | "kms" | "wagmi" | "custom";
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  readonly source:
+    | "private-key"
+    | "file"
+    | "env"
+    | "kms"
+    | "wagmi"
+    | "custom"
+    | (string & {});
 }
 
 export interface SignTypedDataArgs {
@@ -56,6 +64,9 @@ export interface SignableTx {
   value?: bigint;
   data?: `0x${string}`;
   gas?: bigint;
+  gasPrice?: bigint;
+  maxFeePerGas?: bigint;
+  maxPriorityFeePerGas?: bigint;
   nonce?: number;
   chainId?: number;
 }

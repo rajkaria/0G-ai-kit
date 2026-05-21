@@ -543,6 +543,9 @@ importers:
       '@aws-sdk/client-kms':
         specifier: ^3.600.0
         version: 3.1051.0
+      '@noble/curves':
+        specifier: ^1.9.7
+        version: 1.9.7
       '@types/node':
         specifier: ^22.10.2
         version: 22.19.19

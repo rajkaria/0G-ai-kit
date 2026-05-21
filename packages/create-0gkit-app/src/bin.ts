@@ -1,5 +1,3 @@
-// Defensive alias: redirect users to the canonical `create-0g-app`.
-console.error(
-  "\nuse `npm create 0g-app` instead — `create-0gkit-app` is a defensive alias.\n"
-);
-process.exit(1);
+import { run } from "./index.js";
+
+run(process.argv).then((code) => process.exit(code));

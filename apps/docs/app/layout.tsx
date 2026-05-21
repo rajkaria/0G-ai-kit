@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <span style={{ color: "var(--muted)", fontSize: "0.85rem" }}>docs</span>
               <span className="spacer" />
               <a
-                href="https://github.com/rajkaria/0G-ai-kit"
+                href="https://github.com/rajkaria/0g-ai-kit"
                 target="_blank"
                 rel="noreferrer"
               >

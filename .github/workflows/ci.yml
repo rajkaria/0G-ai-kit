@@ -52,8 +52,8 @@ jobs:
 
       - run: pnpm --filter @foundryprotocol/0gkit-playground exec playwright test
 
-  create-0g-app-e2e:
-    name: create-0g-app · scaffolds a project
+  create-0gkit-app-e2e:
+    name: create-0gkit-app · scaffolds a project
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -69,20 +69,17 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm --filter create-0g-app build
+      - run: pnpm --filter create-0gkit-app build
 
       # Smoke the binary: should write package.json + .env.example into a
-      # fresh tmpdir, exit 0, with --no-install / --no-git for speed. Uses
-      # OGKIT_TEMPLATE_REF=main so we test against the current branch, not
-      # the (not-yet-tagged) v0.2.x release ref.
+      # fresh tmpdir, exit 0, with --no-install / --no-git for speed. The
+      # package default pins templates to the matching v0.2.x release ref.
       - name: Scaffold storage-app (local network, no install)
-        env:
-          OGKIT_TEMPLATE_REF: main
         run: |
           set -euo pipefail
           WORK=$(mktemp -d)
           cd "$WORK"
-          node "$GITHUB_WORKSPACE/packages/create-0g-app/dist/bin.js" demo \
+          node "$GITHUB_WORKSPACE/packages/create-0gkit-app/dist/bin.js" demo \
             --template storage-app --network local --no-install --no-git
           test -f demo/package.json
           test -f demo/.env.example

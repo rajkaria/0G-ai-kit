@@ -37,11 +37,14 @@ No `@foundryprotocol/0gkit-*` package may statically import any other `@foundryp
 
 ---
 
-## D5 — Initializer is `create-0g-app`, not `create-0gkit-app`
+## D5 — Initializer was planned as `create-0g-app`, superseded by D12
 
 **Date:** 2026-05-20 · **SP:** SP1
 
 `npm create 0g-app` (which resolves to a package named `create-0g-app`) wins muscle memory for `npm create <thing>`. `create-0gkit-app` is the defensive registration but is **not** the primary entry. We register both names on npm; the `create-0gkit-app` package is a 3-line shim that prints `→ use 'npm create 0g-app' instead` and exits 1.
+
+Superseded on 2026-05-21: npm publish returned 403 for `create-0g-app`
+because the root package name is held by another publisher. See D12.
 
 ---
 
@@ -97,3 +100,17 @@ weight problem (KMS, wagmi, etc. would tunnel into every storage user). By
 defining the interface in `0gkit-core` (the package every other 0gkit-\* already
 depends on), primitives consume only a type and stay weightless. Wallet
 implements; primitives consume; no cycle, no extra installs.
+
+---
+
+## D12 — Canonical initializer is `create-0gkit-app`
+
+**Date:** 2026-05-21 · **SP:** Phase 1 release fix
+
+The public front door is `npm create 0gkit-app@latest`. The originally planned
+`create-0g-app` package is private because the npm root name is held by another
+publisher. To avoid duplicate scaffolder code, `create-0gkit-app` bundles the
+same source implementation at build time, has its own `create-0gkit-app` binary,
+and publishes as the only working npm-create package. Documentation, CI smoke
+tests, and template fetches use the lowercase GitHub repo slug
+`rajkaria/0g-ai-kit`.

@@ -35,12 +35,12 @@ export function isValidTemplateName(s: string): s is TemplateName {
 
 /**
  * Git ref the templates are fetched from. The release pipeline pins this
- * to the published version tag (e.g. `v0.2.x`) so `npm create 0g-app@latest`
+ * to the published version tag (e.g. `v0.2.x`) so `npm create 0gkit-app@latest`
  * always pulls a template matching the published toolkit.
  */
 const TEMPLATE_REF = process.env.OGKIT_TEMPLATE_REF ?? "v0.2.x";
 
-const TEMPLATE_REPO = "rajkaria/0G-ai-kit";
+const TEMPLATE_REPO = "rajkaria/0g-ai-kit";
 
 export async function fetchTemplate(opts: {
   name: TemplateName;

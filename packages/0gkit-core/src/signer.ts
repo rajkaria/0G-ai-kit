@@ -17,7 +17,7 @@ export interface Signer {
    * structure that matches viem's `SignableMessage` type).
    */
   signMessage(
-    bytes: string | { raw: `0x${string}` | Uint8Array }
+    bytes: string | Uint8Array | { raw: `0x${string}` | Uint8Array }
   ): Promise<`0x${string}`>;
 
   /** EIP-712 typed-data sign. */

@@ -10,7 +10,7 @@ describe("Signer interface (type-only)", () => {
       address: `0x${string}`;
       source: string;
       signMessage: (
-        bytes: string | { raw: `0x${string}` | Uint8Array }
+        bytes: string | Uint8Array | { raw: `0x${string}` | Uint8Array }
       ) => Promise<`0x${string}`>;
       signTypedData: (args: SignTypedDataArgs) => Promise<`0x${string}`>;
       sendTransaction: (tx: SignableTx) => Promise<`0x${string}`>;

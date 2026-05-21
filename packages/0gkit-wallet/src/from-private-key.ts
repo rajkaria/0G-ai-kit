@@ -1,5 +1,6 @@
 import type { Signer } from "@foundryprotocol/0gkit-core";
+import { buildLocalSigner } from "./local-signer.js";
 
-export async function fromPrivateKey(_pk: string): Promise<Signer> {
-  throw new Error("fromPrivateKey: implemented in task 3");
+export async function fromPrivateKey(privateKey: string): Promise<Signer> {
+  return buildLocalSigner(privateKey, "private-key");
 }

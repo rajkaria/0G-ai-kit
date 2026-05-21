@@ -1,5 +1,15 @@
 # @foundryprotocol/0gkit-react
 
+## 0.2.0
+
+### Patch Changes
+
+- Updated dependencies [63a297e]
+  - @foundryprotocol/0gkit-core@0.2.0
+  - @foundryprotocol/0gkit-storage@0.2.0
+  - @foundryprotocol/0gkit-compute@0.2.0
+  - @foundryprotocol/0gkit-attestation@0.2.0
+
 ## 0.1.1
 
 ### Patch Changes

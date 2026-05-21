@@ -18,3 +18,11 @@ export {
   AttestationVerifierAbi,
   KNOWN_ADDRESSES,
 } from "./standard/index.js";
+
+export {
+  makeContractEstimate,
+  weiToFee,
+  type ContractEstimate,
+  type ContractEstimateBreakdown,
+} from "./estimate.js";
+export { type WriteOptions } from "./types.js";

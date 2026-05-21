@@ -29,3 +29,7 @@ export interface EventOptions {
   /** Indexed arg filter, passed straight to viem.getLogs. */
   args?: Record<string, unknown>;
 }
+
+export interface WriteOptions {
+  dryRun?: boolean;
+}

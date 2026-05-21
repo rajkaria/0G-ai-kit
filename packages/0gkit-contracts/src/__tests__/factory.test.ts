@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { ChainError, ConfigError } from "@foundryprotocol/0gkit-core";
+import { ChainError, ConfigError, type Receipt } from "@foundryprotocol/0gkit-core";
 import { createTypedContract } from "../factory.js";
 
 const MINI_ABI = [
@@ -89,10 +89,10 @@ describe("createTypedContract — write namespace", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       walletClient: wal as any,
     });
-    const receipt = await c.write.transfer!(
+    const receipt = (await c.write.transfer!(
       "0x0000000000000000000000000000000000000003",
       99n
-    );
+    )) as Receipt;
     expect(receipt.txHash).toBe("0xfeedface");
     expect(receipt.blockNumber).toBe(99n);
     expect(typeof receipt.latencyMs).toBe("number");

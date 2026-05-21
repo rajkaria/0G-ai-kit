@@ -112,5 +112,24 @@ The public front door is `npm create 0gkit-app@latest`. The originally planned
 publisher. To avoid duplicate scaffolder code, `create-0gkit-app` bundles the
 same source implementation at build time, has its own `create-0gkit-app` binary,
 and publishes as the only working npm-create package. Documentation, CI smoke
-tests, and template fetches use the lowercase GitHub repo slug
-`rajkaria/0g-ai-kit`.
+tests, and template fetches use the GitHub repo slug `rajkaria/0gkit`
+(see D13 for the rename history).
+
+---
+
+## D13 — GitHub repo renamed `0G-ai-kit` → `0gkit`
+
+**Date:** 2026-05-21 · **SP:** SP4 housekeeping
+
+The repository was renamed from `rajkaria/0G-ai-kit` to `rajkaria/0gkit` to
+match the npm publishing scope (`@foundryprotocol/0gkit-*`), the canonical
+initializer (`create-0gkit-app`), the public command (`npm create 0gkit-app`),
+and the brand. The previous name carried a misleading "ai" suffix even though
+the toolkit covers storage, compute, DA, attestation, chain, contracts, and
+indexing — not just inference. GitHub maintains an HTTP redirect from the old
+name; existing clones continue to work but should `git remote set-url origin
+https://github.com/rajkaria/0gkit.git`. All in-repo URL references
+(package.json `homepage`/`repository`/`bugs`, README CI badge, SECURITY.md,
+template degit commands, and the `TEMPLATE_REPO` constant in
+`create-0g-app/src/templates.ts`) were rewritten to the new slug in the same
+PR.

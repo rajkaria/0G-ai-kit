@@ -1,6 +1,6 @@
 # 0gkit — the neutral 0G builder toolkit
 
-[![CI](https://github.com/rajkaria/0g-ai-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/rajkaria/0g-ai-kit/actions/workflows/ci.yml)
+[![CI](https://github.com/rajkaria/0gkit/actions/workflows/ci.yml/badge.svg)](https://github.com/rajkaria/0gkit/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 **0gkit** is the fastest way to build on the [0G](https://0g.ai) network —

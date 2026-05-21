@@ -1,3 +1,4 @@
+export { Indexer } from "./indexer.js";
 export { MemoryCursorStore } from "./cursors/memory.js";
 export type {
   CursorState,

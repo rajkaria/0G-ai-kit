@@ -1,0 +1,25 @@
+title: "[SHOW] "
+labels: ["show-and-tell"]
+body:
+  - type: input
+    id: project
+    attributes:
+      label: Project name
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Link
+      placeholder: GitHub repo, live demo, or video
+  - type: textarea
+    id: about
+    attributes:
+      label: What did you build?
+    validations:
+      required: true
+  - type: textarea
+    id: stack
+    attributes:
+      label: Which 0gkit pieces did you use?
+      description: e.g. 0gkit-storage + 0gkit-compute + tee-attested-api template

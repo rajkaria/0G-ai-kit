@@ -1,0 +1,32 @@
+---
+title: CHAIN_RPC_TIMEOUT
+description: RPC call timed out
+namespace: CHAIN
+---
+
+# CHAIN_RPC_TIMEOUT
+
+**RPC call timed out**
+
+## What happened
+
+The RPC node accepted the request but didn't respond within the timeout window. Either the node is overloaded or the call is genuinely slow (e.g. a wide `eth_getLogs` range).
+
+## How to fix
+
+Increase the timeout via the client option, narrow the range of `eth_getLogs`-style calls, or point at a more responsive RPC endpoint.
+
+## Example
+
+```ts
+const client = createClient({
+  network: "galileo",
+  transport: http("https://...", { timeout: 30_000 }),
+});
+```
+
+## Reference
+
+- Namespace: `CHAIN`
+- Help URL: `https://0gkit.dev/errors/CHAIN_RPC_TIMEOUT`
+- See also: [all error codes](/errors)

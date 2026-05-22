@@ -1,0 +1,31 @@
+---
+title: JOBS_JOB_NOT_FOUND
+description: Job ID not found
+namespace: JOBS
+---
+
+# JOBS_JOB_NOT_FOUND
+
+**Job ID not found**
+
+## What happened
+
+A `jobs.get(id)` / `jobs.cancel(id)` call referenced a job that doesn't exist or has been purged.
+
+## How to fix
+
+Check the job ID is correct. If the job is older than the retention window, it may have been purged — adjust `retentionMs` on the runner config.
+
+## Example
+
+```ts
+// SP10
+const job = await runner.get(jobId);
+if (!job) console.error("not found");
+```
+
+## Reference
+
+- Namespace: `JOBS`
+- Help URL: `https://0gkit.dev/errors/JOBS_JOB_NOT_FOUND`
+- See also: [all error codes](/errors)

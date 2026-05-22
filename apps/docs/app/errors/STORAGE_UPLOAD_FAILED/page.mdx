@@ -1,0 +1,30 @@
+---
+title: STORAGE_UPLOAD_FAILED
+description: Upload to 0G storage failed
+namespace: STORAGE
+---
+
+# STORAGE_UPLOAD_FAILED
+
+**Upload to 0G storage failed**
+
+## What happened
+
+The 0G storage HTTP API rejected the upload (network issue, malformed body, rate limit, or backend error).
+
+## How to fix
+
+Run `0g storage put` with `--dry-run` first to verify the bytes + estimate are sane, then re-attempt. Check `0g doctor` to confirm storage endpoint reachability.
+
+## Example
+
+```ts
+0g storage put ./data.bin --dry-run
+0g storage put ./data.bin # if dry-run succeeds
+```
+
+## Reference
+
+- Namespace: `STORAGE`
+- Help URL: `https://0gkit.dev/errors/STORAGE_UPLOAD_FAILED`
+- See also: [all error codes](/errors)

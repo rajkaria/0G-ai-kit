@@ -1,0 +1,31 @@
+---
+title: DA_INVALID_PAYLOAD
+description: DA payload empty or oversized
+namespace: DA
+---
+
+# DA_INVALID_PAYLOAD
+
+**DA payload empty or oversized**
+
+## What happened
+
+The DA layer received a payload that's either zero-length or exceeds the per-blob size limit.
+
+## How to fix
+
+Validate the payload length before submitting. For very large payloads, chunk into multiple DA publishes and reference them in a manifest.
+
+## Example
+
+```ts
+if (payload.length === 0 || payload.length > MAX) {
+  throw new Error("invalid payload size");
+}
+```
+
+## Reference
+
+- Namespace: `DA`
+- Help URL: `https://0gkit.dev/errors/DA_INVALID_PAYLOAD`
+- See also: [all error codes](/errors)

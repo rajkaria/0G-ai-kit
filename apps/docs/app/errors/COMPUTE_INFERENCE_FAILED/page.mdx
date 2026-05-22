@@ -1,0 +1,29 @@
+---
+title: COMPUTE_INFERENCE_FAILED
+description: Inference call returned an error
+namespace: COMPUTE
+---
+
+# COMPUTE_INFERENCE_FAILED
+
+**Inference call returned an error**
+
+## What happened
+
+The provider accepted the request but returned a non-OK response — could be a model-specific error (context window, malformed prompt) or a transient provider issue.
+
+## How to fix
+
+Re-run with `--json` and inspect the raw provider response. If the failure is consistent, try a smaller prompt or a different model.
+
+## Example
+
+```ts
+0g infer "..." --model llama-3.1-8b --json
+```
+
+## Reference
+
+- Namespace: `COMPUTE`
+- Help URL: `https://0gkit.dev/errors/COMPUTE_INFERENCE_FAILED`
+- See also: [all error codes](/errors)

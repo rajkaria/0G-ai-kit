@@ -1,0 +1,31 @@
+---
+title: OBSERVABILITY_EXPORTER_FAILED
+description: OTel exporter rejected the export
+namespace: OBSERVABILITY
+---
+
+# OBSERVABILITY_EXPORTER_FAILED
+
+**OTel exporter rejected the export**
+
+## What happened
+
+The configured OpenTelemetry exporter (OTLP, Honeycomb, Jaeger) rejected a span/metric batch — usually network or auth misconfiguration.
+
+## How to fix
+
+Confirm the exporter endpoint + headers (e.g. `OTEL_EXPORTER_OTLP_HEADERS`) are correct. Drop logs to inspect the raw export attempt.
+
+## Example
+
+```ts
+// SP11 — wire instrument0g
+import { instrument0g } from "@foundryprotocol/0gkit-observability";
+instrument0g({ exporter: "otlp", endpoint: process.env.OTEL_URL });
+```
+
+## Reference
+
+- Namespace: `OBSERVABILITY`
+- Help URL: `https://0gkit.dev/errors/OBSERVABILITY_EXPORTER_FAILED`
+- See also: [all error codes](/errors)

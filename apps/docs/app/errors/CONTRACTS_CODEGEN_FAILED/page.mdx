@@ -1,0 +1,31 @@
+---
+title: CONTRACTS_CODEGEN_FAILED
+description: 0g contracts generate failed
+namespace: CONTRACTS
+---
+
+# CONTRACTS_CODEGEN_FAILED
+
+**0g contracts generate failed**
+
+## What happened
+
+The codegen step couldn't read the Foundry artifact JSON — either the file path is wrong, the JSON is malformed, or it's a Hardhat artifact (not currently supported).
+
+## How to fix
+
+Confirm the path points to a Foundry artifact: it should have top-level `abi` and `contractName` fields. For Hardhat artifacts, extract the ABI with `jq '.abi'` and wrap it manually until plugin support lands.
+
+## Example
+
+```ts
+# Foundry — supported
+forge build
+0g contracts generate --abi ./out/MyContract.sol/MyContract.json --out ./src/typed
+```
+
+## Reference
+
+- Namespace: `CONTRACTS`
+- Help URL: `https://0gkit.dev/errors/CONTRACTS_CODEGEN_FAILED`
+- See also: [all error codes](/errors)

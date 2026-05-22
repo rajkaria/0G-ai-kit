@@ -1,0 +1,37 @@
+---
+title: WALLET_NO_CONNECTOR
+description: No wagmi connector available
+namespace: WALLET
+---
+
+# WALLET_NO_CONNECTOR
+
+**No wagmi connector available**
+
+## What happened
+
+`useConnect()` was called from a React component, but the wagmi `WagmiProvider` has no connectors configured — so there's nothing for the user to pick.
+
+## How to fix
+
+Wrap your app in `<WagmiProvider config={config}>` where `config` has at least one connector. The `0gkit-wallet-react` starter templates wire MetaMask + WalletConnect by default.
+
+## Example
+
+```ts
+import { createConfig, http } from "wagmi";
+import { injected } from "wagmi/connectors";
+import { galileo } from "@foundryprotocol/0gkit-core";
+
+export const config = createConfig({
+  chains: [galileo.chain],
+  connectors: [injected()],
+  transports: { [galileo.chain.id]: http() },
+});
+```
+
+## Reference
+
+- Namespace: `WALLET`
+- Help URL: `https://0gkit.dev/errors/WALLET_NO_CONNECTOR`
+- See also: [all error codes](/errors)

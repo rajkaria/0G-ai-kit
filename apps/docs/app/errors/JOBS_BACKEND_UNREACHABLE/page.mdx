@@ -1,0 +1,30 @@
+---
+title: JOBS_BACKEND_UNREACHABLE
+description: Jobs backend unreachable
+namespace: JOBS
+---
+
+# JOBS_BACKEND_UNREACHABLE
+
+**Jobs backend unreachable**
+
+## What happened
+
+The configured jobs backend (memory/sqlite/redis) wasn't reachable when enqueuing or claiming a job.
+
+## How to fix
+
+Verify the backend is healthy. For Redis, ping with `redis-cli`. For sqlite, check disk space + file permissions.
+
+## Example
+
+```ts
+// Pre-SP10 stub — surface for forward-compat
+import { JobRunner } from "@foundryprotocol/0gkit-jobs"; // ships in SP10
+```
+
+## Reference
+
+- Namespace: `JOBS`
+- Help URL: `https://0gkit.dev/errors/JOBS_BACKEND_UNREACHABLE`
+- See also: [all error codes](/errors)

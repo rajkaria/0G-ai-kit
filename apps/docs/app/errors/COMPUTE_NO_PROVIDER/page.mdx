@@ -1,0 +1,30 @@
+---
+title: COMPUTE_NO_PROVIDER
+description: No provider serving the requested model
+namespace: COMPUTE
+---
+
+# COMPUTE_NO_PROVIDER
+
+**No provider serving the requested model**
+
+## What happened
+
+The broker has no active provider that advertises the requested model name.
+
+## How to fix
+
+List currently-online providers + their models with `0g infer --list-providers`, then either pick an available model or wait for a provider to come back online.
+
+## Example
+
+```ts
+0g infer --list-providers
+0g infer "hello" --model llama-3.1-8b
+```
+
+## Reference
+
+- Namespace: `COMPUTE`
+- Help URL: `https://0gkit.dev/errors/COMPUTE_NO_PROVIDER`
+- See also: [all error codes](/errors)

@@ -1,0 +1,31 @@
+---
+title: CONFIG_MISSING_ENV
+description: Missing required environment variable
+namespace: CONFIG
+---
+
+# CONFIG_MISSING_ENV
+
+**Missing required environment variable**
+
+## What happened
+
+A required environment variable (e.g. `ZEROG_PRIVATE_KEY`, `ZEROG_BROKER_KEY`) was not set when the primitive was constructed.
+
+## How to fix
+
+Set the variable in your shell or `.env` file before invoking the CLI / starting your app. For local dev, copy `.env.example` to `.env` and fill it in.
+
+## Example
+
+```ts
+// .env
+ZEROG_PRIVATE_KEY=0x...
+ZEROG_NETWORK=galileo
+```
+
+## Reference
+
+- Namespace: `CONFIG`
+- Help URL: `https://0gkit.dev/errors/CONFIG_MISSING_ENV`
+- See also: [all error codes](/errors)

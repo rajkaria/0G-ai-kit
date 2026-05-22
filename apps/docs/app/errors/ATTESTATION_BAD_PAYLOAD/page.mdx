@@ -1,0 +1,33 @@
+---
+title: ATTESTATION_BAD_PAYLOAD
+description: Attestation envelope malformed
+namespace: ATTESTATION
+---
+
+# ATTESTATION_BAD_PAYLOAD
+
+**Attestation envelope malformed**
+
+## What happened
+
+The attestation JSON couldn't be parsed or is missing required fields (typically `payload`, `signature`, `signer`).
+
+## How to fix
+
+Inspect the raw envelope and confirm it matches the expected shape. If it came from a provider, the provider may be running an outdated TEE image — update or pick another provider.
+
+## Example
+
+```ts
+try {
+  parseEnvelope(rawJson);
+} catch (e) {
+  // bad payload
+}
+```
+
+## Reference
+
+- Namespace: `ATTESTATION`
+- Help URL: `https://0gkit.dev/errors/ATTESTATION_BAD_PAYLOAD`
+- See also: [all error codes](/errors)

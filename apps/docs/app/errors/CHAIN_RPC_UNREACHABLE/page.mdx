@@ -1,0 +1,30 @@
+---
+title: CHAIN_RPC_UNREACHABLE
+description: RPC endpoint unreachable
+namespace: CHAIN
+---
+
+# CHAIN_RPC_UNREACHABLE
+
+**RPC endpoint unreachable**
+
+## What happened
+
+A JSON-RPC call to the configured 0G node failed — network down, DNS error, wrong URL, or rate-limited.
+
+## How to fix
+
+Run `0g doctor` to ping the configured RPC. If your network is fine, the public Galileo RPC may be rate-limiting — provide your own via `--rpc` or `ZEROG_RPC_URL`.
+
+## Example
+
+```ts
+0g doctor
+0g chain balance 0xabc... --rpc https://my-own-galileo-rpc.example
+```
+
+## Reference
+
+- Namespace: `CHAIN`
+- Help URL: `https://0gkit.dev/errors/CHAIN_RPC_UNREACHABLE`
+- See also: [all error codes](/errors)

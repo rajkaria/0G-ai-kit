@@ -1,0 +1,30 @@
+---
+title: CONTRACTS_REVERTED
+description: Typed contract write reverted
+namespace: CONTRACTS
+---
+
+# CONTRACTS_REVERTED
+
+**Typed contract write reverted**
+
+## What happened
+
+A `typedContract.write.method(...)` call's simulation reverted. The revert reason is in the error message — usually a `require(...)` check or a custom error.
+
+## How to fix
+
+Read the revert reason; it names the failing precondition. Run `typedContract.write.method([...], { dryRun: true })` for the simulation-only path.
+
+## Example
+
+```ts
+await typedContract.write.transfer([to, amount], { dryRun: true });
+// Inspect the simulated revert reason without broadcasting
+```
+
+## Reference
+
+- Namespace: `CONTRACTS`
+- Help URL: `https://0gkit.dev/errors/CONTRACTS_REVERTED`
+- See also: [all error codes](/errors)

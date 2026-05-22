@@ -16,3 +16,6 @@ export {
 } from "./IndexerProvider.js";
 export { useEvent, type UseEventOptions, type UseEventResult } from "./useEvent.js";
 export { useLogs, type UseLogsOptions, type UseLogsResult } from "./useLogs.js";
+
+// SP9 — error boundary
+export { ZeroGErrorBoundary, type ZeroGErrorBoundaryProps } from "./error-boundary.js";

@@ -1,0 +1,35 @@
+---
+title: CONFIG_INVALID_ARGUMENT
+description: Invalid argument passed to a primitive
+namespace: CONFIG
+---
+
+# CONFIG_INVALID_ARGUMENT
+
+**Invalid argument passed to a primitive**
+
+## What happened
+
+A function was called with an argument that fails a precondition (wrong type, out of range, empty value, etc.). The error message names the specific field.
+
+## How to fix
+
+Read the error message — it always says exactly which argument and what the constraint is. If you're integrating via the CLI, double-check the flag value.
+
+## Example
+
+```ts
+try {
+  // ...
+} catch (e) {
+  if (e instanceof ZeroGError && e.code === "CONFIG_INVALID_ARGUMENT") {
+    console.error(e.message, e.hint);
+  }
+}
+```
+
+## Reference
+
+- Namespace: `CONFIG`
+- Help URL: `https://0gkit.dev/errors/CONFIG_INVALID_ARGUMENT`
+- See also: [all error codes](/errors)

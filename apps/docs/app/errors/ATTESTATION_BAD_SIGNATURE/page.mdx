@@ -1,0 +1,30 @@
+---
+title: ATTESTATION_BAD_SIGNATURE
+description: Attestation signature did not recover
+namespace: ATTESTATION
+---
+
+# ATTESTATION_BAD_SIGNATURE
+
+**Attestation signature did not recover**
+
+## What happened
+
+The signature on a TEE attestation envelope didn't recover to the expected signer address — either tampering or a key mismatch.
+
+## How to fix
+
+Confirm you're verifying against the right signer. For the testing fixture, use `FIXTURE_ATTESTATION_SIGNER`. For a real provider, fetch the provider's signing address from its public registry entry.
+
+## Example
+
+```ts
+import { verifyEnvelope } from "@foundryprotocol/0gkit-attestation";
+const ok = verifyEnvelope(signed, expectedSigner);
+```
+
+## Reference
+
+- Namespace: `ATTESTATION`
+- Help URL: `https://0gkit.dev/errors/ATTESTATION_BAD_SIGNATURE`
+- See also: [all error codes](/errors)

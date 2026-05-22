@@ -1,0 +1,30 @@
+---
+title: STORAGE_DOWNLOAD_FAILED
+description: Download from 0G storage failed
+namespace: STORAGE
+---
+
+# STORAGE_DOWNLOAD_FAILED
+
+**Download from 0G storage failed**
+
+## What happened
+
+The 0G storage HTTP API returned non-2xx for a download. Could be a stale root, an unavailable node, or a network blip.
+
+## How to fix
+
+Confirm the root exists via `0g storage exists <root>`. If yes, retry — single-node failures are usually transient.
+
+## Example
+
+```ts
+0g storage exists 0xroothere
+0g storage get 0xroothere ./out.bin
+```
+
+## Reference
+
+- Namespace: `STORAGE`
+- Help URL: `https://0gkit.dev/errors/STORAGE_DOWNLOAD_FAILED`
+- See also: [all error codes](/errors)

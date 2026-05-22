@@ -1,0 +1,30 @@
+---
+title: WALLET_KMS_PUBKEY_FAILED
+description: AWS KMS GetPublicKey failed
+namespace: WALLET
+---
+
+# WALLET_KMS_PUBKEY_FAILED
+
+**AWS KMS GetPublicKey failed**
+
+## What happened
+
+The KMS `GetPublicKey` API call did not return a `PublicKey` SPKI blob. Usually means the key doesn't exist, is in a non-active state, or your role lacks `kms:GetPublicKey`.
+
+## How to fix
+
+Run `aws kms describe-key --key-id <id>` to confirm the key is `Enabled`. If it is, grant the calling IAM principal `kms:GetPublicKey` on that key's resource ARN.
+
+## Example
+
+```ts
+# AWS CLI sanity check
+aws kms describe-key --key-id arn:aws:kms:us-east-1:...:key/...
+```
+
+## Reference
+
+- Namespace: `WALLET`
+- Help URL: `https://0gkit.dev/errors/WALLET_KMS_PUBKEY_FAILED`
+- See also: [all error codes](/errors)

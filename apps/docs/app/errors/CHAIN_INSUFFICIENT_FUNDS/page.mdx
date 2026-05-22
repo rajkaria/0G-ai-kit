@@ -1,0 +1,29 @@
+---
+title: CHAIN_INSUFFICIENT_FUNDS
+description: Account has insufficient funds
+namespace: CHAIN
+---
+
+# CHAIN_INSUFFICIENT_FUNDS
+
+**Account has insufficient funds**
+
+## What happened
+
+The signing account's native token balance can't cover (value + maxFee × gasLimit) for this transaction.
+
+## How to fix
+
+Top up the account — on Galileo, use https://faucet.0g.ai. Or reduce the value/gas estimate.
+
+## Example
+
+```ts
+0g chain faucet # surfaces the faucet URL — Galileo has no programmatic faucet
+```
+
+## Reference
+
+- Namespace: `CHAIN`
+- Help URL: `https://0gkit.dev/errors/CHAIN_INSUFFICIENT_FUNDS`
+- See also: [all error codes](/errors)

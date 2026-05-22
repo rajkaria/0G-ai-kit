@@ -1,0 +1,30 @@
+---
+title: INDEXER_CURSOR_BACKEND_UNREACHABLE
+description: Cursor backend unreachable
+namespace: INDEXER
+---
+
+# INDEXER_CURSOR_BACKEND_UNREACHABLE
+
+**Cursor backend unreachable**
+
+## What happened
+
+The configured cursor store (sqlite file, Redis instance) wasn't reachable — file permissions, missing Redis, wrong connection string.
+
+## How to fix
+
+Verify the backend is up and configured correctly. For Redis, confirm the URL via `redis-cli -u $REDIS_URL ping`. For sqlite, check the file path is writable.
+
+## Example
+
+```ts
+import { RedisCursorStore } from "@foundryprotocol/0gkit-indexer/cursors/redis";
+const cursor = new RedisCursorStore({ url: process.env.REDIS_URL });
+```
+
+## Reference
+
+- Namespace: `INDEXER`
+- Help URL: `https://0gkit.dev/errors/INDEXER_CURSOR_BACKEND_UNREACHABLE`
+- See also: [all error codes](/errors)

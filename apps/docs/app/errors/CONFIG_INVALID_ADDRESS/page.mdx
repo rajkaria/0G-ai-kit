@@ -1,0 +1,30 @@
+---
+title: CONFIG_INVALID_ADDRESS
+description: Not a valid 0x address
+namespace: CONFIG
+---
+
+# CONFIG_INVALID_ADDRESS
+
+**Not a valid 0x address**
+
+## What happened
+
+An address argument did not match the `0x` + 40 hex chars format (EIP-55 mixed-case is also accepted).
+
+## How to fix
+
+Double-check the address — common mistakes are missing the `0x` prefix or copying a contract name instead of the address. Use `viem.getAddress(...)` to normalize if needed.
+
+## Example
+
+```ts
+import { getAddress } from "viem";
+const normalized = getAddress("0xAbC...");
+```
+
+## Reference
+
+- Namespace: `CONFIG`
+- Help URL: `https://0gkit.dev/errors/CONFIG_INVALID_ADDRESS`
+- See also: [all error codes](/errors)

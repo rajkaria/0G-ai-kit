@@ -1,0 +1,30 @@
+---
+title: WALLET_NO_PRIVATE_KEY
+description: No private key derived from mnemonic
+namespace: WALLET
+---
+
+# WALLET_NO_PRIVATE_KEY
+
+**No private key derived from mnemonic**
+
+## What happened
+
+`mnemonicToAccount()` returned a Hierarchical Deterministic key with no `privateKey`. Either the mnemonic is invalid, or the derivation index isn't reachable on `m/44'/60'/0'/0/i`.
+
+## How to fix
+
+Verify the mnemonic is a valid BIP-39 phrase and the index is in range (0–9 for the standard 10-account anvil/devnet derivation).
+
+## Example
+
+```ts
+import { testWallet } from "@foundryprotocol/0gkit-testing";
+const w = testWallet({ index: 0 }); // anvil dev account 0
+```
+
+## Reference
+
+- Namespace: `WALLET`
+- Help URL: `https://0gkit.dev/errors/WALLET_NO_PRIVATE_KEY`
+- See also: [all error codes](/errors)

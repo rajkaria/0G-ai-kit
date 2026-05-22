@@ -1,0 +1,30 @@
+---
+title: INDEXER_REORG_LIMIT_EXCEEDED
+description: Reorg depth exceeded configured limit
+namespace: INDEXER
+---
+
+# INDEXER_REORG_LIMIT_EXCEEDED
+
+**Reorg depth exceeded configured limit**
+
+## What happened
+
+A reorg deeper than the indexer's configured `reorgDepth` (default 64) was detected. The indexer can't safely rewind past this limit.
+
+## How to fix
+
+Increase `reorgDepth` if you expect deep reorgs on this chain, or reset the cursor and rebuild from a known-safe block.
+
+## Example
+
+```ts
+import { Indexer } from "@foundryprotocol/0gkit-indexer";
+const indexer = new Indexer({ network: "galileo", reorgDepth: 128 });
+```
+
+## Reference
+
+- Namespace: `INDEXER`
+- Help URL: `https://0gkit.dev/errors/INDEXER_REORG_LIMIT_EXCEEDED`
+- See also: [all error codes](/errors)

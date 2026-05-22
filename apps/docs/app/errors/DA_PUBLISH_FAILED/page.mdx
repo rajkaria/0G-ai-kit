@@ -1,0 +1,30 @@
+---
+title: DA_PUBLISH_FAILED
+description: DA publish failed
+namespace: DA
+---
+
+# DA_PUBLISH_FAILED
+
+**DA publish failed**
+
+## What happened
+
+The 0G DA encoder rejected the publish — typically a network blip, a payload that doesn't meet encoder requirements, or a misconfigured endpoint.
+
+## How to fix
+
+Retry with `--dry-run` to verify the digest + estimate are sane. Confirm the configured DA URL is reachable via `0g doctor`.
+
+## Example
+
+```ts
+0g da publish ./payload.bin --dry-run
+0g da publish ./payload.bin
+```
+
+## Reference
+
+- Namespace: `DA`
+- Help URL: `https://0gkit.dev/errors/DA_PUBLISH_FAILED`
+- See also: [all error codes](/errors)

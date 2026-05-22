@@ -1,0 +1,31 @@
+---
+title: WALLET_CHAIN_MISMATCH
+description: Signer chainId doesn't match active chain
+namespace: WALLET
+---
+
+# WALLET_CHAIN_MISMATCH
+
+**Signer chainId doesn't match active chain**
+
+## What happened
+
+A signer derived for chainId X was asked to sign a transaction for chainId Y. EIP-155 signatures are chain-scoped, so this is a hard error.
+
+## How to fix
+
+Either reconnect the wallet on the target chain (most wallets have a `switchChain` flow) or build a new signer pinned to the target chainId.
+
+## Example
+
+```ts
+import { useSwitchChain } from "wagmi";
+const { switchChain } = useSwitchChain();
+switchChain({ chainId: 16602 }); // Galileo
+```
+
+## Reference
+
+- Namespace: `WALLET`
+- Help URL: `https://0gkit.dev/errors/WALLET_CHAIN_MISMATCH`
+- See also: [all error codes](/errors)

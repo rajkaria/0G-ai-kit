@@ -1,0 +1,30 @@
+---
+title: WALLET_BAD_DER_SIGNATURE
+description: Malformed DER signature from KMS
+namespace: WALLET
+---
+
+# WALLET_BAD_DER_SIGNATURE
+
+**Malformed DER signature from KMS**
+
+## What happened
+
+The DER-encoded ECDSA signature returned by KMS couldn't be parsed into (r, s) components. Indicates either a corrupted response or — extremely rarely — a non-secp256k1 KMS key.
+
+## How to fix
+
+Verify the KMS key's `KeySpec` is `ECC_SECG_P256K1`. If it is, this is a transient AWS issue — retry the operation.
+
+## Example
+
+```ts
+# Verify key spec
+aws kms describe-key --key-id <id> --query 'KeyMetadata.KeySpec'
+```
+
+## Reference
+
+- Namespace: `WALLET`
+- Help URL: `https://0gkit.dev/errors/WALLET_BAD_DER_SIGNATURE`
+- See also: [all error codes](/errors)

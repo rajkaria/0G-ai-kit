@@ -1,0 +1,31 @@
+---
+title: STORAGE_INVALID_BYTES
+description: Storage input bytes empty or invalid
+namespace: STORAGE
+---
+
+# STORAGE_INVALID_BYTES
+
+**Storage input bytes empty or invalid**
+
+## What happened
+
+An upload was attempted with an empty buffer, a non-buffer value, or bytes that exceed the per-upload size cap.
+
+## How to fix
+
+Verify the bytes are non-empty and within size limits before calling `Storage.upload(...)`. For files, use `readFileSync` + length check.
+
+## Example
+
+```ts
+import { readFileSync } from "node:fs";
+const bytes = readFileSync(path);
+if (bytes.length === 0) throw new Error("empty");
+```
+
+## Reference
+
+- Namespace: `STORAGE`
+- Help URL: `https://0gkit.dev/errors/STORAGE_INVALID_BYTES`
+- See also: [all error codes](/errors)

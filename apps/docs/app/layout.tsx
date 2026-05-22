@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Sidebar } from "../components/Sidebar";
+import { Search } from "../components/Search";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -24,10 +25,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </Link>
               <span style={{ color: "var(--muted)", fontSize: "0.85rem" }}>docs</span>
               <span className="spacer" />
+              <Search />
               <a
-                href="https://github.com/rajkaria/0g-ai-kit"
+                href="https://github.com/rajkaria/0gkit"
                 target="_blank"
                 rel="noreferrer"
+                style={{ marginLeft: "1rem" }}
               >
                 GitHub
               </a>

@@ -1,0 +1,45 @@
+name: Lighthouse
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: lhci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lhci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build packages (for docs to consume)
+        run: pnpm build
+
+      - name: Build docs site
+        run: pnpm --filter @foundryprotocol/0gkit-docs build
+
+      - name: Start docs server
+        run: pnpm --filter @foundryprotocol/0gkit-docs start &
+        env:
+          PORT: 3000
+
+      - name: Wait for docs to be ready
+        run: npx --yes wait-on http://localhost:3000 --timeout 90000
+
+      - name: Run Lighthouse CI
+        run: pnpm dlx @lhci/cli@0.14 autorun --config=./lighthouse.config.json
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}

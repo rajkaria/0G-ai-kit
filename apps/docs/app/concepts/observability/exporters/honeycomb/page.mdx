@@ -1,0 +1,63 @@
+---
+title: Honeycomb — instrument0g wire-up
+---
+
+# Honeycomb
+
+Honeycomb's OTLP endpoint accepts traces over HTTP with a single auth header.
+Sign up at [honeycomb.io](https://www.honeycomb.io), create an environment,
+and grab the API key — there's a free tier that's more than enough to play
+with `0gkit.*` attributes.
+
+## Wire-up
+
+```ts
+import { instrument0g } from "@foundryprotocol/0gkit-observability";
+
+await instrument0g({
+  serviceName: "my-0g-app",
+  exporter: {
+    kind: "otlp",
+    endpoint: "https://api.honeycomb.io/v1/traces",
+    headers: {
+      "x-honeycomb-team": process.env.HONEYCOMB_API_KEY!,
+      // If you have multiple datasets, also set the dataset header:
+      // "x-honeycomb-dataset": "my-0g-app",
+    },
+  },
+});
+```
+
+That's it. Every `Storage.upload` / `Compute.inference` / `DA.publish` call
+now lands as a span in Honeycomb tagged with the `0gkit.*` attributes.
+
+## Auth
+
+Honeycomb accepts the ingest API key via the `x-honeycomb-team` HTTP header.
+Don't commit it — load from `HONEYCOMB_API_KEY` in your `.env`. The key has
+write-only ingest permission so it's lower-risk than a query key, but treat
+it as a secret regardless.
+
+## Where the traces land
+
+Honeycomb's UI groups spans into traces by trace ID. Each span shows:
+
+- **Span name**: `0gkit.storage.upload`, `0gkit.compute.inference`, etc.
+- **Service**: whatever you passed as `serviceName`.
+- **Attributes**: the full `0gkit.*` set plus any standard OTel attributes
+  layered on by your own instrumentation.
+
+Useful queries:
+
+- **What's slow?** Heatmap on duration grouped by `0gkit.op` — surfaces
+  outliers immediately.
+- **What's expensive?** Sum `0gkit.fee_native` (cast as a number) grouped by
+  `0gkit.op` over the last 24h.
+- **What's failing?** Filter `status_code = ERROR` and group by
+  `0gkit.error_code` to see which SCREAMING_SNAKE codes are spiking.
+
+## Triage tip
+
+If spans aren't showing up, set `kind: "console"` temporarily — every span
+will print to stdout, so you can confirm the wrapping is firing before
+debugging the network path.

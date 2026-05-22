@@ -1,0 +1,68 @@
+---
+title: Datadog — instrument0g wire-up
+---
+
+# Datadog
+
+Datadog accepts OTLP traces through the Datadog Agent (recommended) or
+through the OTLP-native intake. Both work — the agent route is the most
+common because it gives you per-host metrics, log correlation, and traces in
+one place.
+
+## Wire-up (via the Datadog Agent)
+
+Run the agent locally or as a sidecar; its OTLP HTTP receiver listens on
+`:4318` by default.
+
+```ts
+import { instrument0g } from "@foundryprotocol/0gkit-observability";
+
+await instrument0g({
+  serviceName: "my-0g-app",
+  exporter: {
+    kind: "otlp",
+    endpoint: "http://localhost:4318/v1/traces",
+    // No headers needed — the agent authenticates outbound to Datadog.
+  },
+});
+```
+
+For the OTLP-native intake (no agent), point at the regional Datadog endpoint
+and include the API key:
+
+```ts
+await instrument0g({
+  serviceName: "my-0g-app",
+  exporter: {
+    kind: "otlp",
+    endpoint: "https://trace.agent.datadoghq.com/v0.4/traces", // adjust by region
+    headers: { "dd-api-key": process.env.DD_API_KEY! },
+  },
+});
+```
+
+## Auth
+
+When sending via the agent, the agent itself holds `DD_API_KEY` and the
+in-app code is unauthenticated. When sending directly, the API key goes in
+the `dd-api-key` header. Either way, load from env — never hardcode.
+
+## Where the traces land
+
+Datadog's APM trace explorer groups spans into flame graphs. Each
+`0gkit.<op>` span carries the full `0gkit.*` attribute set. Useful views:
+
+- **Resource page**: pick `0gkit.compute.inference` (or any op) to see all
+  invocations as a sorted list with p50/p95/p99 latency.
+- **Trace search**: filter on `0gkit.error_code:STORAGE_QUOTA_EXCEEDED` to
+  pull all instances of a specific failure mode.
+- **Custom metrics**: Datadog auto-generates trace metrics from span
+  attributes, so `0gkit.fee_native` becomes graphable in dashboards without
+  any extra wiring.
+
+## Service map
+
+If you also instrument your HTTP / DB calls with the standard OTel
+auto-instrumentations, the service map shows 0G as a downstream — each
+`0gkit.*` span links into the parent service's request span via OTel context
+propagation. No extra config required.

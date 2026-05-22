@@ -1,0 +1,130 @@
+---
+title: Observability — OTel + cost attribution
+---
+
+# Observability — OTel + cost attribution
+
+Every production app eventually needs to answer three questions:
+
+1. **What's slow?** Which 0G call put the p95 latency over budget last night?
+2. **What's expensive?** Which feature is burning the most gas / DA fees?
+3. **What's failing?** Why is the SLO at 99.2% instead of 99.9%?
+
+`@foundryprotocol/0gkit-observability` answers all three with one call —
+`instrument0g({...})` — that patches every primitive's public methods to emit
+OTel spans tagged with `0gkit.*` semantic attributes. The spans go to
+whichever OTel collector you already use (Honeycomb, Datadog, Tempo, Vercel
+OTel, Grafana Cloud, …).
+
+## Mental model
+
+Each public primitive method (`Storage.upload`, `Compute.inference`,
+`DA.publish`, etc.) is wrapped in a span at runtime. The span:
+
+- carries `0gkit.op = "<primitive>.<method>"` so collectors can filter for
+  "all 0G calls" with one predicate.
+- carries `0gkit.network` so you can split traces by `galileo` /
+  `aristotle` / `local`.
+- carries per-op size + cost attributes (`0gkit.size_bytes`,
+  `0gkit.gas_native`, `0gkit.fee_native`, …) — enough to build a cost
+  dashboard by aggregating one or two attributes.
+- records exceptions and sets `0gkit.error_code` on failures, so error
+  alerts can route by the SCREAMING_SNAKE codes you already use elsewhere.
+
+## Wire-up (one call, two modes)
+
+The package supports two modes — pick the one that matches your existing OTel
+posture.
+
+### Auto SDK setup
+
+You don't have an OTel SDK yet. We lazy-import `@opentelemetry/sdk-node` and
+the OTLP exporter, build the SDK, and start it.
+
+```ts
+import { instrument0g } from "@foundryprotocol/0gkit-observability";
+
+await instrument0g({
+  serviceName: "my-app",
+  exporter: {
+    kind: "otlp",
+    endpoint: process.env.OTEL_EXPORTER_OTLP_ENDPOINT!,
+    headers: { authorization: `Bearer ${process.env.OTEL_TOKEN!}` },
+  },
+});
+```
+
+### Attach mode
+
+You already have an OTel SDK configured (Vercel auto-instrumentation,
+`@opentelemetry/auto-instrumentations-node`, a homegrown SDK). We skip SDK
+setup and only patch the primitives.
+
+```ts
+import { instrument0g } from "@foundryprotocol/0gkit-observability";
+
+await instrument0g({ mode: "attach" });
+```
+
+In both modes, `instrument0g()` is idempotent — calling it twice is a no-op.
+
+## Cost attribution playbook
+
+A "cost per feature" dashboard in any collector that supports attribute
+filtering is one query away:
+
+```sql
+-- Honeycomb / Tempo / Grafana SQL-flavour pseudo-query
+SELECT
+  resource.service_name AS service,
+  attributes['0gkit.op'] AS op,
+  SUM(CAST(attributes['0gkit.fee_native'] AS BIGINT)) AS total_fee_wei
+FROM spans
+WHERE attributes['0gkit.op'] IS NOT NULL
+GROUP BY service, op
+ORDER BY total_fee_wei DESC
+```
+
+You'll see something like:
+
+```
+my-app | compute.inference | 4_500_000_000_000_000_000
+my-app | storage.upload    |   210_000_000_000_000_000
+my-app | da.publish        |    85_000_000_000_000_000
+```
+
+…which translates directly to "compute is 95% of our spend." For per-feature
+attribution, layer on a custom attribute (`feature: "summarize"`) at the
+parent-span level via `tracer.startActiveSpan(...)` in your own code — the
+0gkit spans automatically inherit it as part of the trace context.
+
+## Delivery & failure semantics
+
+- Wrapping a method preserves its original semantics. If the method throws,
+  we record the exception, set `0gkit.error_code` if available, and re-throw
+  — your error handling continues to work.
+- We never swallow errors. If your handler fails for any reason, the span
+  ends with `status: ERROR` and the throw propagates.
+- Span end is in a `finally`-equivalent: success or failure both close the
+  span, so we never leak open spans on long-running runtimes.
+
+## Bundle budget
+
+The public entry is ≤ 20 KB gzipped (currently ~2.2 KB). `@opentelemetry/api`
+is externalised; the SDK + exporter peers are lazy-imported only when
+`mode: "auto"` triggers SDK setup. So an "attach"-only app with its own SDK
+pays just the 2 KB cost of the wrapping logic + attribute mappers.
+
+## Recipes by exporter
+
+- [Honeycomb](/concepts/observability/exporters/honeycomb)
+- [Datadog](/concepts/observability/exporters/datadog)
+- [Vercel OTel](/concepts/observability/exporters/vercel)
+
+## See also
+
+- [Package: `@foundryprotocol/0gkit-observability`](/packages/0gkit-observability)
+- [Error codes](/errors)
+- [DECISIONS D32 — prototype patching](https://github.com/rajkaria/0gkit/blob/main/docs/DECISIONS.md)
+- [DECISIONS D33 — `0gkit.*` attribute namespace](https://github.com/rajkaria/0gkit/blob/main/docs/DECISIONS.md)
+- [DECISIONS D34 — bundle budget 20 KB](https://github.com/rajkaria/0gkit/blob/main/docs/DECISIONS.md)

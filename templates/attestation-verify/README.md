@@ -67,3 +67,10 @@ keccak digest, so they verify identically on-chain. See
 
 - 0gkit: <https://github.com/rajkaria/0gkit>
 - 0G docs: <https://docs.0g.ai>
+
+## Deploy on Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Frajkaria%2F0gkit%2Ftree%2Fmain%2Ftemplates%2Fattestation-verify&project-name=0gkit-attestation-verify&env=NETWORK&envDescription=See%200gkit.dev%20env%20vars&envLink=https%3A%2F%2F0gkit.dev%2Fgetting-started%2Fenv-vars)
+
+Vercel will fork the template into a new repository, prompt for the listed
+env vars, and deploy in under 60 seconds on Fluid Compute.

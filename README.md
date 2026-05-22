@@ -59,26 +59,36 @@ const signer = await fromEnv();
 const storage = new Storage({ network: "galileo", signer });
 const { root, tx } = await storage.upload(new TextEncoder().encode("gm"));
 const bytes = await storage.download(root);
+
+// "What will this cost?" — every primitive answers, every write supports dry-run
+const est = await storage.estimate(new TextEncoder().encode("gm"));
+const dryRun = await storage.upload(new TextEncoder().encode("gm"), { dryRun: true });
+```
+
+```bash
+# Or from the CLI
+0g estimate storage ./README.md
+0g storage put ./README.md --dry-run
 ```
 
 ## Packages
 
-| Package                                                                | What it does                                                                                        |
-| ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| [`@foundryprotocol/0gkit-core`](./packages/0gkit-core)                 | Network presets, viem client factory, `Receipt`, `ZeroGError` taxonomy. The shared base.            |
-| [`@foundryprotocol/0gkit-chain`](./packages/0gkit-chain)               | Explorer URLs, balance, `waitForReceipt`, testnet faucet.                                           |
-| [`@foundryprotocol/0gkit-storage`](./packages/0gkit-storage)           | `upload` / `download` / `computeRoot` / `exists`.                                                   |
-| [`@foundryprotocol/0gkit-compute`](./packages/0gkit-compute)           | Provider discovery, broker inference, OpenAI-compatible shim.                                       |
-| [`@foundryprotocol/0gkit-da`](./packages/0gkit-da)                     | Data Availability publish + verify (canonical digest).                                              |
-| [`@foundryprotocol/0gkit-attestation`](./packages/0gkit-attestation)   | TEE attestation parse / sign / recover / verify / report.                                           |
-| [`@foundryprotocol/0gkit-contracts`](./packages/0gkit-contracts)       | Typed contract clients — 5 standard 0G contracts + `forge build` → typed TS codegen.                |
-| [`@foundryprotocol/0gkit-testing`](./packages/0gkit-testing)           | Vitest mocks, fixtures, `testWallet`, `setupLocalDevnet`, four 0G-aware matchers.                   |
-| [`@foundryprotocol/0gkit-indexer`](./packages/0gkit-indexer)           | Reorg-safe event subscriptions on 0G (memory/sqlite/redis cursors).                                 |
-| [`@foundryprotocol/0gkit-wallet`](./packages/0gkit-wallet)             | Node wallet loaders: `fromPrivateKey`, `fromFile`, `fromEnv`, `fromKMS`, SIWE.                      |
-| [`@foundryprotocol/0gkit-wallet-react`](./packages/0gkit-wallet-react) | React + wagmi v2: `ZeroGWalletProvider`, `useWallet`, `useConnect`, `useSwitchNetwork`.             |
-| [`@foundryprotocol/0gkit-cli`](./packages/0gkit-cli)                   | The `0g` command line — `init`, `doctor`, `chain`, `storage`, `infer`, `da`, `attest`, `contracts`. |
-| [`@foundryprotocol/0gkit-mcp`](./packages/0gkit-mcp)                   | Every primitive as an MCP tool for Claude / Cursor / Cline / any agent.                             |
-| [`@foundryprotocol/0gkit-react`](./packages/0gkit-react)               | `useUpload` / `useDownload` / `useInference` / `useAttestation` / `useEvent` / `useLogs`.           |
+| Package                                                                | What it does                                                                                                    |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| [`@foundryprotocol/0gkit-core`](./packages/0gkit-core)                 | Network presets, viem client factory, `Receipt`, `ZeroGError` taxonomy. The shared base.                        |
+| [`@foundryprotocol/0gkit-chain`](./packages/0gkit-chain)               | Explorer URLs, balance, `waitForReceipt`, testnet faucet.                                                       |
+| [`@foundryprotocol/0gkit-storage`](./packages/0gkit-storage)           | `upload` / `download` / `computeRoot` / `exists`.                                                               |
+| [`@foundryprotocol/0gkit-compute`](./packages/0gkit-compute)           | Provider discovery, broker inference, OpenAI-compatible shim.                                                   |
+| [`@foundryprotocol/0gkit-da`](./packages/0gkit-da)                     | Data Availability publish + verify (canonical digest).                                                          |
+| [`@foundryprotocol/0gkit-attestation`](./packages/0gkit-attestation)   | TEE attestation parse / sign / recover / verify / report.                                                       |
+| [`@foundryprotocol/0gkit-contracts`](./packages/0gkit-contracts)       | Typed contract clients — 5 standard 0G contracts + `forge build` → typed TS codegen.                            |
+| [`@foundryprotocol/0gkit-testing`](./packages/0gkit-testing)           | Vitest mocks, fixtures, `testWallet`, `setupLocalDevnet`, four 0G-aware matchers.                               |
+| [`@foundryprotocol/0gkit-indexer`](./packages/0gkit-indexer)           | Reorg-safe event subscriptions on 0G (memory/sqlite/redis cursors).                                             |
+| [`@foundryprotocol/0gkit-wallet`](./packages/0gkit-wallet)             | Node wallet loaders: `fromPrivateKey`, `fromFile`, `fromEnv`, `fromKMS`, SIWE.                                  |
+| [`@foundryprotocol/0gkit-wallet-react`](./packages/0gkit-wallet-react) | React + wagmi v2: `ZeroGWalletProvider`, `useWallet`, `useConnect`, `useSwitchNetwork`.                         |
+| [`@foundryprotocol/0gkit-cli`](./packages/0gkit-cli)                   | The `0g` command line — `init`, `doctor`, `chain`, `storage`, `infer`, `da`, `attest`, `contracts`, `estimate`. |
+| [`@foundryprotocol/0gkit-mcp`](./packages/0gkit-mcp)                   | Every primitive as an MCP tool for Claude / Cursor / Cline / any agent.                                         |
+| [`@foundryprotocol/0gkit-react`](./packages/0gkit-react)               | `useUpload` / `useDownload` / `useInference` / `useAttestation` / `useEvent` / `useLogs`.                       |
 
 ## Documentation
 

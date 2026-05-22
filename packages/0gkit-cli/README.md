@@ -61,6 +61,27 @@ curl (compute is OpenAI-compatible — see `@foundryprotocol/0gkit-compute`):
 0g infer -m "hello" --provider 0xPROVIDER --json | jq -r .output
 ```
 
+## Estimating & dry-run
+
+```bash
+0g estimate storage ./big-file.bin
+0g estimate compute --prompt "What is 2+2?" --max-output 64
+0g estimate da --bytes 4096
+0g estimate contracts --abi ./MyContract.abi.json --address 0x... --method transfer --args '["0x...","1000"]'
+```
+
+Every write command also accepts `--dry-run`:
+
+```bash
+0g storage put ./file --dry-run
+0g da publish ./blob --dry-run
+0g infer -m "ping" --dry-run
+```
+
+`--dry-run` runs all estimation work (gas + fee + simulation) without
+broadcasting a single tx. The output is a structured `DryRunResult` envelope
+under `--json`, or a human `[dry-run]`-prefixed block by default.
+
 ## Environment variables
 
 `ZEROG_NETWORK`, `ZEROG_RPC_URL`, `ZEROG_PRIVATE_KEY`, `ZEROG_BROKER_KEY`,

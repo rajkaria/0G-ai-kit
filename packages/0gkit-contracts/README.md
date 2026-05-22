@@ -114,6 +114,26 @@ All thrown errors are `0gkit-core.ZeroGError` subclasses with a `code` and a one
 - `CONFIG` — wrong/missing args, or a non-pinned contract address. Includes a remedy.
 - `CHAIN` — viem write/read/getLogs failed. Original message preserved.
 
+## Estimating & dry-run
+
+```ts
+const c = createTypedContract({ abi, address, network, signer });
+
+const est = await c.estimate.transfer(recipient, 1_000n);
+// { kind: "contract", gas, fee, breakdown: { method: "transfer", gasPrice }, expectedSeconds: 3 }
+
+const dr = await c.write.transfer([recipient, 1_000n], { dryRun: true });
+// { dryRun: true, estimate, result: { latencyMs: 0 } }
+```
+
+`estimate` uses viem's `estimateContractGas` + `getGasPrice`; `write({ dryRun })`
+also runs `simulateContract` so EVM revert paths surface before any broadcast
+happens. From the CLI:
+
+```bash
+0g estimate contracts --abi ./out/MyContract.json --address 0x... --method transfer --args '["0x...","1000"]'
+```
+
 ## License
 
 MIT

@@ -21,6 +21,21 @@ const { root, tx } = await storage.upload(new Uint8Array([1, 2, 3]));
 const bytes = await storage.download(root);
 ```
 
+## Estimating & dry-run
+
+```ts
+const est = await storage.estimate(data);
+// { kind: "storage", gas, fee, breakdown: { sizeBytes, segments }, expectedSeconds }
+
+const dr = await storage.upload(data, { dryRun: true });
+// { dryRun: true, estimate, result: { root, tx: { latencyMs: 0 }, raw } }
+```
+
+Estimates are heuristics (256 KiB segments, ~80k gas/segment, ~1 gwei
+fee/segment) — exact costs depend on network gas + the SDK's submit calldata.
+Use `0g estimate storage <file>` on the CLI, or `0g storage put <file> --dry-run`
+to validate end-to-end without broadcasting.
+
 ## License
 
 MIT.

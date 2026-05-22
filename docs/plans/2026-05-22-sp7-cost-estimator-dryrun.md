@@ -25,76 +25,76 @@
 
 ### Modify: `packages/0gkit-core/`
 
-| File                                | Responsibility                                                                                                                                   |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `src/estimate.ts`                   | NEW. `Estimate` base interface, `DryRunResult<T>` envelope, `formatEstimate(est)` human-renderer, `formatNative(wei)` for human bigint display.  |
-| `src/index.ts`                      | Re-export `Estimate`, `DryRunResult`, `formatEstimate`, `formatNative`, plus the four per-primitive aliases (`StorageEstimate`, etc.) as types.  |
-| `src/__tests__/estimate.test.ts`    | NEW. Pure-function tests for `formatEstimate` + `formatNative` (zero, sub-gwei, sub-eth, multi-eth boundaries).                                  |
+| File                             | Responsibility                                                                                                                                  |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/estimate.ts`                | NEW. `Estimate` base interface, `DryRunResult<T>` envelope, `formatEstimate(est)` human-renderer, `formatNative(wei)` for human bigint display. |
+| `src/index.ts`                   | Re-export `Estimate`, `DryRunResult`, `formatEstimate`, `formatNative`, plus the four per-primitive aliases (`StorageEstimate`, etc.) as types. |
+| `src/__tests__/estimate.test.ts` | NEW. Pure-function tests for `formatEstimate` + `formatNative` (zero, sub-gwei, sub-eth, multi-eth boundaries).                                 |
 
 ### Modify: `packages/0gkit-storage/`
 
-| File                                       | Responsibility                                                                                                       |
-| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `src/estimate.ts`                          | NEW. `StorageEstimate` type, `SEGMENT_SIZE_BYTES = 256 * 1024`, pure `estimateBytes(bytes)` segment math.            |
-| `src/storage.ts`                           | Add `Storage.estimate(bytes): Promise<StorageEstimate>`; add `{ dryRun?: boolean }` overload to `upload`.            |
-| `src/index.ts`                             | Re-export `StorageEstimate`, `SEGMENT_SIZE_BYTES`.                                                                   |
-| `src/__tests__/estimate.test.ts`           | NEW. Tests: empty, single-segment, multi-segment boundary, large blob, dry-run returns no txHash.                    |
+| File                             | Responsibility                                                                                            |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `src/estimate.ts`                | NEW. `StorageEstimate` type, `SEGMENT_SIZE_BYTES = 256 * 1024`, pure `estimateBytes(bytes)` segment math. |
+| `src/storage.ts`                 | Add `Storage.estimate(bytes): Promise<StorageEstimate>`; add `{ dryRun?: boolean }` overload to `upload`. |
+| `src/index.ts`                   | Re-export `StorageEstimate`, `SEGMENT_SIZE_BYTES`.                                                        |
+| `src/__tests__/estimate.test.ts` | NEW. Tests: empty, single-segment, multi-segment boundary, large blob, dry-run returns no txHash.         |
 
 ### Modify: `packages/0gkit-compute/`
 
-| File                                       | Responsibility                                                                                                       |
-| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `src/estimate.ts`                          | NEW. `ComputeEstimate` type, `countTokens(text)` heuristic (chars/4 rounded up), `DEFAULT_MAX_OUTPUT_TOKENS = 512`.   |
-| `src/compute.ts`                           | Add `Compute.estimate(args): Promise<ComputeEstimate>`; add `{ dryRun?: boolean }` overload to `inference`.          |
-| `src/index.ts`                             | Re-export `ComputeEstimate`, `countTokens`, `DEFAULT_MAX_OUTPUT_TOKENS`.                                             |
-| `src/__tests__/estimate.test.ts`           | NEW. Tests: empty, single message, multi-message, unicode, dry-run skips broker call.                                |
+| File                             | Responsibility                                                                                                      |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `src/estimate.ts`                | NEW. `ComputeEstimate` type, `countTokens(text)` heuristic (chars/4 rounded up), `DEFAULT_MAX_OUTPUT_TOKENS = 512`. |
+| `src/compute.ts`                 | Add `Compute.estimate(args): Promise<ComputeEstimate>`; add `{ dryRun?: boolean }` overload to `inference`.         |
+| `src/index.ts`                   | Re-export `ComputeEstimate`, `countTokens`, `DEFAULT_MAX_OUTPUT_TOKENS`.                                            |
+| `src/__tests__/estimate.test.ts` | NEW. Tests: empty, single message, multi-message, unicode, dry-run skips broker call.                               |
 
 ### Modify: `packages/0gkit-da/`
 
-| File                                       | Responsibility                                                                                                       |
-| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `src/estimate.ts`                          | NEW. `DAEstimate` type, `DEFAULT_DA_RATE_WEI_PER_BYTE = 1_000_000n` (placeholder; documented), `estimateBytes(bytes, ratePerByte?)`. |
-| `src/da.ts`                                | Add `DA.estimate(bytes): Promise<DAEstimate>`; add `{ dryRun?: boolean }` overload to `publish`.                     |
-| `src/index.ts`                             | Re-export `DAEstimate`, `DEFAULT_DA_RATE_WEI_PER_BYTE`.                                                              |
-| `src/__tests__/estimate.test.ts`           | NEW. Tests: byte count, KB conversion, local-mode = zero fee, dry-run skips encoder call.                            |
+| File                             | Responsibility                                                                                                                       |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/estimate.ts`                | NEW. `DAEstimate` type, `DEFAULT_DA_RATE_WEI_PER_BYTE = 1_000_000n` (placeholder; documented), `estimateBytes(bytes, ratePerByte?)`. |
+| `src/da.ts`                      | Add `DA.estimate(bytes): Promise<DAEstimate>`; add `{ dryRun?: boolean }` overload to `publish`.                                     |
+| `src/index.ts`                   | Re-export `DAEstimate`, `DEFAULT_DA_RATE_WEI_PER_BYTE`.                                                                              |
+| `src/__tests__/estimate.test.ts` | NEW. Tests: byte count, KB conversion, local-mode = zero fee, dry-run skips encoder call.                                            |
 
 ### Modify: `packages/0gkit-contracts/`
 
-| File                                       | Responsibility                                                                                                       |
-| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `src/estimate.ts`                          | NEW. `ContractEstimate` type, pure `weiToFee(gas, gasPrice)` helper.                                                 |
-| `src/factory.ts`                           | Add `estimate.<method>(...args)` namespace to `TypedContract`; add `{ dryRun?: boolean }` to `write.<method>` calls. |
-| `src/types.ts`                             | Add `WriteOptions` and a `DryRunWriteResult` union; update `TypedContract<TAbi>` interface.                          |
-| `src/index.ts`                             | Re-export `ContractEstimate`, `WriteOptions`.                                                                        |
-| `src/__tests__/estimate.test.ts`           | NEW. Tests: estimate returns gas+fee from mocked publicClient; dry-run uses simulateContract; missing wallet path.   |
+| File                             | Responsibility                                                                                                       |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `src/estimate.ts`                | NEW. `ContractEstimate` type, pure `weiToFee(gas, gasPrice)` helper.                                                 |
+| `src/factory.ts`                 | Add `estimate.<method>(...args)` namespace to `TypedContract`; add `{ dryRun?: boolean }` to `write.<method>` calls. |
+| `src/types.ts`                   | Add `WriteOptions` and a `DryRunWriteResult` union; update `TypedContract<TAbi>` interface.                          |
+| `src/index.ts`                   | Re-export `ContractEstimate`, `WriteOptions`.                                                                        |
+| `src/__tests__/estimate.test.ts` | NEW. Tests: estimate returns gas+fee from mocked publicClient; dry-run uses simulateContract; missing wallet path.   |
 
 ### Modify: `packages/0gkit-cli/`
 
-| File                                       | Responsibility                                                                                                       |
-| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `src/commands/estimate.ts`                 | NEW. Registers `0g estimate storage|compute|da|contracts` subcommands; renders human + JSON via `formatEstimate`.    |
-| `src/commands/storage.ts`                  | Add `--dry-run` flag to `0g storage put`; print dry-run result without broadcasting.                                 |
-| `src/commands/da.ts`                       | Add `--dry-run` flag to `0g da publish`.                                                                             |
-| `src/commands/infer.ts`                    | Add `--dry-run` flag to `0g infer`.                                                                                  |
-| `src/program.ts`                           | Register `registerEstimate(program, deps)`.                                                                          |
-| `src/__tests__/estimate.test.ts`           | NEW. Snapshot tests for `0g estimate storage|compute|da|contracts` human + `--json` output.                          |
-| `src/__tests__/storage.test.ts`            | Add `--dry-run` snapshot test for `0g storage put`.                                                                  |
-| `src/__tests__/da.test.ts`                 | Add `--dry-run` snapshot test for `0g da publish`.                                                                   |
-| `src/__tests__/infer.test.ts`              | Add `--dry-run` snapshot test for `0g infer`.                                                                        |
+| File                             | Responsibility                                                                       |
+| -------------------------------- | ------------------------------------------------------------------------------------ | ------- | --- | ---------------------------------------------------------------- |
+| `src/commands/estimate.ts`       | NEW. Registers `0g estimate storage                                                  | compute | da  | contracts`subcommands; renders human + JSON via`formatEstimate`. |
+| `src/commands/storage.ts`        | Add `--dry-run` flag to `0g storage put`; print dry-run result without broadcasting. |
+| `src/commands/da.ts`             | Add `--dry-run` flag to `0g da publish`.                                             |
+| `src/commands/infer.ts`          | Add `--dry-run` flag to `0g infer`.                                                  |
+| `src/program.ts`                 | Register `registerEstimate(program, deps)`.                                          |
+| `src/__tests__/estimate.test.ts` | NEW. Snapshot tests for `0g estimate storage                                         | compute | da  | contracts`human +`--json` output.                                |
+| `src/__tests__/storage.test.ts`  | Add `--dry-run` snapshot test for `0g storage put`.                                  |
+| `src/__tests__/da.test.ts`       | Add `--dry-run` snapshot test for `0g da publish`.                                   |
+| `src/__tests__/infer.test.ts`    | Add `--dry-run` snapshot test for `0g infer`.                                        |
 
 ### Root-level changes
 
-| File                                          | Responsibility                                                                                              |
-| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| File                                          | Responsibility                                                                                                |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | `.changeset/sp7-cost-estimator-dryrun.md`     | `minor` bumps for `0gkit-core`, `0gkit-storage`, `0gkit-compute`, `0gkit-da`, `0gkit-contracts`, `0gkit-cli`. |
-| `README.md`                                   | Add `0g estimate` row to the CLI feature table; mention `.estimate()` + `dryRun: true` in the API blurb.    |
-| `docs/DECISIONS.md`                           | Append **D21** (token-count heuristic), **D22** (storage segment math), **D23** (dryRun envelope shape).    |
-| `docs/specs/2026-05-20-essentials-roadmap.md` | Flip SP7 status row to ✅ (shipped) at end of plan.                                                          |
-| `packages/0gkit-storage/README.md`            | Append "Estimating & dry-run" section.                                                                       |
-| `packages/0gkit-compute/README.md`            | Append "Estimating & dry-run" section.                                                                       |
-| `packages/0gkit-da/README.md`                 | Append "Estimating & dry-run" section.                                                                       |
-| `packages/0gkit-contracts/README.md`          | Append "Estimating & dry-run" section.                                                                       |
-| `packages/0gkit-cli/README.md`                | Append `0g estimate` section.                                                                                |
+| `README.md`                                   | Add `0g estimate` row to the CLI feature table; mention `.estimate()` + `dryRun: true` in the API blurb.      |
+| `docs/DECISIONS.md`                           | Append **D21** (token-count heuristic), **D22** (storage segment math), **D23** (dryRun envelope shape).      |
+| `docs/specs/2026-05-20-essentials-roadmap.md` | Flip SP7 status row to ✅ (shipped) at end of plan.                                                           |
+| `packages/0gkit-storage/README.md`            | Append "Estimating & dry-run" section.                                                                        |
+| `packages/0gkit-compute/README.md`            | Append "Estimating & dry-run" section.                                                                        |
+| `packages/0gkit-da/README.md`                 | Append "Estimating & dry-run" section.                                                                        |
+| `packages/0gkit-contracts/README.md`          | Append "Estimating & dry-run" section.                                                                        |
+| `packages/0gkit-cli/README.md`                | Append `0g estimate` section.                                                                                 |
 
 ---
 
@@ -428,15 +428,13 @@ export function estimateBytes(sizeBytes: number): StorageEstimateBreakdown {
   if (sizeBytes < 0) {
     throw new Error("sizeBytes must be ≥ 0");
   }
-  const segments =
-    sizeBytes === 0 ? 0 : Math.ceil(sizeBytes / SEGMENT_SIZE_BYTES);
+  const segments = sizeBytes === 0 ? 0 : Math.ceil(sizeBytes / SEGMENT_SIZE_BYTES);
   return { sizeBytes, segments };
 }
 
 export function makeStorageEstimate(sizeBytes: number): StorageEstimate {
   const breakdown = estimateBytes(sizeBytes);
-  const gas =
-    GAS_BASE + BigInt(breakdown.segments) * GAS_PER_SEGMENT;
+  const gas = GAS_BASE + BigInt(breakdown.segments) * GAS_PER_SEGMENT;
   const fee = BigInt(breakdown.segments) * FEE_PER_SEGMENT_WEI;
   return {
     kind: "storage",
@@ -563,10 +561,7 @@ git commit -m "feat(storage): add Storage.estimate + upload({ dryRun }) for SP7"
 // packages/0gkit-compute/src/__tests__/estimate.test.ts
 import { describe, it, expect } from "vitest";
 import { Compute } from "../compute.js";
-import {
-  countTokens,
-  DEFAULT_MAX_OUTPUT_TOKENS,
-} from "../estimate.js";
+import { countTokens, DEFAULT_MAX_OUTPUT_TOKENS } from "../estimate.js";
 
 describe("countTokens (heuristic)", () => {
   it("empty string → 0 tokens", () => {
@@ -709,10 +704,7 @@ export function makeComputeEstimate(args: {
   maxOutputTokens?: number;
   feeWeiPerToken?: bigint;
 }): ComputeEstimate {
-  const inputTokens = args.messages.reduce(
-    (acc, m) => acc + countTokens(m.content),
-    0
-  );
+  const inputTokens = args.messages.reduce((acc, m) => acc + countTokens(m.content), 0);
   const outputTokensMax = args.maxOutputTokens ?? DEFAULT_MAX_OUTPUT_TOKENS;
   const rate = args.feeWeiPerToken ?? DEFAULT_FEE_WEI_PER_TOKEN;
   const fee = BigInt(inputTokens + outputTokensMax) * rate;
@@ -735,10 +727,7 @@ export function makeComputeEstimate(args: {
 In `packages/0gkit-compute/src/compute.ts`, add the import:
 
 ```ts
-import {
-  makeComputeEstimate,
-  type ComputeEstimate,
-} from "./estimate.js";
+import { makeComputeEstimate, type ComputeEstimate } from "./estimate.js";
 import type { DryRunResult } from "@foundryprotocol/0gkit-core";
 ```
 
@@ -843,10 +832,7 @@ git commit -m "feat(compute): add Compute.estimate + inference({ dryRun }) for S
 // packages/0gkit-da/src/__tests__/estimate.test.ts
 import { describe, it, expect } from "vitest";
 import { DA } from "../da.js";
-import {
-  estimateBytes,
-  DEFAULT_DA_RATE_WEI_PER_BYTE,
-} from "../estimate.js";
+import { estimateBytes, DEFAULT_DA_RATE_WEI_PER_BYTE } from "../estimate.js";
 
 describe("estimateBytes (pure)", () => {
   it("0 bytes → fee 0", () => {
@@ -1087,10 +1073,7 @@ describe("typedContract.estimate.<method>", () => {
       network: "galileo",
       publicClient: pub,
     });
-    const e = await c.estimate.transfer(
-      "0x" + "22".repeat(20),
-      1_000n
-    );
+    const e = await c.estimate.transfer("0x" + "22".repeat(20), 1_000n);
     expect(e.kind).toBe("contract");
     expect(e.gas).toBe(50_000n);
     expect(e.fee).toBe(50_000n * 2_000_000_000n);
@@ -1116,10 +1099,7 @@ describe("typedContract.write.<method>({ dryRun: true })", () => {
         source: "private-key",
       },
     });
-    const res = await c.write.transfer(
-      ["0x" + "22".repeat(20), 1n],
-      { dryRun: true }
-    );
+    const res = await c.write.transfer(["0x" + "22".repeat(20), 1n], { dryRun: true });
     expect(res.dryRun).toBe(true);
     expect(res.estimate.gas).toBe(60_000n);
     expect(res.result.txHash).toBeUndefined();
@@ -1208,10 +1188,7 @@ export interface TypedContract<TAbi extends Abi> {
 After the `events` namespace construction, build `estimate`:
 
 ```ts
-const estimate: Record<
-  string,
-  (...args: unknown[]) => Promise<ContractEstimate>
-> = {};
+const estimate: Record<string, (...args: unknown[]) => Promise<ContractEstimate>> = {};
 for (const name of writeMethods) {
   estimate[name] = async (...args: unknown[]): Promise<ContractEstimate> => {
     try {
@@ -1236,7 +1213,9 @@ Replace the `write[name]` wrapper with one that accepts `WriteOptions`:
 
 ```ts
 for (const name of writeMethods) {
-  write[name] = async (...input: unknown[]): Promise<Receipt | DryRunResult<Receipt>> => {
+  write[name] = async (
+    ...input: unknown[]
+  ): Promise<Receipt | DryRunResult<Receipt>> => {
     // Detect the WriteOptions trailing arg.
     let callArgs = input;
     let writeOpts: WriteOptions | undefined;
@@ -1245,17 +1224,21 @@ for (const name of writeMethods) {
       last !== null &&
       typeof last === "object" &&
       !Array.isArray(last) &&
-      ("dryRun" in (last as object))
+      "dryRun" in (last as object)
     ) {
       writeOpts = last as WriteOptions;
       callArgs = input.slice(0, -1);
     }
     // viem typed contracts take a single positional `args` array on write.
-    const positional = Array.isArray(callArgs[0]) ? callArgs[0] as unknown[] : callArgs;
+    const positional = Array.isArray(callArgs[0])
+      ? (callArgs[0] as unknown[])
+      : callArgs;
 
     if (writeOpts?.dryRun) {
       try {
-        const account = walletClient?.account?.address ?? "0x0000000000000000000000000000000000000000";
+        const account =
+          walletClient?.account?.address ??
+          "0x0000000000000000000000000000000000000000";
         const gas = await publicClient.estimateContractGas({
           address: opts.address,
           abi: opts.abi,
@@ -1406,10 +1389,9 @@ describe("0g estimate storage", () => {
     const deps = makeDeps();
     const lines = (deps as ProgramDeps & { __lines: string[] }).__lines;
     const prog = buildProgram(deps);
-    await prog.parseAsync(
-      ["0g", "estimate", "storage", "./demo.bin", "--json"],
-      { from: "user" }
-    );
+    await prog.parseAsync(["0g", "estimate", "storage", "./demo.bin", "--json"], {
+      from: "user",
+    });
     const payload = JSON.parse(lines.join("\n"));
     expect(payload.ok).toBe(true);
     expect(payload.data.kind).toBe("storage");
@@ -1420,10 +1402,9 @@ describe("0g estimate storage", () => {
     const deps = makeDeps();
     const lines = (deps as ProgramDeps & { __lines: string[] }).__lines;
     const prog = buildProgram(deps);
-    await prog.parseAsync(
-      ["0g", "estimate", "storage", "./demo.bin"],
-      { from: "user" }
-    );
+    await prog.parseAsync(["0g", "estimate", "storage", "./demo.bin"], {
+      from: "user",
+    });
     const blob = lines.join("\n");
     expect(blob).toContain("kind        storage");
     expect(blob).toContain("gas         ");
@@ -1535,7 +1516,9 @@ describe("0g estimate compute", () => {
     const lines = (deps as ProgramDeps & { __lines: string[] }).__lines;
     // Override makeCompute to construct without broker — estimate is offline-only.
     deps.makeCompute = ((cfg) =>
-      new (require("@foundryprotocol/0gkit-compute").Compute)(cfg)) as ProgramDeps["makeCompute"];
+      new (require("@foundryprotocol/0gkit-compute").Compute)(
+        cfg
+      )) as ProgramDeps["makeCompute"];
     const prog = buildProgram(deps);
     await prog.parseAsync(
       [
@@ -1560,10 +1543,7 @@ describe("0g estimate compute", () => {
     const deps = makeDeps();
     const lines = (deps as ProgramDeps & { __lines: string[] }).__lines;
     const prog = buildProgram(deps);
-    await prog.parseAsync(
-      ["0g", "estimate", "compute", "--json"],
-      { from: "user" }
-    );
+    await prog.parseAsync(["0g", "estimate", "compute", "--json"], { from: "user" });
     const payload = JSON.parse(lines.join("\n"));
     expect(payload.ok).toBe(false);
     expect(payload.error.code).toBe("CONFIG");
@@ -1625,6 +1605,7 @@ estimate
 ```bash
 cd packages/0gkit-cli && pnpm test estimate
 ```
+
 Expected: PASS.
 
 ```bash
@@ -1649,10 +1630,9 @@ describe("0g estimate da", () => {
     const deps = makeDeps();
     const lines = (deps as ProgramDeps & { __lines: string[] }).__lines;
     const prog = buildProgram(deps);
-    await prog.parseAsync(
-      ["0g", "estimate", "da", "--bytes", "1024", "--json"],
-      { from: "user" }
-    );
+    await prog.parseAsync(["0g", "estimate", "da", "--bytes", "1024", "--json"], {
+      from: "user",
+    });
     const payload = JSON.parse(lines.join("\n"));
     expect(payload.ok).toBe(true);
     expect(payload.data.kind).toBe("da");
@@ -1664,10 +1644,9 @@ describe("0g estimate da", () => {
     const lines = (deps as ProgramDeps & { __lines: string[] }).__lines;
     deps.fs.readFile = async () => new Uint8Array(2048);
     const prog = buildProgram(deps);
-    await prog.parseAsync(
-      ["0g", "estimate", "da", "./blob.bin", "--json"],
-      { from: "user" }
-    );
+    await prog.parseAsync(["0g", "estimate", "da", "./blob.bin", "--json"], {
+      from: "user",
+    });
     const payload = JSON.parse(lines.join("\n"));
     expect(payload.ok).toBe(true);
     expect(payload.data.breakdown.sizeBytes).toBe(2048);
@@ -1719,6 +1698,7 @@ estimate
 ```bash
 cd packages/0gkit-cli && pnpm test estimate
 ```
+
 Expected: PASS.
 
 ```bash
@@ -1793,9 +1773,9 @@ In `packages/0gkit-cli/src/program.ts`, extend the `contracts` field:
 
 ```ts
 contracts: {
-  generate: /* unchanged */;
-  listStandard: /* unchanged */;
-  getStandard: /* unchanged */;
+  generate: /* unchanged */ ;
+  listStandard: /* unchanged */ ;
+  getStandard: /* unchanged */ ;
   estimate: (opts: {
     abiPath: string;
     address: `0x${string}`;
@@ -1804,7 +1784,7 @@ contracts: {
     network: string;
     rpcUrl?: string;
   }) => Promise<import("@foundryprotocol/0gkit-core").Estimate>;
-};
+}
 ```
 
 And in the default `ProgramDeps` constructor (wherever the real `contracts` object is built — likely in `cli.ts`), add a real implementation:
@@ -1924,7 +1904,9 @@ In `packages/0gkit-cli/src/__tests__/storage.test.ts`, append:
 ```ts
 describe("0g storage put --dry-run", () => {
   it("does not broadcast and prints estimate", async () => {
-    const deps = makeDefaultDeps({ /* same shape as estimate.test.ts */ });
+    const deps = makeDefaultDeps({
+      /* same shape as estimate.test.ts */
+    });
     const prog = buildProgram(deps);
     await prog.parseAsync(
       ["0g", "storage", "put", "./demo.bin", "--dry-run", "--json"],
@@ -2019,6 +2001,7 @@ if (opts.dryRun) {
 ```bash
 cd packages/0gkit-cli && pnpm test
 ```
+
 Expected: all green.
 
 ```bash
@@ -2035,15 +2018,18 @@ git commit -m "feat(cli): add --dry-run to 0g storage put / da publish / infer f
 - [ ] **Step 1: Run full monorepo lint + typecheck + test**
 
 Run:
+
 ```bash
 cd /Users/rajkaria/Projects/0G-ai-kit
 pnpm format:check && pnpm boundary:check && pnpm typecheck && pnpm build && pnpm test
 ```
+
 Expected: all pass. Total test count should be ≥ previous baseline + ~30 (the new tests across 6 packages).
 
 - [ ] **Step 2: Verify per-package coverage gates**
 
 Run:
+
 ```bash
 cd packages/0gkit-core && pnpm coverage 2>&1 | grep -E "All files|Lines|Branch"
 cd ../0gkit-storage && pnpm coverage 2>&1 | grep -E "All files|Lines|Branch"
@@ -2052,6 +2038,7 @@ cd ../0gkit-da && pnpm coverage 2>&1 | grep -E "All files|Lines|Branch"
 cd ../0gkit-contracts && pnpm coverage 2>&1 | grep -E "All files|Lines|Branch"
 cd ../0gkit-cli && pnpm coverage 2>&1 | grep -E "All files|Lines|Branch"
 ```
+
 Expected: every package ≥ 80% lines / 70% branches.
 
 - [ ] **Step 3: If any gate fails**, add additional tests targeting the uncovered branches (most likely: error paths in the dry-run branches, and the wrap of `ConfigError` in the contracts dry-run). Commit fixes individually.
@@ -2109,7 +2096,7 @@ EOF
 
 In `docs/DECISIONS.md`, append:
 
-```md
+````md
 ## D21 — Compute token-count heuristic: `chars / 4` (ceil)
 
 OpenAI's documented English approximation: 1 token ≈ 4 characters. We adopt
@@ -2133,11 +2120,13 @@ Every write path that accepts `{ dryRun: true }` returns:
 ```ts
 { dryRun: true, estimate: Estimate, result: T }
 ```
+````
 
 — where `T` is the existing success shape with `txHash`/`blockNumber` left
 undefined. This keeps callers' type narrowing simple (`if (res.dryRun) {...}`)
 and means dry-run code paths share the same Receipt-handling logic as live ones.
-```
+
+`````
 
 - [ ] **Step 3: Append the package README sections**
 
@@ -2152,12 +2141,13 @@ const est = await storage.estimate(data);
 
 const dr = await storage.upload(data, { dryRun: true });
 // { dryRun: true, estimate, result: { root, tx: { latencyMs: 0 }, raw } }
-```
+`````
 
 Estimates are heuristics (256 KiB segments, ~80k gas/segment, ~1 gwei fee/segment) —
 exact costs depend on network gas + the SDK's submit calldata. Use `0g estimate storage <file>`
 on the CLI for the same answer in your terminal.
-````
+
+`````
 
 Mirror for compute / da / contracts with their respective signatures and one-line caveats.
 
@@ -2184,7 +2174,7 @@ Every write command also takes `--dry-run`:
 ```
 
 `--dry-run` runs all the estimation work without broadcasting a single tx.
-````
+`````
 
 - [ ] **Step 5: Flip the roadmap row**
 
@@ -2208,6 +2198,7 @@ cd /Users/rajkaria/Projects/0G-ai-kit && pnpm format
 ```bash
 pnpm format:check && pnpm boundary:check && pnpm typecheck && pnpm build && pnpm test
 ```
+
 Expected: all pass.
 
 - [ ] **Step 9: Commit all docs changes**
@@ -2268,22 +2259,22 @@ gh pr merge --squash --delete-branch
 
 **Spec coverage** (against §SP7 of the roadmap):
 
-| Requirement                                                       | Task     |
-| ----------------------------------------------------------------- | -------- |
-| `storage.estimate(bytes) → { sizeBytes, segments, gas, fee, … }`  | Task 2   |
-| `compute.estimate({ prompt, model }) → { inputTokens, outputTokensMax, fee }` | Task 3   |
-| `da.estimate(bytes)`                                              | Task 4   |
-| attestation registration `.estimate()`                            | N/A — attestations are pure local crypto today (no on-chain register call yet); when one lands it'll mirror contract.estimate. Noted in PR body. |
-| `storage.upload(bytes, { dryRun: true })`                         | Task 2   |
-| every write path accepts `{ dryRun: true }`                       | Tasks 2/3/4/5 |
-| `0g estimate storage ./file`                                      | Task 6   |
-| `0g estimate compute --prompt --model`                            | Task 7   |
-| `0g estimate da --bytes`                                          | Task 8   |
-| `0g estimate contracts --abi --address --method --args`           | Task 9   |
-| `0g dry-run` (per-command --dry-run on existing writes)           | Task 10  |
-| Snapshot stability of `0g estimate` output                        | Tasks 6/7/8/9 (snapshot tests via expect.toMatchSnapshot is fine, but the structured shape assertions we wrote are stronger than snapshots) |
-| Coverage gates                                                    | Task 11  |
-| Changeset, DECISIONS, roadmap flip                                | Task 12  |
+| Requirement                                                                   | Task                                                                                                                                             |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `storage.estimate(bytes) → { sizeBytes, segments, gas, fee, … }`              | Task 2                                                                                                                                           |
+| `compute.estimate({ prompt, model }) → { inputTokens, outputTokensMax, fee }` | Task 3                                                                                                                                           |
+| `da.estimate(bytes)`                                                          | Task 4                                                                                                                                           |
+| attestation registration `.estimate()`                                        | N/A — attestations are pure local crypto today (no on-chain register call yet); when one lands it'll mirror contract.estimate. Noted in PR body. |
+| `storage.upload(bytes, { dryRun: true })`                                     | Task 2                                                                                                                                           |
+| every write path accepts `{ dryRun: true }`                                   | Tasks 2/3/4/5                                                                                                                                    |
+| `0g estimate storage ./file`                                                  | Task 6                                                                                                                                           |
+| `0g estimate compute --prompt --model`                                        | Task 7                                                                                                                                           |
+| `0g estimate da --bytes`                                                      | Task 8                                                                                                                                           |
+| `0g estimate contracts --abi --address --method --args`                       | Task 9                                                                                                                                           |
+| `0g dry-run` (per-command --dry-run on existing writes)                       | Task 10                                                                                                                                          |
+| Snapshot stability of `0g estimate` output                                    | Tasks 6/7/8/9 (snapshot tests via expect.toMatchSnapshot is fine, but the structured shape assertions we wrote are stronger than snapshots)      |
+| Coverage gates                                                                | Task 11                                                                                                                                          |
+| Changeset, DECISIONS, roadmap flip                                            | Task 12                                                                                                                                          |
 
 **Placeholder scan:** none — every step contains the actual code or command.
 

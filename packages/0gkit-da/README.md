@@ -22,6 +22,22 @@ const ok = da.verify({ hello: "world" }, digest);
 `verify(payload, expectedDigest)` is a local integrity check (no network). See
 the repo's `docs/superpowers/DECISIONS.md` (D3) for the DA verify scope.
 
+## Estimating & dry-run
+
+```ts
+const est = await da.estimate(payload);
+// { kind: "da", gas: 0n, fee, breakdown: { sizeBytes, mode } }
+
+const dr = await da.publish(payload, { dryRun: true });
+// { dryRun: true, estimate, result: { digest, mode, latencyMs: 0 } }
+```
+
+Local mode (no `encoderUrl`) always returns `fee: 0n`. Live mode uses
+`DEFAULT_DA_RATE_WEI_PER_BYTE` (`1e6 wei/byte`, ~1 nano-0G/byte) as a
+placeholder until 0G publishes a programmatic pricing feed. Use
+`0g estimate da <file>` or `0g estimate da --bytes <n>` on the CLI;
+`0g da publish <file> --dry-run` validates without broadcasting.
+
 ## License
 
 MIT.

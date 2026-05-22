@@ -1,0 +1,84 @@
+---
+title: Vercel OTel — instrument0g wire-up
+---
+
+# Vercel OTel
+
+Vercel ships an OpenTelemetry collector on every function deployment. If your
+app is Next.js on Vercel, your function spans already flow into the platform
+Observability tab; with `instrument0g`, your 0G primitive calls show up
+there too — under the same trace ID as the request that triggered them.
+
+## Wire-up — attach mode (recommended)
+
+Vercel's runtime registers the OTel SDK for you when `@vercel/otel` is
+loaded, so `instrument0g` only needs to patch the primitives:
+
+```ts
+// next.config.js — keep this; @vercel/otel reads it.
+module.exports = {
+  experimental: { instrumentationHook: true },
+};
+```
+
+```ts
+// instrumentation.ts (Next.js convention)
+import { registerOTel } from "@vercel/otel";
+import { instrument0g } from "@foundryprotocol/0gkit-observability";
+
+export async function register() {
+  registerOTel({ serviceName: "my-0g-app" });
+  await instrument0g({ mode: "attach" });
+}
+```
+
+That's it. Next.js calls `register()` on cold start, before any request
+handler runs.
+
+## Wire-up — direct OTLP
+
+If you're outside Next.js (Edge functions, custom serverless) you can hit the
+Vercel OTel ingest endpoint directly:
+
+```ts
+import { instrument0g } from "@foundryprotocol/0gkit-observability";
+
+await instrument0g({
+  serviceName: "my-0g-app",
+  exporter: {
+    kind: "otlp",
+    endpoint: "https://api.vercel.com/v1/otel/v1/traces",
+    headers: { authorization: `Bearer ${process.env.VERCEL_OTEL_TOKEN!}` },
+  },
+});
+```
+
+## Auth
+
+`@vercel/otel` reads the project's deployment token automatically — no env
+vars to set for the attach-mode path. For direct OTLP, generate a token in
+the Vercel dashboard (Project → Settings → Tokens) and pass via
+`VERCEL_OTEL_TOKEN`.
+
+## Where the traces land
+
+Vercel's Observability tab (Project → Logs → Observability) shows traces
+grouped by request. Each request expands into:
+
+1. The Vercel-emitted request span (`GET /api/...`, with status + duration).
+2. Any spans you emit yourself.
+3. The `0gkit.<op>` spans for every primitive call, with the full
+   `0gkit.*` attribute set.
+
+The trace ID is consistent across all three, so jumping from "slow request"
+to "which 0G call was the bottleneck" is one click.
+
+## Fluid Compute / `waitUntil` interactions
+
+Vercel's Fluid Compute runtime gives you 25 seconds of `beforeExit` grace
+after the response. If you're using
+[`@foundryprotocol/0gkit-jobs`](/packages/jobs) inside the same function, the
+job runner's `stop({ drain: true, timeoutMs: 25_000 })` and instrument0g's
+spans coexist cleanly — handler spans for in-flight jobs finish before the
+SDK shuts down. No special wiring needed; both packages target the same
+shutdown semantics.

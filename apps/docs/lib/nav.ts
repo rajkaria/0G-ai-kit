@@ -42,6 +42,10 @@ export const NAV: NavSection[] = [
       },
       { title: "@foundryprotocol/0gkit-cli", href: "/packages/cli" },
       { title: "@foundryprotocol/0gkit-jobs", href: "/packages/jobs" },
+      {
+        title: "@foundryprotocol/0gkit-observability",
+        href: "/packages/0gkit-observability",
+      },
       { title: "@foundryprotocol/0gkit-mcp", href: "/packages/mcp" },
       { title: "@foundryprotocol/0gkit-react", href: "/packages/react" },
     ],
@@ -53,6 +57,7 @@ export const NAV: NavSection[] = [
       { title: "MCP guide", href: "/mcp" },
       { title: "React guide", href: "/react" },
       { title: "Durable jobs", href: "/concepts/durable-jobs" },
+      { title: "Observability", href: "/concepts/observability" },
       { title: "Templates", href: "/templates" },
       { title: "Error codes", href: "/errors" },
       { title: "Troubleshooting & FAQ", href: "/troubleshooting" },

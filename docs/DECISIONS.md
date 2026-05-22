@@ -453,3 +453,78 @@ write side-effects.
 **Why:** Every durable job runner that's honest about its delivery semantics
 lands here (Sidekiq, BullMQ, Temporal in some modes, AWS SQS). The honesty
 matters: silent at-most-once is the failure mode that wakes engineers up.
+
+---
+
+## D32 — Observability via prototype patching, not module rewriting
+
+**Date:** 2026-05-22 · **SP:** SP11
+
+`instrument0g()` mutates `Storage.prototype.upload` etc. directly at call
+time. Because ES modules export live bindings, this takes effect for every
+caller that already imported the class. This avoids the alternative — a
+`tracedStorage(s)` wrapper users would have to remember to call everywhere —
+and matches the OTel auto-instrumentation contract that "one call wires
+everything."
+
+Tests use `mode: "attach"` + an explicit `targets` injection so the
+synchronous path is exercised without dynamic imports.
+
+**Attestation is intentionally excluded from `defaultTargets()`.**
+`@foundryprotocol/0gkit-attestation` ships free functions (`verifyEnvelope`,
+`signEnvelope`, …) — not a class with a prototype to patch. Module-export
+monkey-patching is fragile under ESM live bindings (consumers may have
+already captured a reference to the function), so we don't auto-wrap it. If
+a future `AttestationClient` class ships, callers can pass it via
+`instrument0g({ targets: { attestation: { class, methods } } })` with no
+code changes needed in `0gkit-observability` (the `ATTESTATION_MAPPERS` map
+is already there).
+
+**Why:** "One call wires everything" beats "two-API split where one half is
+silently optional." The cost is a small dynamic import on the auto path,
+which we already eat to keep the boundary check clean.
+
+---
+
+## D33 — Span attribute namespace is `0gkit.*`, frozen const in `ATTR`
+
+**Date:** 2026-05-22 · **SP:** SP11
+
+All attribute keys live in a single `ATTR` constant in `attributes.ts`. The
+canonical names: `0gkit.network`, `0gkit.op`, `0gkit.size_bytes`,
+`0gkit.segments`, `0gkit.gas_native`, `0gkit.fee_native`,
+`0gkit.confirm_seconds`, `0gkit.root`, `0gkit.tx_hash`, `0gkit.block_number`,
+`0gkit.model`, `0gkit.input_tokens`, `0gkit.output_tokens`,
+`0gkit.error_code`, `0gkit.dry_run`. Standard OTel `http.*` / `rpc.*`
+attributes are layered on top by user instrumentation — we don't duplicate
+them.
+
+The `0gkit.*` prefix follows OTel's vendor namespace convention so
+collectors and cost calculators can filter on the prefix with a single
+predicate. The `ATTR` const is `Object.freeze`'d so consumers can rely on
+the key set never silently widening at runtime.
+
+**Why:** A single source of truth prevents the typical "we typed
+`0gkit.fee` here and `0gkit.fee_wei` over there" drift that ruins
+collector dashboards six months later.
+
+---
+
+## D34 — Bundle budget 20 KB gzipped for the public entry
+
+**Date:** 2026-05-22 · **SP:** SP11
+
+Asserted by `bundle-size.test.ts` via esbuild + gzip. `@opentelemetry/api`
+is externalised (it's a peer; users provide it). The SDK and exporter peers
+(`@opentelemetry/sdk-node`, `@opentelemetry/exporter-trace-otlp-http`) are
+optional and lazy-imported — they never reach the bundle unless the caller
+explicitly chooses the auto-SDK path AND emits at least one span.
+
+Measured today: **~2.2 KB gzipped** (well under the 20 KB ceiling). The
+budget protects the "free observability" promise — we never want users to
+weigh a toolkit decision on observability bundle cost.
+
+**Why:** A budget that the test asserts is the only kind of budget that
+holds. Once someone slips in a static dep that drags 50 KB of transitive
+JSON-Schema validation in, gzip jumps and the test fails red — exactly the
+moment we'd want to know.

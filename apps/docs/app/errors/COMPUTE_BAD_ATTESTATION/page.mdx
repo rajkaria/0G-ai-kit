@@ -1,0 +1,30 @@
+---
+title: COMPUTE_BAD_ATTESTATION
+description: TEE attestation verification failed
+namespace: COMPUTE
+---
+
+# COMPUTE_BAD_ATTESTATION
+
+**TEE attestation verification failed**
+
+## What happened
+
+The provider's inference completed but the attached TEE attestation didn't verify — signer mismatch, expired quote, or tampered envelope.
+
+## How to fix
+
+Re-run the inference call; if the failure repeats, the provider's TEE may be misconfigured. Open an issue with the provider ID + attestation envelope for inspection.
+
+## Example
+
+```ts
+import { Compute } from "@foundryprotocol/0gkit-compute";
+const { output, raw } = await compute.inference({ messages });
+```
+
+## Reference
+
+- Namespace: `COMPUTE`
+- Help URL: `https://0gkit.dev/errors/COMPUTE_BAD_ATTESTATION`
+- See also: [all error codes](/errors)

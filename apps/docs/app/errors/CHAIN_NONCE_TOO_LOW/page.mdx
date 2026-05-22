@@ -1,0 +1,30 @@
+---
+title: CHAIN_NONCE_TOO_LOW
+description: Nonce already used
+namespace: CHAIN
+---
+
+# CHAIN_NONCE_TOO_LOW
+
+**Nonce already used**
+
+## What happened
+
+The nonce on the outgoing transaction is lower than the account's on-chain nonce. Usually means a previous tx with the same nonce already confirmed.
+
+## How to fix
+
+Refetch the nonce via `eth_getTransactionCount` and retry. Most wallets do this automatically; if you're managing nonces yourself, sync after every send.
+
+## Example
+
+```ts
+import { createClient } from "viem";
+const nonce = await client.getTransactionCount({ address });
+```
+
+## Reference
+
+- Namespace: `CHAIN`
+- Help URL: `https://0gkit.dev/errors/CHAIN_NONCE_TOO_LOW`
+- See also: [all error codes](/errors)

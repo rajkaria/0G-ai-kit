@@ -4,8 +4,15 @@ export {
   NetworkError,
   ChainError,
   AttestationError,
-  type ZeroGErrorCode,
 } from "./errors.js";
+export {
+  ERROR_CODES,
+  type ErrorCode,
+  isErrorCode,
+  errorNamespace,
+  helpUrlFor,
+  ERROR_HELP_BASE,
+} from "./error-codes.js";
 export {
   networks,
   aristotle,

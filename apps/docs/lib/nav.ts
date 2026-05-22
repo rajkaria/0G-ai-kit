@@ -52,6 +52,7 @@ export const NAV: NavSection[] = [
       { title: "MCP guide", href: "/mcp" },
       { title: "React guide", href: "/react" },
       { title: "Templates", href: "/templates" },
+      { title: "Error codes", href: "/errors" },
       { title: "Troubleshooting & FAQ", href: "/troubleshooting" },
     ],
   },

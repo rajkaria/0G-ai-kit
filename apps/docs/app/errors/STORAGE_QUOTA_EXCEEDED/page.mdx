@@ -1,0 +1,35 @@
+---
+title: STORAGE_QUOTA_EXCEEDED
+description: Storage quota exceeded
+namespace: STORAGE
+---
+
+# STORAGE_QUOTA_EXCEEDED
+
+**Storage quota exceeded**
+
+## What happened
+
+The signer's account has uploaded more bytes than the network permits per epoch.
+
+## How to fix
+
+Wait until the next epoch, request a quota increase via faucet support, or compress + dedup the bytes before re-uploading.
+
+## Example
+
+```ts
+try {
+  await storage.upload(bigBuffer);
+} catch (e) {
+  if (e instanceof ZeroGError && e.code === "STORAGE_QUOTA_EXCEEDED") {
+    console.log("Try again in the next epoch.");
+  }
+}
+```
+
+## Reference
+
+- Namespace: `STORAGE`
+- Help URL: `https://0gkit.dev/errors/STORAGE_QUOTA_EXCEEDED`
+- See also: [all error codes](/errors)

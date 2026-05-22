@@ -1,0 +1,30 @@
+---
+title: STORAGE_ROOT_MISMATCH
+description: Computed root doesn't match expected
+namespace: STORAGE
+---
+
+# STORAGE_ROOT_MISMATCH
+
+**Computed root doesn't match expected**
+
+## What happened
+
+Two computed Merkle roots disagree — typically the local recomputation after download doesn't match the on-chain root, indicating tampering or a different chunking scheme.
+
+## How to fix
+
+Re-download with the canonical chunk size (256 KiB) and recompute. If still mismatched, the upload may have been corrupted — re-upload from source bytes.
+
+## Example
+
+```ts
+import { Storage } from "@foundryprotocol/0gkit-storage";
+const local = await Storage.computeRoot(bytes);
+```
+
+## Reference
+
+- Namespace: `STORAGE`
+- Help URL: `https://0gkit.dev/errors/STORAGE_ROOT_MISMATCH`
+- See also: [all error codes](/errors)

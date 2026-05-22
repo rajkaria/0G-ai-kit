@@ -1,0 +1,30 @@
+---
+title: INDEXER_EVENT_DECODE_FAILED
+description: Log topic doesn't match any ABI event
+namespace: INDEXER
+---
+
+# INDEXER_EVENT_DECODE_FAILED
+
+**Log topic doesn't match any ABI event**
+
+## What happened
+
+A log was fetched with a `topic0` that isn't in the contract's ABI — typically a stale ABI after a contract upgrade, or wrong contract address.
+
+## How to fix
+
+Refresh the ABI for the contract address (via `cast interface` or a redeployed artifact) and restart the indexer.
+
+## Example
+
+```ts
+// Refresh the typed contract after upgrade
+const typed = createTypedContract({ abi: freshAbi, address, client });
+```
+
+## Reference
+
+- Namespace: `INDEXER`
+- Help URL: `https://0gkit.dev/errors/INDEXER_EVENT_DECODE_FAILED`
+- See also: [all error codes](/errors)

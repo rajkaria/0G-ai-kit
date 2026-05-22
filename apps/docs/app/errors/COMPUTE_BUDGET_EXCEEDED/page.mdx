@@ -1,0 +1,30 @@
+---
+title: COMPUTE_BUDGET_EXCEEDED
+description: Inference cost exceeded budget
+namespace: COMPUTE
+---
+
+# COMPUTE_BUDGET_EXCEEDED
+
+**Inference cost exceeded budget**
+
+## What happened
+
+The estimated cost of the inference call exceeded the configured budget cap. The estimate uses ~chars/4 tokens × per-token rate.
+
+## How to fix
+
+Either raise the budget, shorten the prompt, or lower `maxOutputTokens`. Always estimate first with `Compute.estimate(...)`.
+
+## Example
+
+```ts
+const est = await compute.estimate({ messages, maxOutputTokens: 256 });
+if (est.fee > budget) throw new Error("too expensive");
+```
+
+## Reference
+
+- Namespace: `COMPUTE`
+- Help URL: `https://0gkit.dev/errors/COMPUTE_BUDGET_EXCEEDED`
+- See also: [all error codes](/errors)

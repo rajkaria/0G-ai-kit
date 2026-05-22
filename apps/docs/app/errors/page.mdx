@@ -1,0 +1,86 @@
+---
+title: Error codes
+description: Every error 0gkit can throw, with cause + fix.
+---
+
+# Error codes
+
+Every error `0gkit-*` throws carries a stable `code` from this list plus a `helpUrl` that links back here. Click a code for cause, fix, and a minimal example.
+
+## CONFIG
+
+- [`CONFIG_MISSING_ENV`](/errors/CONFIG_MISSING_ENV) — Missing required environment variable
+- [`CONFIG_INVALID_NETWORK`](/errors/CONFIG_INVALID_NETWORK) — Unknown network name
+- [`CONFIG_INVALID_ADDRESS`](/errors/CONFIG_INVALID_ADDRESS) — Not a valid 0x address
+- [`CONFIG_INVALID_ARGUMENT`](/errors/CONFIG_INVALID_ARGUMENT) — Invalid argument passed to a primitive
+
+## WALLET
+
+- [`WALLET_NO_PRIVATE_KEY`](/errors/WALLET_NO_PRIVATE_KEY) — No private key derived from mnemonic
+- [`WALLET_KMS_SIGN_FAILED`](/errors/WALLET_KMS_SIGN_FAILED) — AWS KMS Sign returned no signature
+- [`WALLET_KMS_PUBKEY_FAILED`](/errors/WALLET_KMS_PUBKEY_FAILED) — AWS KMS GetPublicKey failed
+- [`WALLET_BAD_DER_SIGNATURE`](/errors/WALLET_BAD_DER_SIGNATURE) — Malformed DER signature from KMS
+- [`WALLET_NO_CONNECTOR`](/errors/WALLET_NO_CONNECTOR) — No wagmi connector available
+- [`WALLET_CHAIN_MISMATCH`](/errors/WALLET_CHAIN_MISMATCH) — Signer chainId doesn't match active chain
+
+## CHAIN
+
+- [`CHAIN_RPC_UNREACHABLE`](/errors/CHAIN_RPC_UNREACHABLE) — RPC endpoint unreachable
+- [`CHAIN_RPC_TIMEOUT`](/errors/CHAIN_RPC_TIMEOUT) — RPC call timed out
+- [`CHAIN_TX_REVERTED`](/errors/CHAIN_TX_REVERTED) — Transaction reverted on-chain
+- [`CHAIN_TX_TIMEOUT`](/errors/CHAIN_TX_TIMEOUT) — Transaction did not confirm in time
+- [`CHAIN_INSUFFICIENT_FUNDS`](/errors/CHAIN_INSUFFICIENT_FUNDS) — Account has insufficient funds
+- [`CHAIN_NONCE_TOO_LOW`](/errors/CHAIN_NONCE_TOO_LOW) — Nonce already used
+
+## STORAGE
+
+- [`STORAGE_QUOTA_EXCEEDED`](/errors/STORAGE_QUOTA_EXCEEDED) — Storage quota exceeded
+- [`STORAGE_UPLOAD_FAILED`](/errors/STORAGE_UPLOAD_FAILED) — Upload to 0G storage failed
+- [`STORAGE_DOWNLOAD_FAILED`](/errors/STORAGE_DOWNLOAD_FAILED) — Download from 0G storage failed
+- [`STORAGE_ROOT_NOT_FOUND`](/errors/STORAGE_ROOT_NOT_FOUND) — Storage root not found on network
+- [`STORAGE_ROOT_MISMATCH`](/errors/STORAGE_ROOT_MISMATCH) — Computed root doesn't match expected
+- [`STORAGE_INVALID_BYTES`](/errors/STORAGE_INVALID_BYTES) — Storage input bytes empty or invalid
+
+## COMPUTE
+
+- [`COMPUTE_PROVIDER_UNREACHABLE`](/errors/COMPUTE_PROVIDER_UNREACHABLE) — 0G Compute provider unreachable
+- [`COMPUTE_NO_PROVIDER`](/errors/COMPUTE_NO_PROVIDER) — No provider serving the requested model
+- [`COMPUTE_INFERENCE_FAILED`](/errors/COMPUTE_INFERENCE_FAILED) — Inference call returned an error
+- [`COMPUTE_BAD_ATTESTATION`](/errors/COMPUTE_BAD_ATTESTATION) — TEE attestation verification failed
+- [`COMPUTE_BUDGET_EXCEEDED`](/errors/COMPUTE_BUDGET_EXCEEDED) — Inference cost exceeded budget
+
+## DA
+
+- [`DA_PUBLISH_FAILED`](/errors/DA_PUBLISH_FAILED) — DA publish failed
+- [`DA_VERIFY_FAILED`](/errors/DA_VERIFY_FAILED) — DA proof verification failed
+- [`DA_INVALID_PAYLOAD`](/errors/DA_INVALID_PAYLOAD) — DA payload empty or oversized
+
+## ATTESTATION
+
+- [`ATTESTATION_BAD_SIGNATURE`](/errors/ATTESTATION_BAD_SIGNATURE) — Attestation signature did not recover
+- [`ATTESTATION_BAD_PAYLOAD`](/errors/ATTESTATION_BAD_PAYLOAD) — Attestation envelope malformed
+- [`ATTESTATION_EXPIRED`](/errors/ATTESTATION_EXPIRED) — Attestation is too old
+
+## CONTRACTS
+
+- [`CONTRACTS_REVERTED`](/errors/CONTRACTS_REVERTED) — Typed contract write reverted
+- [`CONTRACTS_NO_ADDRESS`](/errors/CONTRACTS_NO_ADDRESS) — Standard contract has no known address
+- [`CONTRACTS_ABI_MISMATCH`](/errors/CONTRACTS_ABI_MISMATCH) — ABI doesn't match deployed contract
+- [`CONTRACTS_CODEGEN_FAILED`](/errors/CONTRACTS_CODEGEN_FAILED) — 0g contracts generate failed
+
+## INDEXER
+
+- [`INDEXER_REORG_LIMIT_EXCEEDED`](/errors/INDEXER_REORG_LIMIT_EXCEEDED) — Reorg depth exceeded configured limit
+- [`INDEXER_CURSOR_BACKEND_UNREACHABLE`](/errors/INDEXER_CURSOR_BACKEND_UNREACHABLE) — Cursor backend unreachable
+- [`INDEXER_EVENT_DECODE_FAILED`](/errors/INDEXER_EVENT_DECODE_FAILED) — Log topic doesn't match any ABI event
+
+## JOBS
+
+- [`JOBS_BACKEND_UNREACHABLE`](/errors/JOBS_BACKEND_UNREACHABLE) — Jobs backend unreachable
+- [`JOBS_JOB_NOT_FOUND`](/errors/JOBS_JOB_NOT_FOUND) — Job ID not found
+- [`JOBS_HANDLER_THREW`](/errors/JOBS_HANDLER_THREW) — Job handler threw an exception
+- [`JOBS_WEBHOOK_BAD_SIGNATURE`](/errors/JOBS_WEBHOOK_BAD_SIGNATURE) — Webhook HMAC signature invalid
+
+## OBSERVABILITY
+
+- [`OBSERVABILITY_EXPORTER_FAILED`](/errors/OBSERVABILITY_EXPORTER_FAILED) — OTel exporter rejected the export

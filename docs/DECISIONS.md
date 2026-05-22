@@ -336,3 +336,45 @@ don't ship templates that import packages that don't exist, but we also
 don't ship templates that pretend the future doesn't exist. Inline TODOs
 
 - a deps-injection seam make the migration mechanical when SP10/SP11 land.
+
+---
+
+## D27 — `helpUrl` is computed from the code, not stored per-throw
+
+**Date:** 2026-05-22 · **SP:** SP9
+
+`ZeroGError.helpUrl = `${ERROR_HELP_BASE}${code}``(default`https://0gkit.dev/errors/<CODE>`). We don't store the URL on each throw site
+for two reasons: (a) DRY — one source of truth for the URL shape; (b) it lets
+us rebase the docs domain (e.g. to `docs.0gkit.dev`) with a single
+`ERROR_HELP_BASE`swap and a release. If per-code URL overrides ever become
+necessary (unlikely — every code corresponds to one MDX page), the lookup
+moves into`helpUrlFor()` and the callers don't change.
+
+**Why:** Honesty rule extended to docs. Every error references its own fix
+page — no error is more findable than another, and the URL can never drift
+out of sync with the code (they share a deterministic mapping).
+
+---
+
+## D28 — `pnpm docs:check` is a CI gate, not just a lint
+
+**Date:** 2026-05-22 · **SP:** SP9
+
+Every `ErrorCode` referenced by a `throw new ZeroGError(...)` (or by a subclass
+with an explicit code arg) MUST have a corresponding directory under
+`apps/docs/app/errors/<CODE>/page.mdx`. The check runs in CI after `pnpm test`.
+A PR that adds a code without adding a page fails red; deleting a code without
+deleting its page also fails red (catches doc-rot from refactors).
+
+Codes in the enum that aren't yet thrown anywhere are a **warning only**, not
+a failure — the enum forward-defines SP10 (`JOBS_*`) and SP11
+(`OBSERVABILITY_*`) codes so later sprints don't have to amend the enum
+mid-roadmap.
+
+Static regex extraction is fine — codegen-grade precision would be overkill,
+false positives are rare, and the failure mode is a noisy CI run not a runtime
+bug.
+
+**Why:** The whole point of SP9's `helpUrl` story falls apart if the URL points
+at a 404. CI is the only place the invariant can be guaranteed; humans forget,
+linters get bypassed.

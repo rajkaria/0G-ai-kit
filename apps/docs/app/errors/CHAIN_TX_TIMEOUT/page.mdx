@@ -1,0 +1,30 @@
+---
+title: CHAIN_TX_TIMEOUT
+description: Transaction did not confirm in time
+namespace: CHAIN
+---
+
+# CHAIN_TX_TIMEOUT
+
+**Transaction did not confirm in time**
+
+## What happened
+
+The transaction was broadcast but didn't reach the configured number of confirmations within the timeout. Possible reasons: network congestion, gas price too low, or the tx was dropped from the mempool.
+
+## How to fix
+
+Bump the gas price and re-send (with the same nonce, to replace), or extend the wait timeout. The receipt is recoverable later via the tx hash.
+
+## Example
+
+```ts
+import { waitForReceipt } from "@foundryprotocol/0gkit-chain";
+const receipt = await waitForReceipt({ hash, timeoutMs: 120_000 });
+```
+
+## Reference
+
+- Namespace: `CHAIN`
+- Help URL: `https://0gkit.dev/errors/CHAIN_TX_TIMEOUT`
+- See also: [all error codes](/errors)

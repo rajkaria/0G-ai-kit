@@ -1,0 +1,33 @@
+---
+title: CONTRACTS_NO_ADDRESS
+description: Standard contract has no known address
+namespace: CONTRACTS
+---
+
+# CONTRACTS_NO_ADDRESS
+
+**Standard contract has no known address**
+
+## What happened
+
+A `standardContracts.<name>({...})` factory was called for a contract whose address isn't published yet for the active network (e.g. Registry / AttestationVerifier on Galileo as of mid-2026).
+
+## How to fix
+
+Pass an explicit `{ address }` when 0G publishes one. Until then, deploy your own and configure via `address` directly.
+
+## Example
+
+```ts
+// Once 0G publishes:
+const registry = standardContracts.registry({
+  address: "0x...known...",
+  client,
+});
+```
+
+## Reference
+
+- Namespace: `CONTRACTS`
+- Help URL: `https://0gkit.dev/errors/CONTRACTS_NO_ADDRESS`
+- See also: [all error codes](/errors)

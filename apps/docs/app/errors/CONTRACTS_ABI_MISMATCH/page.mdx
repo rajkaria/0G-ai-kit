@@ -1,0 +1,29 @@
+---
+title: CONTRACTS_ABI_MISMATCH
+description: ABI doesn't match deployed contract
+namespace: CONTRACTS
+---
+
+# CONTRACTS_ABI_MISMATCH
+
+**ABI doesn't match deployed contract**
+
+## What happened
+
+The ABI passed to `createTypedContract({ abi, address })` doesn't match the deployed bytecode — typically a stale codegen output after the contract was redeployed.
+
+## How to fix
+
+Re-run `0g contracts generate --abi <fresh-forge-artifact>.json --out <dir>` to refresh the typed client.
+
+## Example
+
+```ts
+0g contracts generate --abi ./out/MyContract.sol/MyContract.json --out ./src/typed
+```
+
+## Reference
+
+- Namespace: `CONTRACTS`
+- Help URL: `https://0gkit.dev/errors/CONTRACTS_ABI_MISMATCH`
+- See also: [all error codes](/errors)

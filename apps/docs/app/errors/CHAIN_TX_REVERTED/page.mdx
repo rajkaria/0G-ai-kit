@@ -1,0 +1,30 @@
+---
+title: CHAIN_TX_REVERTED
+description: Transaction reverted on-chain
+namespace: CHAIN
+---
+
+# CHAIN_TX_REVERTED
+
+**Transaction reverted on-chain**
+
+## What happened
+
+The transaction was accepted into a block but execution reverted. The receipt's `revertReason` (when available) names the specific contract error.
+
+## How to fix
+
+Decode the revert reason from the receipt. Common causes: insufficient allowance, failing `require(...)` check, out-of-gas. Re-run with `--dry-run` to simulate without broadcasting.
+
+## Example
+
+```ts
+0g storage put ./bigfile.bin --dry-run
+# Inspect the simulation output for the revert reason
+```
+
+## Reference
+
+- Namespace: `CHAIN`
+- Help URL: `https://0gkit.dev/errors/CHAIN_TX_REVERTED`
+- See also: [all error codes](/errors)

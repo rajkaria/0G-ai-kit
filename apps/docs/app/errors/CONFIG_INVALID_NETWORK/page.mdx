@@ -1,0 +1,31 @@
+---
+title: CONFIG_INVALID_NETWORK
+description: Unknown network name
+namespace: CONFIG
+---
+
+# CONFIG_INVALID_NETWORK
+
+**Unknown network name**
+
+## What happened
+
+The `--network` flag (or `ZEROG_NETWORK` env var) was set to a value that doesn't match any known preset. Valid values are `galileo`, `aristotle`, and `local`.
+
+## How to fix
+
+Pick one of the supported networks, or pass an explicit RPC URL via `--rpc` if you're targeting a custom node.
+
+## Example
+
+```ts
+0g chain balance 0xabc... --network galileo
+# or
+0g chain balance 0xabc... --rpc https://my-custom-rpc.example
+```
+
+## Reference
+
+- Namespace: `CONFIG`
+- Help URL: `https://0gkit.dev/errors/CONFIG_INVALID_NETWORK`
+- See also: [all error codes](/errors)

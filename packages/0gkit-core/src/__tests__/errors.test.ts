@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   ZeroGError,
   ConfigError,
@@ -7,44 +7,58 @@ import {
   AttestationError,
 } from "../errors.js";
 
-describe("ZeroGError taxonomy", () => {
-  it("ConfigError carries code, message, hint and is a ZeroGError", () => {
-    const e = new ConfigError("RPC_ARISTOTLE is not set", "Set RPC_ARISTOTLE in .env");
-    expect(e).toBeInstanceOf(ZeroGError);
-    expect(e).toBeInstanceOf(Error);
-    expect(e.code).toBe("CONFIG");
-    expect(e.name).toBe("ConfigError");
-    expect(e.message).toBe("RPC_ARISTOTLE is not set");
-    expect(e.hint).toBe("Set RPC_ARISTOTLE in .env");
-  });
-
-  it("each subclass has the right code", () => {
-    expect(new NetworkError("x", "y").code).toBe("NETWORK");
-    expect(new ChainError("x", "y").code).toBe("CHAIN");
-    expect(new AttestationError("x", "y").code).toBe("ATTESTATION");
-  });
-
-  it("subclasses are catchable as ZeroGError", () => {
-    try {
-      throw new NetworkError("unreachable", "run `0g doctor`");
-    } catch (err) {
-      expect(err).toBeInstanceOf(ZeroGError);
-      if (err instanceof ZeroGError) expect(err.hint).toBe("run `0g doctor`");
-    }
-  });
-
-  it("the base ZeroGError stores code, message, and hint directly", () => {
-    const e = new ZeroGError("NETWORK", "rpc unreachable", "run `0g doctor`");
-    expect(e).toBeInstanceOf(Error);
-    expect(e.code).toBe("NETWORK");
+describe("ZeroGError", () => {
+  it("requires a canonical code and exposes helpUrl", () => {
+    const e = new ZeroGError(
+      "STORAGE_QUOTA_EXCEEDED",
+      "over quota",
+      "raise quota or shrink upload"
+    );
+    expect(e.code).toBe("STORAGE_QUOTA_EXCEEDED");
+    expect(e.helpUrl).toBe("https://0gkit.dev/errors/STORAGE_QUOTA_EXCEEDED");
+    expect(e.hint).toBe("raise quota or shrink upload");
+    expect(e.message).toBe("over quota");
     expect(e.name).toBe("ZeroGError");
-    expect(e.message).toBe("rpc unreachable");
-    expect(e.hint).toBe("run `0g doctor`");
+    expect(e instanceof Error).toBe(true);
   });
 
-  it("populates a stack trace", () => {
-    const e = new ConfigError("missing env", "set it");
-    expect(e.stack).toBeDefined();
-    expect(typeof e.stack).toBe("string");
+  it("toJSON serialises code, message, hint, helpUrl", () => {
+    const e = new ZeroGError("CHAIN_RPC_UNREACHABLE", "rpc down", "check connectivity");
+    expect(e.toJSON()).toEqual({
+      name: "ZeroGError",
+      code: "CHAIN_RPC_UNREACHABLE",
+      message: "rpc down",
+      hint: "check connectivity",
+      helpUrl: "https://0gkit.dev/errors/CHAIN_RPC_UNREACHABLE",
+    });
+  });
+});
+
+describe("subclasses", () => {
+  it("ConfigError defaults to CONFIG_INVALID_ARGUMENT when no code given", () => {
+    const e = new ConfigError("bad", "fix");
+    expect(e.code).toBe("CONFIG_INVALID_ARGUMENT");
+    expect(e).toBeInstanceOf(ZeroGError);
+    expect(e.name).toBe("ConfigError");
+  });
+
+  it("ConfigError accepts an explicit code in the CONFIG_* namespace", () => {
+    const e = new ConfigError("missing", "set FOO", "CONFIG_MISSING_ENV");
+    expect(e.code).toBe("CONFIG_MISSING_ENV");
+  });
+
+  it("NetworkError defaults to CHAIN_RPC_UNREACHABLE", () => {
+    const e = new NetworkError("rpc", "retry");
+    expect(e.code).toBe("CHAIN_RPC_UNREACHABLE");
+  });
+
+  it("ChainError defaults to CHAIN_TX_REVERTED", () => {
+    const e = new ChainError("revert", "check args");
+    expect(e.code).toBe("CHAIN_TX_REVERTED");
+  });
+
+  it("AttestationError defaults to ATTESTATION_BAD_SIGNATURE", () => {
+    const e = new AttestationError("bad sig", "regenerate");
+    expect(e.code).toBe("ATTESTATION_BAD_SIGNATURE");
   });
 });

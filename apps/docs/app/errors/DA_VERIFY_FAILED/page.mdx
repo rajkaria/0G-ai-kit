@@ -1,0 +1,31 @@
+---
+title: DA_VERIFY_FAILED
+description: DA proof verification failed
+namespace: DA
+---
+
+# DA_VERIFY_FAILED
+
+**DA proof verification failed**
+
+## What happened
+
+The Merkle proof returned by the DA layer didn't verify against the expected digest — either the digest is wrong or the proof is corrupted.
+
+## How to fix
+
+Recompute the digest from the original payload (`DA.digest(bytes)`) and re-verify. If still failing, re-fetch the proof from a different DA node.
+
+## Example
+
+```ts
+import { DA } from "@foundryprotocol/0gkit-da";
+const digest = DA.digest(payload);
+const ok = await da.verify(digest, proof);
+```
+
+## Reference
+
+- Namespace: `DA`
+- Help URL: `https://0gkit.dev/errors/DA_VERIFY_FAILED`
+- See also: [all error codes](/errors)

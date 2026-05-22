@@ -1,0 +1,30 @@
+---
+title: JOBS_WEBHOOK_BAD_SIGNATURE
+description: Webhook HMAC signature invalid
+namespace: JOBS
+---
+
+# JOBS_WEBHOOK_BAD_SIGNATURE
+
+**Webhook HMAC signature invalid**
+
+## What happened
+
+An incoming webhook to the jobs runner had an HMAC signature that didn't match the expected secret — either tampered, wrong secret, or wrong canonicalization.
+
+## How to fix
+
+Confirm both sides are using the same secret + canonical-JSON serialization. The runner exposes `verifyWebhookSignature(body, secret, signature)` for testing.
+
+## Example
+
+```ts
+import { verifyWebhookSignature } from "@foundryprotocol/0gkit-jobs"; // SP10
+const ok = verifyWebhookSignature(body, secret, sig);
+```
+
+## Reference
+
+- Namespace: `JOBS`
+- Help URL: `https://0gkit.dev/errors/JOBS_WEBHOOK_BAD_SIGNATURE`
+- See also: [all error codes](/errors)

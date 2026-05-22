@@ -1,0 +1,29 @@
+---
+title: STORAGE_ROOT_NOT_FOUND
+description: Storage root not found on network
+namespace: STORAGE
+---
+
+# STORAGE_ROOT_NOT_FOUND
+
+**Storage root not found on network**
+
+## What happened
+
+The requested Merkle root is not available on the connected 0G storage network. Either the upload never landed, or you're pointed at the wrong network.
+
+## How to fix
+
+Check the network (`--network`), then verify with `0g storage exists <root>`. If the root truly isn't there, re-upload.
+
+## Example
+
+```ts
+0g storage exists 0xroothere --network galileo
+```
+
+## Reference
+
+- Namespace: `STORAGE`
+- Help URL: `https://0gkit.dev/errors/STORAGE_ROOT_NOT_FOUND`
+- See also: [all error codes](/errors)

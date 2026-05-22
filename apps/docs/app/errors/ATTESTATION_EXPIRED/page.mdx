@@ -1,0 +1,30 @@
+---
+title: ATTESTATION_EXPIRED
+description: Attestation is too old
+namespace: ATTESTATION
+---
+
+# ATTESTATION_EXPIRED
+
+**Attestation is too old**
+
+## What happened
+
+The attestation timestamp is older than the freshness window (default 5 minutes). Stale attestations don't prove current TEE state.
+
+## How to fix
+
+Request a fresh attestation by re-running the inference call. If you cached an attestation, drop the cache and re-fetch.
+
+## Example
+
+```ts
+// Always re-attest at request time, not on a long-lived cache
+const fresh = await compute.inference({ messages });
+```
+
+## Reference
+
+- Namespace: `ATTESTATION`
+- Help URL: `https://0gkit.dev/errors/ATTESTATION_EXPIRED`
+- See also: [all error codes](/errors)

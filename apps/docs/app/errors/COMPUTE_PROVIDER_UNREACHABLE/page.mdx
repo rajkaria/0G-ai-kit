@@ -1,0 +1,30 @@
+---
+title: COMPUTE_PROVIDER_UNREACHABLE
+description: 0G Compute provider unreachable
+namespace: COMPUTE
+---
+
+# COMPUTE_PROVIDER_UNREACHABLE
+
+**0G Compute provider unreachable**
+
+## What happened
+
+The TEE compute provider's HTTP endpoint didn't respond — network issue or provider downtime.
+
+## How to fix
+
+Run `0g doctor` to confirm endpoint reachability. If the provider is down, list available providers via `0g infer --list-providers` and retry against another.
+
+## Example
+
+```ts
+0g doctor
+0g infer --list-providers
+```
+
+## Reference
+
+- Namespace: `COMPUTE`
+- Help URL: `https://0gkit.dev/errors/COMPUTE_PROVIDER_UNREACHABLE`
+- See also: [all error codes](/errors)

@@ -1,0 +1,30 @@
+---
+title: WALLET_KMS_SIGN_FAILED
+description: AWS KMS Sign returned no signature
+namespace: WALLET
+---
+
+# WALLET_KMS_SIGN_FAILED
+
+**AWS KMS Sign returned no signature**
+
+## What happened
+
+The AWS KMS `Sign` API call succeeded but returned an empty `Signature` field. Almost always indicates a misconfigured KMS key (wrong KeySpec, wrong KeyUsage, or missing permissions).
+
+## How to fix
+
+Confirm the KMS key has `KeySpec: ECC_SECG_P256K1` and `KeyUsage: SIGN_VERIFY`, and that your IAM role has `kms:Sign` permission. Re-run with `AWS_SDK_DEBUG=1` for raw KMS response logs.
+
+## Example
+
+```ts
+import { fromKMS } from "@foundryprotocol/0gkit-wallet";
+const signer = await fromKMS({ keyId: "arn:aws:kms:..." });
+```
+
+## Reference
+
+- Namespace: `WALLET`
+- Help URL: `https://0gkit.dev/errors/WALLET_KMS_SIGN_FAILED`
+- See also: [all error codes](/errors)

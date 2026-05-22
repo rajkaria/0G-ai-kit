@@ -1,0 +1,36 @@
+---
+title: JOBS_HANDLER_THREW
+description: Job handler threw an exception
+namespace: JOBS
+---
+
+# JOBS_HANDLER_THREW
+
+**Job handler threw an exception**
+
+## What happened
+
+The user-provided handler for a job threw — the runner catches and surfaces this so the job state machine can move to `failed` cleanly.
+
+## How to fix
+
+Inspect the job's `error` field for the original stack. Fix the handler bug (or add retry logic via `retries:` on the job definition).
+
+## Example
+
+```ts
+// SP10 — define with retries
+jobs.define(
+  "upload",
+  async (input) => {
+    /* ... */
+  },
+  { retries: 3 }
+);
+```
+
+## Reference
+
+- Namespace: `JOBS`
+- Help URL: `https://0gkit.dev/errors/JOBS_HANDLER_THREW`
+- See also: [all error codes](/errors)

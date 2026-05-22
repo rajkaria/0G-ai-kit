@@ -58,6 +58,7 @@ describe("buildProgram", () => {
         "da",
         "dev",
         "doctor",
+        "estimate",
         "infer",
         "init",
         "storage",

@@ -236,3 +236,45 @@ gives us a uniform place to insert reorg detection. The 2-second default poll
 interval is plenty for the dapp use cases this indexer targets (event-driven
 UIs, side-effect reactors). Sub-second latency users can override
 `pollIntervalMs`.
+
+---
+
+## D21 — Compute token-count heuristic: `chars / 4` (ceil)
+
+**Date:** 2026-05-22 · **SP:** SP7
+
+OpenAI's documented English approximation: 1 token ≈ 4 characters. We adopt
+this in `countTokens(text)` so cost estimates round-trip in pure JS with no
+tokenizer download. Estimates are explicitly order-of-magnitude — D22 documents
+the per-token fee placeholder. A precise tokenizer (`tiktoken` ≈ 6 MB of vocab
+files) would inflate every install for sub-cent precision nobody asked for.
+
+---
+
+## D22 — Storage segment math: ceil(bytes / 256 KiB)
+
+**Date:** 2026-05-22 · **SP:** SP7
+
+0G storage chunks files into 256 KiB segments (matches `@0gfoundation/0g-storage-ts-sdk`
+default). `estimateBytes(n)` returns `{ sizeBytes, segments: ceil(n / 256 KiB) }`.
+Per-segment gas/fee defaults (`80_000 gas`, `1 gwei`) are heuristics matching
+observed Galileo behaviour mid-2026. The SDK's actual cost function will
+override these once a programmatic feed exists.
+
+---
+
+## D23 — `DryRunResult<T>` envelope
+
+**Date:** 2026-05-22 · **SP:** SP7
+
+Every write path that accepts `{ dryRun: true }` returns:
+
+```ts
+{ dryRun: true, estimate: Estimate, result: T }
+```
+
+— where `T` is the existing success shape with `txHash`/`blockNumber` left
+undefined. This keeps callers' type narrowing simple (`if (res.dryRun) {...}`)
+and means dry-run code paths share the same Receipt-handling logic as live ones.
+The DA `DEFAULT_DA_RATE_WEI_PER_BYTE = 1e6 wei/byte` is a placeholder until 0G
+publishes a programmatic DA pricing feed.

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import "@foundryprotocol/0gkit-testing/matchers";
 import { fixtureReceipt } from "@foundryprotocol/0gkit-testing";
+import type { Receipt } from "@foundryprotocol/0gkit-core";
 import { createTypedContract } from "../factory.js";
 
 const ABI = [
@@ -42,10 +43,10 @@ describe("@foundryprotocol/0gkit-testing — fixtureReceipt + toBeConfirmedOn0G 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       walletClient: walletClient as any,
     });
-    const receipt = await c.write.transfer!(
+    const receipt = (await c.write.transfer!(
       "0x0000000000000000000000000000000000000002",
       1n
-    );
+    )) as Receipt;
     expect(receipt).toBeConfirmedOn0G();
     expect(receipt.blockNumber).toBe(fixture.blockNumber);
   });

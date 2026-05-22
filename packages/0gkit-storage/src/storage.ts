@@ -1,9 +1,11 @@
 import {
   ConfigError,
   NetworkError,
+  type DryRunResult,
   type Receipt,
   type Signer,
 } from "@foundryprotocol/0gkit-core";
+import { makeStorageEstimate, type StorageEstimate } from "./estimate.js";
 
 const INDEXERS = {
   aristotle: "https://indexer-storage.0g.network",
@@ -153,7 +155,29 @@ export class Storage {
     }
   }
 
-  async upload(data: Uint8Array): Promise<UploadResult> {
+  async estimate(data: Uint8Array): Promise<StorageEstimate> {
+    return makeStorageEstimate(data.length);
+  }
+
+  async upload(data: Uint8Array): Promise<UploadResult>;
+  async upload(
+    data: Uint8Array,
+    opts: { dryRun: true }
+  ): Promise<DryRunResult<UploadResult>>;
+  async upload(
+    data: Uint8Array,
+    opts?: { dryRun?: boolean }
+  ): Promise<UploadResult | DryRunResult<UploadResult>> {
+    if (opts?.dryRun) {
+      const estimate = await this.estimate(data);
+      const root = await this.computeRoot(data);
+      const result: UploadResult = {
+        root,
+        tx: { latencyMs: 0 },
+        raw: { dryRun: true },
+      };
+      return { dryRun: true, estimate, result };
+    }
     const signer = await this.signer();
     const mod = await this.sdk();
     const startedAt = Date.now();

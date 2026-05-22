@@ -23,6 +23,7 @@ import type {
   readState,
   clearState,
 } from "@foundryprotocol/0gkit-devnet";
+import type { Estimate } from "@foundryprotocol/0gkit-core";
 import { createOutput, type CommandResult } from "./output.js";
 import { resolveContext, type CliContext, type GlobalFlags } from "./context.js";
 import type { FoundryPlugin } from "./foundry-loader.js";
@@ -36,6 +37,7 @@ import { registerAttest } from "./commands/attest.js";
 import { registerInfer } from "./commands/infer.js";
 import { registerFoundry } from "./commands/foundry.js";
 import { registerContracts } from "./commands/contracts.js";
+import { registerEstimate } from "./commands/estimate.js";
 
 export const VERSION = "0.1.0";
 
@@ -92,6 +94,14 @@ export interface ProgramDeps {
       methods: readonly string[];
       events: readonly string[];
     } | null;
+    estimate: (opts: {
+      abiPath: string;
+      address: `0x${string}`;
+      method: string;
+      args: unknown[];
+      network: string;
+      rpcUrl?: string;
+    }) => Promise<Estimate>;
   };
   fs: FsLike;
   readStdin: () => Promise<Uint8Array>;
@@ -165,6 +175,7 @@ export function buildProgram(deps: ProgramDeps): Command {
   registerAttest(program, deps);
   registerInfer(program, deps);
   registerContracts(program, deps);
+  registerEstimate(program, deps);
   registerFoundry(program, deps);
 
   return program;

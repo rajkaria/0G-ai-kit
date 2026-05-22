@@ -1,9 +1,11 @@
 import {
   ConfigError,
   NetworkError,
+  type DryRunResult,
   type Receipt,
   type Signer,
 } from "@foundryprotocol/0gkit-core";
+import { makeComputeEstimate, type ComputeEstimate } from "./estimate.js";
 
 const DEFAULT_RPC = "https://evmrpc.0g.ai";
 const PKG_NEW = "@0gfoundation/0g-compute-ts-sdk";
@@ -86,6 +88,18 @@ export class Compute {
       }
       this.resolvedBrokerKey = config.brokerKey;
     }
+  }
+
+  async estimate(args: {
+    messages: ChatMessage[];
+    model?: string;
+    maxOutputTokens?: number;
+  }): Promise<ComputeEstimate> {
+    return makeComputeEstimate({
+      messages: args.messages,
+      model: args.model ?? this.cfg.model,
+      maxOutputTokens: args.maxOutputTokens,
+    });
   }
 
   private async loadBrokerMod(): Promise<{
@@ -183,7 +197,39 @@ export class Compute {
     model?: string;
     messages: ChatMessage[];
     temperature?: number;
-  }): Promise<InferenceResult> {
+    maxOutputTokens?: number;
+  }): Promise<InferenceResult>;
+  async inference(
+    args: {
+      model?: string;
+      messages: ChatMessage[];
+      temperature?: number;
+      maxOutputTokens?: number;
+    },
+    opts: { dryRun: true }
+  ): Promise<DryRunResult<InferenceResult>>;
+  async inference(
+    args: {
+      model?: string;
+      messages: ChatMessage[];
+      temperature?: number;
+      maxOutputTokens?: number;
+    },
+    opts?: { dryRun?: boolean }
+  ): Promise<InferenceResult | DryRunResult<InferenceResult>> {
+    if (opts?.dryRun) {
+      const estimate = await this.estimate(args);
+      const result: InferenceResult = {
+        output: "",
+        receipt: { latencyMs: 0 },
+        raw: { dryRun: true },
+      };
+      return { dryRun: true, estimate, result };
+    }
+    // `maxOutputTokens` is accepted for API uniformity with `.estimate()` but
+    // is not forwarded to the broker SDK — the broker reads its own provider
+    // metadata for actual generation limits.
+    void args.maxOutputTokens;
     const provider = this.requireProvider();
     const broker = await this.getBroker();
     try {

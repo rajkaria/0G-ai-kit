@@ -30,6 +30,27 @@ const res = await oa.chat.completions.create({
 });
 ```
 
+## Estimating & dry-run
+
+```ts
+const est = await compute.estimate({
+  messages: [{ role: "user", content: "What is 2+2?" }],
+  maxOutputTokens: 64,
+});
+// { kind: "compute", gas: 0n, fee, breakdown: { inputTokens, outputTokensMax, model } }
+
+const dr = await compute.inference(
+  { messages: [{ role: "user", content: "ping" }] },
+  { dryRun: true }
+);
+// { dryRun: true, estimate, result: { output: "", receipt: { latencyMs: 0 }, raw } }
+```
+
+Token counts use a `chars / 4` heuristic (OpenAI's documented English
+approximation). Estimates are order-of-magnitude — precise tokenizers add
+megabytes of vocab files for sub-cent precision. Use
+`0g estimate compute --prompt "..." --max-output 64` from the CLI.
+
 ## License
 
 MIT.

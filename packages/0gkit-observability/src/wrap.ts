@@ -74,8 +74,7 @@ export function wrapMethod(
       }
     });
   };
-  (wrapper as unknown as { __0gkit_instrumented: boolean }).__0gkit_instrumented =
-    true;
+  (wrapper as unknown as { __0gkit_instrumented: boolean }).__0gkit_instrumented = true;
   target[method] = wrapper as unknown as (...args: unknown[]) => unknown;
   wrapped.push({ target, method, original });
 }

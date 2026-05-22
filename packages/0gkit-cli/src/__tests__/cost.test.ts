@@ -152,10 +152,9 @@ describe("0g cost forecast", () => {
     const { d, lines } = makeDeps();
     const p = buildProgram(d);
     p.exitOverride();
-    await p.parseAsync(
-      ["--json", "cost", "forecast", "--storage", "1024,4096,16384"],
-      { from: "user" }
-    );
+    await p.parseAsync(["--json", "cost", "forecast", "--storage", "1024,4096,16384"], {
+      from: "user",
+    });
     const result = lastJson(lines);
     const byOp = result.byOp as { storage: unknown[] };
     expect(byOp.storage).toHaveLength(3);
@@ -165,10 +164,9 @@ describe("0g cost forecast", () => {
     const { d, lines } = makeDeps();
     const p = buildProgram(d);
     p.exitOverride();
-    await p.parseAsync(
-      ["cost", "forecast", "--storage", "1024", "--da", "512"],
-      { from: "user" }
-    );
+    await p.parseAsync(["cost", "forecast", "--storage", "1024", "--da", "512"], {
+      from: "user",
+    });
     const joined = lines.join("\n");
     expect(joined).toMatch(/Forecast:/);
     expect(joined).toMatch(/storage:/);
@@ -204,10 +202,9 @@ describe("0g cost forecast", () => {
     const { d, lines } = makeDeps();
     const p = buildProgram(d);
     p.exitOverride();
-    await p.parseAsync(
-      ["--json", "cost", "forecast", "--compute", "|llama|512"],
-      { from: "user" }
-    );
+    await p.parseAsync(["--json", "cost", "forecast", "--compute", "|llama|512"], {
+      from: "user",
+    });
     const result = lastJson(lines);
     expect(result.ok).toBe(false);
   });
@@ -216,10 +213,9 @@ describe("0g cost forecast", () => {
     const { d, lines } = makeDeps();
     const p = buildProgram(d);
     p.exitOverride();
-    await p.parseAsync(
-      ["--json", "cost", "forecast", "--compute", "just a prompt"],
-      { from: "user" }
-    );
+    await p.parseAsync(["--json", "cost", "forecast", "--compute", "just a prompt"], {
+      from: "user",
+    });
     const result = lastJson(lines);
     expect(result.ok).toBe(true);
     expect(d.computeEstimate).toHaveBeenCalledWith({

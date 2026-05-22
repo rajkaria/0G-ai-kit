@@ -39,20 +39,17 @@ export function withAttestation(provider: AttestationProvider) {
 export function withAccessLog(opts: { tracer?: Tracer } = {}) {
   return async (c: Context, next: Next) => {
     const tracer = opts.tracer ?? trace.getTracer(TRACER_NAME);
-    await tracer.startActiveSpan(
-      `${c.req.method} ${c.req.path}`,
-      async (span) => {
-        const start = Date.now();
-        span.setAttribute("http.method", c.req.method);
-        span.setAttribute("http.route", c.req.path);
-        try {
-          await next();
-          span.setAttribute("http.status_code", c.res.status);
-          span.setAttribute("http.duration_ms", Date.now() - start);
-        } finally {
-          span.end();
-        }
+    await tracer.startActiveSpan(`${c.req.method} ${c.req.path}`, async (span) => {
+      const start = Date.now();
+      span.setAttribute("http.method", c.req.method);
+      span.setAttribute("http.route", c.req.path);
+      try {
+        await next();
+        span.setAttribute("http.status_code", c.res.status);
+        span.setAttribute("http.duration_ms", Date.now() - start);
+      } finally {
+        span.end();
       }
-    );
+    });
   };
 }

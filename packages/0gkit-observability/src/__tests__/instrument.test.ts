@@ -11,7 +11,9 @@ import { instrument0g, disinstrument0g } from "../instrument.js";
 // Storage/Compute/DA — just enough for `instrument0g` to patch them.
 class FakeStorage {
   network = "galileo";
-  async upload(bytes: Uint8Array): Promise<{ root: string; tx: { latencyMs: number } }> {
+  async upload(
+    bytes: Uint8Array
+  ): Promise<{ root: string; tx: { latencyMs: number } }> {
     return { root: "0x" + "ab".repeat(32), tx: { latencyMs: bytes.length } };
   }
   async estimate(bytes: number) {
@@ -27,7 +29,10 @@ class FakeStorage {
 
 class FakeCompute {
   network = "galileo";
-  async inference(args: { messages: { role: string; content: string }[]; model?: string }) {
+  async inference(args: {
+    messages: { role: string; content: string }[];
+    model?: string;
+  }) {
     return {
       output: "ok: " + args.messages[0]?.content,
       receipt: { txHash: "0xdeadbeef", latencyMs: 12 },
@@ -107,7 +112,10 @@ describe("instrument0g", () => {
       targets: { compute: { class: FakeCompute, methods: ["inference"] } },
     });
     const c = new FakeCompute();
-    await c.inference({ messages: [{ role: "user", content: "hi" }], model: "llama-3-8b" });
+    await c.inference({
+      messages: [{ role: "user", content: "hi" }],
+      model: "llama-3-8b",
+    });
     const span = exporter.getFinishedSpans()[0]!;
     expect(span.name).toBe("0gkit.compute.inference");
     expect(span.attributes["0gkit.model"]).toBe("llama-3-8b");
@@ -219,9 +227,7 @@ describe("instrument0g", () => {
       targets: { storage: { class: NoNetStorage, methods: ["upload"] } },
     });
     await new NoNetStorage().upload(new Uint8Array(1));
-    expect(exporter.getFinishedSpans()[0]!.attributes["0gkit.network"]).toBe(
-      "unknown"
-    );
+    expect(exporter.getFinishedSpans()[0]!.attributes["0gkit.network"]).toBe("unknown");
   });
 });
 

@@ -16,9 +16,9 @@ export async function setupSdk(config: InstrumentConfig): Promise<void> {
   if (!exporter || exporter.kind === "noop") return;
 
   try {
-    const { NodeSDK } = (await import(
-      ["@opentelemetry", "sdk-node"].join("/")
-    )) as { NodeSDK: new (cfg: Record<string, unknown>) => { start(): void } };
+    const { NodeSDK } = (await import(["@opentelemetry", "sdk-node"].join("/"))) as {
+      NodeSDK: new (cfg: Record<string, unknown>) => { start(): void };
+    };
 
     let traceExporter: unknown = undefined;
     if (exporter.kind === "console") {

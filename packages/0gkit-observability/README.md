@@ -93,23 +93,23 @@ disinstrument0g(); // restores originals
 
 All attribute keys live in a single frozen `ATTR` constant in `attributes.ts`:
 
-| Constant            | Key                       | Notes                                                  |
-| ------------------- | ------------------------- | ------------------------------------------------------ |
-| `ATTR.NETWORK`      | `0gkit.network`           | `"galileo"` / `"aristotle"` / `"local"`                |
-| `ATTR.OP`           | `0gkit.op`                | `"storage.upload"`, `"compute.inference"`, ...        |
-| `ATTR.SIZE_BYTES`   | `0gkit.size_bytes`        | Bytes uploaded / downloaded / published                |
-| `ATTR.SEGMENTS`     | `0gkit.segments`          | Storage segments (256 KiB chunks)                      |
-| `ATTR.GAS_NATIVE`   | `0gkit.gas_native`        | Gas units (stringified bigint)                         |
-| `ATTR.FEE_NATIVE`   | `0gkit.fee_native`        | Native wei fee (stringified bigint)                    |
-| `ATTR.CONFIRM_SECONDS` | `0gkit.confirm_seconds` | Confirmation latency in seconds                        |
-| `ATTR.ROOT`         | `0gkit.root`              | Storage Merkle root                                    |
-| `ATTR.TX_HASH`      | `0gkit.tx_hash`           | Transaction hash                                       |
-| `ATTR.BLOCK_NUMBER` | `0gkit.block_number`      | Block number                                           |
-| `ATTR.MODEL`        | `0gkit.model`             | Compute model id                                       |
-| `ATTR.INPUT_TOKENS` | `0gkit.input_tokens`      | Input tokens consumed                                  |
-| `ATTR.OUTPUT_TOKENS`| `0gkit.output_tokens`     | Output tokens generated (or max for estimates)         |
-| `ATTR.ERROR_CODE`   | `0gkit.error_code`        | SCREAMING_SNAKE code from SP9 error taxonomy           |
-| `ATTR.DRY_RUN`      | `0gkit.dry_run`           | `true` for `.estimate()` and `{ dryRun: true }` calls  |
+| Constant               | Key                     | Notes                                                 |
+| ---------------------- | ----------------------- | ----------------------------------------------------- |
+| `ATTR.NETWORK`         | `0gkit.network`         | `"galileo"` / `"aristotle"` / `"local"`               |
+| `ATTR.OP`              | `0gkit.op`              | `"storage.upload"`, `"compute.inference"`, ...        |
+| `ATTR.SIZE_BYTES`      | `0gkit.size_bytes`      | Bytes uploaded / downloaded / published               |
+| `ATTR.SEGMENTS`        | `0gkit.segments`        | Storage segments (256 KiB chunks)                     |
+| `ATTR.GAS_NATIVE`      | `0gkit.gas_native`      | Gas units (stringified bigint)                        |
+| `ATTR.FEE_NATIVE`      | `0gkit.fee_native`      | Native wei fee (stringified bigint)                   |
+| `ATTR.CONFIRM_SECONDS` | `0gkit.confirm_seconds` | Confirmation latency in seconds                       |
+| `ATTR.ROOT`            | `0gkit.root`            | Storage Merkle root                                   |
+| `ATTR.TX_HASH`         | `0gkit.tx_hash`         | Transaction hash                                      |
+| `ATTR.BLOCK_NUMBER`    | `0gkit.block_number`    | Block number                                          |
+| `ATTR.MODEL`           | `0gkit.model`           | Compute model id                                      |
+| `ATTR.INPUT_TOKENS`    | `0gkit.input_tokens`    | Input tokens consumed                                 |
+| `ATTR.OUTPUT_TOKENS`   | `0gkit.output_tokens`   | Output tokens generated (or max for estimates)        |
+| `ATTR.ERROR_CODE`      | `0gkit.error_code`      | SCREAMING_SNAKE code from SP9 error taxonomy          |
+| `ATTR.DRY_RUN`         | `0gkit.dry_run`         | `true` for `.estimate()` and `{ dryRun: true }` calls |
 
 ## Bundle size
 

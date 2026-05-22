@@ -1,5 +1,9 @@
 import type { Command } from "commander";
-import { ConfigError, formatEstimate, type Estimate } from "@foundryprotocol/0gkit-core";
+import {
+  ConfigError,
+  formatEstimate,
+  type Estimate,
+} from "@foundryprotocol/0gkit-core";
 import { runCommand, type ProgramDeps } from "../program.js";
 import { bigintsToStrings } from "./_helpers.js";
 

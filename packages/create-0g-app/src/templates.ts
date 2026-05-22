@@ -42,7 +42,8 @@ export const TEMPLATES: TemplateMeta[] = [
   },
   {
     name: "nft-with-storage",
-    description: "ERC-721 minter — metadata + media on 0G Storage, typed-contract codegen.",
+    description:
+      "ERC-721 minter — metadata + media on 0G Storage, typed-contract codegen.",
   },
 ];
 

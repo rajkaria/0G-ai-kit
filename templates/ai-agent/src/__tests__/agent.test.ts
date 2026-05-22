@@ -1,8 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type {
-  ChatMessage,
-  InferenceResult,
-} from "@foundryprotocol/0gkit-compute";
+import type { ChatMessage, InferenceResult } from "@foundryprotocol/0gkit-compute";
 import { runAgent, type AgentDeps } from "../agent.js";
 import { ToolRegistry } from "../tools.js";
 
@@ -21,10 +18,7 @@ function fakeInference(responses: string[]): AgentDeps["compute"] {
   };
 }
 
-function makeDeps(
-  responses: string[],
-  overrides: Partial<AgentDeps> = {}
-): AgentDeps {
+function makeDeps(responses: string[], overrides: Partial<AgentDeps> = {}): AgentDeps {
   const tools = new ToolRegistry();
   tools.register({
     name: "add",

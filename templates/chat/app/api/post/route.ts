@@ -8,7 +8,9 @@ import { MESSAGE_REGISTRY_ABI, MESSAGE_REGISTRY_ADDRESS } from "@/lib/contract";
 export const dynamic = "force-dynamic";
 
 function network(): "galileo" | "aristotle" {
-  return (process.env.ZEROG_NETWORK as "galileo" | "aristotle" | undefined) ?? "galileo";
+  return (
+    (process.env.ZEROG_NETWORK as "galileo" | "aristotle" | undefined) ?? "galileo"
+  );
 }
 
 export async function GET(req: NextRequest) {
@@ -26,10 +28,7 @@ export async function GET(req: NextRequest) {
       headers: { "content-type": "application/octet-stream" },
     });
   } catch (e) {
-    return NextResponse.json(
-      { error: (e as Error).message },
-      { status: 502 }
-    );
+    return NextResponse.json({ error: (e as Error).message }, { status: 502 });
   }
 }
 

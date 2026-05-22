@@ -74,7 +74,10 @@ describe("runMintFlow", () => {
       upload: async (data: Uint8Array) => {
         calls += 1;
         if (calls === 1) {
-          return { root: sha256Hex(data), tx: { txHash: "0x", latencyMs: 1 } as Receipt };
+          return {
+            root: sha256Hex(data),
+            tx: { txHash: "0x", latencyMs: 1 } as Receipt,
+          };
         }
         throw new Error("oom");
       },

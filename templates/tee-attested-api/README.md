@@ -9,9 +9,9 @@ Stack: `hono@^4` · `@foundryprotocol/0gkit-compute` ·
 
 ## Endpoints
 
-| Method | Path     | Returns                                       |
-| ------ | -------- | --------------------------------------------- |
-| GET    | `/health` | `{ ok: true }`                                |
+| Method | Path      | Returns                                        |
+| ------ | --------- | ---------------------------------------------- |
+| GET    | `/health` | `{ ok: true }`                                 |
 | POST   | `/chat`   | `{ reply, txHash }` — runs prompt thru Compute |
 
 Every response includes:

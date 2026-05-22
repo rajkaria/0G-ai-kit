@@ -20,14 +20,12 @@ describe("templates catalogue", () => {
     ]);
   });
 
-  it.each([
-    "chat",
-    "ai-agent",
-    "tee-attested-api",
-    "nft-with-storage",
-  ])("validates SP8 template name: %s", (name) => {
-    expect(isValidTemplateName(name)).toBe(true);
-  });
+  it.each(["chat", "ai-agent", "tee-attested-api", "nft-with-storage"])(
+    "validates SP8 template name: %s",
+    (name) => {
+      expect(isValidTemplateName(name)).toBe(true);
+    }
+  );
 
   it("attaches a non-empty description to every template", () => {
     for (const t of TEMPLATES) {

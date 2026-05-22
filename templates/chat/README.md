@@ -9,11 +9,11 @@ Stack: Next.js 16 App Router · React 19 · `@foundryprotocol/0gkit-storage` ·
 
 ## What this demos
 
-| Surface             | Used for                                                |
-| ------------------- | ------------------------------------------------------- |
-| SP3 wallet (server) | Signs the upload + the `post(root, ts)` tx              |
-| SP4 typed contracts | `createTypedContract(...).write.post(...)`              |
-| SP6 indexer (react) | `useEvent({ contract, event: "MessagePosted" })`        |
+| Surface             | Used for                                                  |
+| ------------------- | --------------------------------------------------------- |
+| SP3 wallet (server) | Signs the upload + the `post(root, ts)` tx                |
+| SP4 typed contracts | `createTypedContract(...).write.post(...)`                |
+| SP6 indexer (react) | `useEvent({ contract, event: "MessagePosted" })`          |
 | SP3 storage         | `storage.upload(encodeMessage(...))` + `storage.download` |
 
 ## Quickstart

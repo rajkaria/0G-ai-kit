@@ -1,8 +1,5 @@
 import { Hono } from "hono";
-import type {
-  ChatMessage,
-  InferenceResult,
-} from "@foundryprotocol/0gkit-compute";
+import type { ChatMessage, InferenceResult } from "@foundryprotocol/0gkit-compute";
 import {
   withAttestation,
   withAccessLog,

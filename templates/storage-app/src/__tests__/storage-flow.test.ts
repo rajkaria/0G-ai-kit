@@ -1,11 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { createHash } from "node:crypto";
 import { runStorageFlow, type UploadResult } from "../storage-flow.js";
-import type {
-  DryRunResult,
-  Estimate,
-  Receipt,
-} from "@foundryprotocol/0gkit-core";
+import type { DryRunResult, Estimate, Receipt } from "@foundryprotocol/0gkit-core";
 
 const FAKE_ESTIMATE: Estimate = {
   kind: "storage",
@@ -97,10 +93,7 @@ describe("runStorageFlow", () => {
     const bytes = new Uint8Array([1, 2, 3]);
     const { storage, store } = fakeStorage();
     const originalUpload = storage.upload;
-    storage.upload = (async (
-      data: Uint8Array,
-      opts?: { dryRun?: boolean }
-    ) => {
+    storage.upload = (async (data: Uint8Array, opts?: { dryRun?: boolean }) => {
       const res = await (opts?.dryRun
         ? originalUpload(data, { dryRun: true })
         : originalUpload(data));

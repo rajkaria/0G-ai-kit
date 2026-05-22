@@ -106,9 +106,7 @@ export default function Home() {
             <div style={{ fontSize: "0.8rem", color: "#888" }}>
               {r.author.slice(0, 10)}… · block {String(r.blockNumber)}
             </div>
-            <div>
-              {bodies[r.root] ?? <em>(loading body…)</em>}
-            </div>
+            <div>{bodies[r.root] ?? <em>(loading body…)</em>}</div>
           </li>
         ))}
       </ul>

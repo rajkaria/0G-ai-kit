@@ -35,9 +35,9 @@ describe("chat message codec", () => {
   });
 
   it("rejects non-address author", () => {
-    expect(() =>
-      encodeMessage({ author: "alice", ts: 1, body: "hi" })
-    ).toThrow(/address/);
+    expect(() => encodeMessage({ author: "alice", ts: 1, body: "hi" })).toThrow(
+      /address/
+    );
   });
 
   it("rejects messages with the wrong wire version", () => {

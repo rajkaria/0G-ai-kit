@@ -13,6 +13,7 @@
 **Default ref pin in `templates.ts`:** Bump from `v0.2.x` → `v0.3.x` so newly-published v0.3.0 packages resolve against template default versions.
 
 **SP10/SP11 dependency carveouts:**
+
 - `ai-agent` references SP10 `0gkit-jobs` in the roadmap. SP10 isn't shipped — implement the agent as an in-process async loop, label the SP10 hand-off explicitly in `README.md` ("Drop `0gkit-jobs` in here when SP10 lands; the in-loop calls become job invocations one-to-one"). No fabricated `0gkit-jobs` imports.
 - `tee-attested-api` references SP11 `0gkit-observability`. SP11 isn't shipped — implement plain `console.log`-style observability and label the SP11 hand-off in `README.md`. No fabricated `0gkit-observability` imports.
 
@@ -21,6 +22,7 @@
 ## File structure
 
 **Modified (existing CLI):**
+
 - `packages/create-0g-app/src/types.ts` — extend `TemplateName` union
 - `packages/create-0g-app/src/templates.ts` — add four entries + bump `TEMPLATE_REF` default
 - `packages/create-0g-app/src/__tests__/templates.test.ts` — add valid-name cases
@@ -28,20 +30,23 @@
 - `apps/docs/app/templates/page.mdx` — five sections (refresh existing + add four)
 
 **Refreshed (existing template):**
+
 - `templates/storage-app/package.json` — bump deps to ^0.3.0, add vitest + 0gkit-testing
 - `templates/storage-app/src/index.ts` — add SP7 estimate + dry-run preflight
 - `templates/storage-app/src/__tests__/round-trip.test.ts` — vitest with mockStorageClient
 - `templates/storage-app/README.md` — tutorial-style rewrite
 - `templates/storage-app/vitest.config.ts` — new
-- `templates/storage-app/tsconfig.json` — bump strict + include __tests__
+- `templates/storage-app/tsconfig.json` — bump strict + include **tests**
 
 **New templates (four full trees):**
+
 - `templates/chat/` — Next.js 16 App Router, wallet + storage + indexer + react
 - `templates/ai-agent/` — Node script, compute + attestation, in-process loop
 - `templates/tee-attested-api/` — Hono API, wallet + attestation + plain logging
 - `templates/nft-with-storage/` — Foundry contracts + TS minter (typed contracts + storage)
 
 **Orchestration:**
+
 - `.changeset/sp8-templates.md` — `create-0gkit-app` minor + `0gkit-app-changelog` patch (none of the runtime packages move)
 - `docs/superpowers/DECISIONS.md` — append D24 + D25 + D26
 - `docs/specs/2026-05-20-essentials-roadmap.md` — mark SP8 ✅ shipped
@@ -66,6 +71,7 @@ Tasks 2–6 are independent and may be dispatched in parallel after Task 1 commi
 ### Task 1: CLI scaffolding — extend `TemplateName` union, templates registry, ref pin
 
 **Files:**
+
 - Modify: `packages/create-0g-app/src/types.ts:1-6`
 - Modify: `packages/create-0g-app/src/templates.ts:9-42`
 - Modify: `packages/create-0g-app/src/__tests__/templates.test.ts`
@@ -94,14 +100,12 @@ describe("TEMPLATES registry", () => {
     ]);
   });
 
-  it.each([
-    "chat",
-    "ai-agent",
-    "tee-attested-api",
-    "nft-with-storage",
-  ])("validates new template name: %s", (name) => {
-    expect(isValidTemplateName(name)).toBe(true);
-  });
+  it.each(["chat", "ai-agent", "tee-attested-api", "nft-with-storage"])(
+    "validates new template name: %s",
+    (name) => {
+      expect(isValidTemplateName(name)).toBe(true);
+    }
+  );
 
   it("rejects unknown template names", () => {
     expect(isValidTemplateName("nope")).toBe(false);
@@ -183,8 +187,7 @@ export const TEMPLATES: TemplateMeta[] = [
   },
   {
     name: "chat",
-    description:
-      "Real-time chat: messages on 0G Storage, indexed live via SP6 events.",
+    description: "Real-time chat: messages on 0G Storage, indexed live via SP6 events.",
   },
   {
     name: "ai-agent",
@@ -193,8 +196,7 @@ export const TEMPLATES: TemplateMeta[] = [
   },
   {
     name: "tee-attested-api",
-    description:
-      "Hono API where every response carries a TEE attestation header.",
+    description: "Hono API where every response carries a TEE attestation header.",
   },
   {
     name: "nft-with-storage",
@@ -223,31 +225,29 @@ Expected: PASS — registry has 9 entries, validation works.
 Append to `packages/create-0g-app/src/__tests__/index.test.ts` (inside the existing top-level `describe("run", ...)` block):
 
 ```ts
-  it("accepts --template chat and writes to dest", async () => {
-    const dest = await mkdtemp(join(tmpdir(), "create-0gkit-chat-"));
-    const fetched: { name: string; dest: string }[] = [];
-    const code = await run(
-      ["node", "create", "demo", "--template", "chat", "--no-install", "--no-git"],
-      {
-        cwd: dest,
-        log: () => undefined,
-        err: () => undefined,
-        fetchTemplate: async (o) => {
-          fetched.push(o);
-        },
-        runInstall: async () => undefined,
-        initGit: async () => ({ initialized: false }),
-      }
-    );
-    expect(code).toBe(0);
-    expect(fetched).toEqual([{ name: "chat", dest: join(dest, "demo") }]);
-  });
+it("accepts --template chat and writes to dest", async () => {
+  const dest = await mkdtemp(join(tmpdir(), "create-0gkit-chat-"));
+  const fetched: { name: string; dest: string }[] = [];
+  const code = await run(
+    ["node", "create", "demo", "--template", "chat", "--no-install", "--no-git"],
+    {
+      cwd: dest,
+      log: () => undefined,
+      err: () => undefined,
+      fetchTemplate: async (o) => {
+        fetched.push(o);
+      },
+      runInstall: async () => undefined,
+      initGit: async () => ({ initialized: false }),
+    }
+  );
+  expect(code).toBe(0);
+  expect(fetched).toEqual([{ name: "chat", dest: join(dest, "demo") }]);
+});
 
-  it.each([
-    "ai-agent",
-    "tee-attested-api",
-    "nft-with-storage",
-  ])("accepts --template %s", async (template) => {
+it.each(["ai-agent", "tee-attested-api", "nft-with-storage"])(
+  "accepts --template %s",
+  async (template) => {
     const dest = await mkdtemp(join(tmpdir(), `create-0gkit-${template}-`));
     const fetched: { name: string; dest: string }[] = [];
     const code = await run(
@@ -265,7 +265,8 @@ Append to `packages/create-0g-app/src/__tests__/index.test.ts` (inside the exist
     );
     expect(code).toBe(0);
     expect(fetched[0]?.name).toBe(template);
-  });
+  }
+);
 ```
 
 (If `mkdtemp`/`tmpdir`/`join` aren't already imported in that file, add `import { mkdtemp } from "node:fs/promises"; import { tmpdir } from "node:os"; import { join } from "node:path";` — check the existing imports first and merge.)
@@ -299,6 +300,7 @@ so scaffolded projects resolve against @foundryprotocol/0gkit-*@0.3.0."
 ### Task 2: `storage-app` refresh — add SP7 estimate + dry-run, vitest, tutorial README
 
 **Files:**
+
 - Modify: `templates/storage-app/package.json`
 - Modify: `templates/storage-app/src/index.ts`
 - Create: `templates/storage-app/src/__tests__/round-trip.test.ts`
@@ -600,7 +602,7 @@ ZEROG_NETWORK=galileo
 
 - [ ] **Step 8: Rewrite `README.md`** (tutorial-style)
 
-```markdown
+````markdown
 # storage-app — upload + retrieve with dedup and dry-run
 
 The fastest path from a file on disk to a content-addressed blob on **0G Storage**.
@@ -609,7 +611,7 @@ Built on `@foundryprotocol/0gkit-storage@0.3.0`. Demos: SP3 wallet, SP7 estimate
 
 ## What you get
 
-1. **Dry-run preflight** — predicts the Merkle root *and* the gas cost, no broadcast.
+1. **Dry-run preflight** — predicts the Merkle root _and_ the gas cost, no broadcast.
 2. **Dedup** — if the predicted root already exists on 0G, you skip the funding tx entirely.
 3. **Live upload** — sends the funding tx, returns receipt + Merkle root.
 4. **Round-trip verify** — downloads by root and asserts byte-for-byte equality.
@@ -623,6 +625,7 @@ cp .env.example .env
 pnpm install
 pnpm dev
 ```
+````
 
 Sample output:
 
@@ -664,7 +667,8 @@ The tests inject `mockStorageClient()` from `@foundryprotocol/0gkit-testing/mock
 - Swap `fromEnv` for a hardware-backed signer using [`fromKMS`](https://0gkit.dev/packages/wallet#fromkms).
 - Add a CLI flag for the path to upload, then wire it into your own data pipeline.
 - For long-lived uploads (>30 MB), consider the SP10 job runner once it ships (this template will gain a `--job` flag).
-```
+
+````
 
 - [ ] **Step 9: Run tests**
 
@@ -687,13 +691,14 @@ Replaces the read-only round-trip script with a flow that:
 
 Adds vitest coverage via @foundryprotocol/0gkit-testing mocks. Tutorial-
 style README."
-```
+````
 
 ---
 
 ### Task 3: `chat` template — Next.js 16 App Router, wallet + storage + indexer + react
 
 **Files (all new):**
+
 - `templates/chat/package.json`
 - `templates/chat/tsconfig.json`
 - `templates/chat/next.config.ts`
@@ -750,9 +755,9 @@ describe("chat message codec", () => {
   });
 
   it("rejects non-address author", () => {
-    expect(() =>
-      encodeMessage({ author: "alice", ts: 1, body: "hi" })
-    ).toThrow(/address/);
+    expect(() => encodeMessage({ author: "alice", ts: 1, body: "hi" })).toThrow(
+      /address/
+    );
   });
 });
 ```
@@ -888,9 +893,9 @@ export const MESSAGE_REGISTRY_ABI = [
   },
 ] as const;
 
-export const MESSAGE_REGISTRY_ADDRESS =
-  (process.env.NEXT_PUBLIC_MESSAGE_REGISTRY_ADDRESS ??
-    "0x0000000000000000000000000000000000000000") as `0x${string}`;
+export const MESSAGE_REGISTRY_ADDRESS = (process.env
+  .NEXT_PUBLIC_MESSAGE_REGISTRY_ADDRESS ??
+  "0x0000000000000000000000000000000000000000") as `0x${string}`;
 ```
 
 - [ ] **Step 7: Create `app/providers.tsx`**
@@ -1009,8 +1014,8 @@ export default function Home() {
     <main>
       <h1>0gkit chat</h1>
       <p style={{ color: "#666" }}>
-        Messages are persisted on 0G Storage; the indexer streams the
-        on-chain event log in real time.
+        Messages are persisted on 0G Storage; the indexer streams the on-chain event log
+        in real time.
       </p>
 
       <ul style={{ listStyle: "none", padding: 0 }}>
@@ -1190,7 +1195,7 @@ NEXT_PUBLIC_MESSAGE_REGISTRY_ADDRESS=0x0000000000000000000000000000000000000000
 
 - [ ] **Step 12: Write `README.md`** — tutorial-style
 
-```markdown
+````markdown
 # chat — real-time chat on 0G
 
 A working chat app where every message is persisted to **0G Storage** and the
@@ -1202,11 +1207,11 @@ Stack: Next.js 16 App Router · React 19 · `@foundryprotocol/0gkit-storage` ·
 
 ## What this demos
 
-| Surface             | Used for                                                |
-| ------------------- | ------------------------------------------------------- |
-| SP3 wallet (server) | Signs the upload + the `post(root, ts)` tx              |
-| SP4 typed contracts | `createTypedContract(...).write.post(...)`              |
-| SP6 indexer (react) | `useEvent({ contract, event: "MessagePosted" })`        |
+| Surface             | Used for                                                  |
+| ------------------- | --------------------------------------------------------- |
+| SP3 wallet (server) | Signs the upload + the `post(root, ts)` tx                |
+| SP4 typed contracts | `createTypedContract(...).write.post(...)`                |
+| SP6 indexer (react) | `useEvent({ contract, event: "MessagePosted" })`          |
 | SP3 storage         | `storage.upload(encodeMessage(...))` + `storage.download` |
 
 ## Quickstart
@@ -1220,6 +1225,7 @@ pnpm install
 pnpm dev
 # Open http://localhost:3000
 ```
+````
 
 > The `predev` script runs `0g dev --detach` before Next.js — that boots a
 > local 0G chain + storage + a `MessageRegistry` contract on 0x… (printed in
@@ -1276,7 +1282,8 @@ Uses `@foundryprotocol/0gkit-testing` mocks. No network or chain needed.
   and filtering `useEvent` with `args`.
 - Move the upload from server-side to client-side using a wallet-react hook
   once you don't need a privileged key.
-```
+
+````
 
 - [ ] **Step 13: Run tests + typecheck + build**
 
@@ -1297,13 +1304,14 @@ useEvent reorg-safe hook). Server-side write path uses fromEnv signer
 + createTypedContract.
 
 Vitest covers the wire-format codec at >80% lines."
-```
+````
 
 ---
 
 ### Task 4: `ai-agent` template — multi-step agent on 0G Compute with TEE attestation per step
 
 **Files (all new):**
+
 - `templates/ai-agent/package.json`
 - `templates/ai-agent/tsconfig.json`
 - `templates/ai-agent/vitest.config.ts`
@@ -1347,13 +1355,11 @@ describe("runAgent", () => {
   it("terminates with a final answer when the model returns 'done'", async () => {
     const deps = makeDeps();
     // Mock compute returns a 'done' step on first call.
-    (deps.compute.inference as ReturnType<typeof vi.fn>) = vi
-      .fn()
-      .mockResolvedValue({
-        choices: [{ message: { content: '{"action":"done","answer":"42"} ' } }],
-        receipt: { txHash: "0xabc", latencyMs: 5 },
-        attestation: fixtureAttestation(),
-      });
+    (deps.compute.inference as ReturnType<typeof vi.fn>) = vi.fn().mockResolvedValue({
+      choices: [{ message: { content: '{"action":"done","answer":"42"} ' } }],
+      receipt: { txHash: "0xabc", latencyMs: 5 },
+      attestation: fixtureAttestation(),
+    });
     const result = await runAgent("what is 41+1?", deps);
     expect(result.kind).toBe("final");
     if (result.kind !== "final") return;
@@ -1395,17 +1401,15 @@ describe("runAgent", () => {
 
   it("returns kind='abort' when maxSteps is reached", async () => {
     const deps = makeDeps({ maxSteps: 1 });
-    (deps.compute.inference as ReturnType<typeof vi.fn>) = vi
-      .fn()
-      .mockResolvedValue({
-        choices: [
-          {
-            message: { content: '{"action":"tool","name":"add","args":{"a":1,"b":1}}' },
-          },
-        ],
-        receipt: { txHash: "0x", latencyMs: 1 },
-        attestation: fixtureAttestation(),
-      });
+    (deps.compute.inference as ReturnType<typeof vi.fn>) = vi.fn().mockResolvedValue({
+      choices: [
+        {
+          message: { content: '{"action":"tool","name":"add","args":{"a":1,"b":1}}' },
+        },
+      ],
+      receipt: { txHash: "0x", latencyMs: 1 },
+      attestation: fixtureAttestation(),
+    });
     const result = await runAgent("loop forever", deps);
     expect(result.kind).toBe("abort");
   });
@@ -1414,13 +1418,11 @@ describe("runAgent", () => {
     const deps = makeDeps({
       verifyAttestation: vi.fn().mockResolvedValue(false),
     });
-    (deps.compute.inference as ReturnType<typeof vi.fn>) = vi
-      .fn()
-      .mockResolvedValue({
-        choices: [{ message: { content: '{"action":"done","answer":"ok"}' } }],
-        receipt: { txHash: "0x", latencyMs: 1 },
-        attestation: fixtureAttestation(),
-      });
+    (deps.compute.inference as ReturnType<typeof vi.fn>) = vi.fn().mockResolvedValue({
+      choices: [{ message: { content: '{"action":"done","answer":"ok"}' } }],
+      receipt: { txHash: "0x", latencyMs: 1 },
+      attestation: fixtureAttestation(),
+    });
     const result = await runAgent("hi", deps);
     expect(result.kind).toBe("abort");
     if (result.kind !== "abort") return;
@@ -1556,7 +1558,9 @@ export async function runAgent(prompt: string, deps: AgentDeps): Promise<AgentRe
   let history = `User: ${prompt}\n\nTools:\n${tools
     .list()
     .map((t) => `- ${t.name}: ${t.description}`)
-    .join("\n")}\n\nRespond as JSON: {"action":"tool","name":"<tool>","args":{...}} or {"action":"done","answer":"..."}.`;
+    .join(
+      "\n"
+    )}\n\nRespond as JSON: {"action":"tool","name":"<tool>","args":{...}} or {"action":"done","answer":"..."}.`;
 
   for (let i = 0; i < maxSteps; i += 1) {
     const res = (await compute.inference({
@@ -1672,7 +1676,9 @@ async function main(): Promise<void> {
   }
   console.log(`  Steps : ${result.steps.length}`);
   for (const [i, s] of result.steps.entries()) {
-    console.log(`    [${i + 1}] tx=${s.attestationTxHash}${s.toolName ? ` tool=${s.toolName}` : ""}`);
+    console.log(
+      `    [${i + 1}] tx=${s.attestationTxHash}${s.toolName ? ` tool=${s.toolName}` : ""}`
+    );
   }
 }
 
@@ -1757,34 +1763,35 @@ Stack: `@foundryprotocol/0gkit-compute` · `@foundryprotocol/0gkit-attestation` 
 `@foundryprotocol/0gkit-wallet`.
 
 ## Architecture
+```
 
-```
 runAgent(prompt) ──┐
-                   ▼
-            ┌──────────────┐
-            │ 1. compute.  │
-       ┌────│   inference  │────► InferenceResult + attestation
-       │    └──────────────┘
-       │           │
-       │           ▼
-       │    ┌──────────────┐
-       │    │ 2. verify    │── false ─► ABORT
-       │    │  attestation │
-       │    └──────────────┘
-       │           │
-       │           ▼
-       │    ┌──────────────┐
-       │    │ 3. parse     │
-       │    │  decision    │
-       │    └──────────────┘
-       │      │         │
-       │   tool       done
-       │      │         │
-       │      ▼         ▼
-       │  invoke    return final
-       │     │
-       └─────┘
-```
+▼
+┌──────────────┐
+│ 1. compute. │
+┌────│ inference │────► InferenceResult + attestation
+│ └──────────────┘
+│ │
+│ ▼
+│ ┌──────────────┐
+│ │ 2. verify │── false ─► ABORT
+│ │ attestation │
+│ └──────────────┘
+│ │
+│ ▼
+│ ┌──────────────┐
+│ │ 3. parse │
+│ │ decision │
+│ └──────────────┘
+│ │ │
+│ tool done
+│ │ │
+│ ▼ ▼
+│ invoke return final
+│ │
+└─────┘
+
+````
 
 ## Quickstart
 
@@ -1794,7 +1801,7 @@ cp .env.example .env
 
 pnpm install
 pnpm dev "What is 17 + 25? Use the add tool."
-```
+````
 
 Sample output:
 
@@ -1854,7 +1861,8 @@ Tests inject `mockComputeClient()` + `fixtureAttestation()` from
   exposes structured tool calls (tracked in SP9).
 - Persist every step's attestation to 0G Storage so you have an auditable
   trail of the agent's reasoning.
-```
+
+````
 
 - [ ] **Step 10: Commit**
 
@@ -1869,13 +1877,14 @@ invalid attestation aborts the run.
 In-process loop today; documented SP10 hand-off path for when the
 durable job runner ships. Vitest covers all four branches (done,
 tool, abort-on-max-steps, abort-on-bad-attestation) at >80% lines."
-```
+````
 
 ---
 
 ### Task 5: `tee-attested-api` template — Hono API with attestation header per response
 
 **Files (all new):**
+
 - `templates/tee-attested-api/package.json`
 - `templates/tee-attested-api/tsconfig.json`
 - `templates/tee-attested-api/vitest.config.ts`
@@ -2028,7 +2037,11 @@ export function withAccessLog(log: (m: string) => void) {
 ```ts
 import { Hono } from "hono";
 import type { Compute } from "@foundryprotocol/0gkit-compute";
-import { withAttestation, withAccessLog, type AttestationProvider } from "./middleware.js";
+import {
+  withAttestation,
+  withAccessLog,
+  type AttestationProvider,
+} from "./middleware.js";
 
 export interface AppDeps extends AttestationProvider {
   compute: Pick<Compute, "inference">;
@@ -2084,13 +2097,16 @@ async function main(): Promise<void> {
 
   // Pre-fetch the quote once at boot; refresh hourly.
   let cached: unknown = await fetchTeeQuote();
-  setInterval(async () => {
-    try {
-      cached = await fetchTeeQuote();
-    } catch (e) {
-      console.error("attestation refresh failed:", e);
-    }
-  }, 60 * 60 * 1000);
+  setInterval(
+    async () => {
+      try {
+        cached = await fetchTeeQuote();
+      } catch (e) {
+        console.error("attestation refresh failed:", e);
+      }
+    },
+    60 * 60 * 1000
+  );
 
   const app = buildApp({
     compute,
@@ -2184,16 +2200,17 @@ Stack: `hono@^4` · `@foundryprotocol/0gkit-compute` ·
 
 ## Endpoints
 
-| Method | Path     | Returns                                |
-| ------ | -------- | -------------------------------------- |
+| Method | Path      | Returns                                |
+| ------ | --------- | -------------------------------------- |
 | GET    | `/health` | `{ ok: true }`                         |
 | POST   | `/chat`   | `{ reply }` — runs prompt thru Compute |
 
 Every response includes:
+```
 
-```
 X-0G-Attestation: {"v":1,"quote":"…","signature":"…",…}
-```
+
+````
 
 ## Quickstart
 
@@ -2208,7 +2225,7 @@ pnpm dev
 curl -i -X POST http://localhost:8787/chat \
   -H 'content-type: application/json' \
   -d '{"prompt":"hello"}'
-```
+````
 
 ## Verifying the header on the client side
 
@@ -2255,7 +2272,8 @@ pnpm test
 Uses `mockComputeClient` + `fixtureAttestation`; no live compute balance
 required. All four branches (health, chat success, chat 400, access log
 emission) covered at >80% lines.
-```
+
+````
 
 - [ ] **Step 10: Commit**
 
@@ -2266,13 +2284,14 @@ git commit -m "feat(templates): SP8 tee-attested-api — Hono API w/ attestation
 Every response carries X-0G-Attestation. Production wires fetchTeeQuote
 into the middleware; tests inject fixtureAttestation. Documented SP11
 hand-off path for observability."
-```
+````
 
 ---
 
 ### Task 6: `nft-with-storage` template — ERC-721 minter with metadata + media on 0G Storage
 
 **Files (all new):**
+
 - `templates/nft-with-storage/package.json`
 - `templates/nft-with-storage/tsconfig.json`
 - `templates/nft-with-storage/vitest.config.ts`
@@ -2796,7 +2815,7 @@ Expected: 5 tests pass, coverage ≥ 80/70, typecheck clean.
 
 - [ ] **Step 12: Write `README.md`**
 
-```markdown
+````markdown
 # nft-with-storage — ERC-721 minter with metadata + media on 0G Storage
 
 Mint an ERC-721 token whose metadata JSON **and** media file both live on
@@ -2827,6 +2846,7 @@ cp .env.example .env
 # 5. Mint
 pnpm dev 0x… "Genesis" ./my-image.png
 ```
+````
 
 ## Walk through the code
 
@@ -2847,7 +2867,7 @@ pnpm dev 0x… "Genesis" ./my-image.png
 `pnpm generate:contracts` runs `0g contracts generate --abi <forge-out>`.
 The output is a deterministic TypeScript module under `src/generated/` that
 gives you full IntelliSense for `mint`, `ownerOf`, `tokenURI`. You can use
-the generated module directly *or* the inline ABI in `src/index.ts` — the
+the generated module directly _or_ the inline ABI in `src/index.ts` — the
 template ships the inline ABI for readability but the generated version
 gives stronger types.
 
@@ -2868,7 +2888,8 @@ required. Coverage ≥ 80/70.
   the JSON for marketplaces (OpenSea-style) that expect HTTP(S).
 - Move minting to a background queue once `@foundryprotocol/0gkit-jobs` (SP10)
   ships, so a slow upload doesn't time out a mint request.
-```
+
+````
 
 - [ ] **Step 13: Commit**
 
@@ -2882,13 +2903,14 @@ Foundry-based ERC-721 contract where tokenURI resolves to
 contracts.
 
 Vitest covers the metadata codec + mint flow at >80% lines."
-```
+````
 
 ---
 
 ### Task 7: Docs site — refresh `apps/docs/app/templates/page.mdx`
 
 **File:**
+
 - Modify: `apps/docs/app/templates/page.mdx`
 
 - [ ] **Step 1: Read existing page**
@@ -2900,7 +2922,7 @@ Expected: existing page lists 5 templates with degit instructions.
 
 Replace contents of `apps/docs/app/templates/page.mdx`:
 
-```mdx
+````mdx
 ---
 title: Templates
 ---
@@ -2917,6 +2939,7 @@ Grab any of them with `create-0gkit-app`:
 npm create 0gkit-app@latest demo -- --template <name>
 cd demo && pnpm install && pnpm dev
 ```
+````
 
 …or with `degit` if you want just the files:
 
@@ -3039,7 +3062,8 @@ Next.js 16 App Router console wired to `0gkit-react` hooks (`useUpload`,
 ```bash
 npm create 0gkit-app@latest my-ui -- --template react-app
 ```
-```
+
+````
 
 - [ ] **Step 3: Verify docs build**
 
@@ -3056,13 +3080,14 @@ Expands from 5 → 9 starter projects. Promotes the five canonical
 archetypes (chat, storage-app, ai-agent, tee-attested-api,
 nft-with-storage) as the headline section; the four Phase-1 starters
 move below."
-```
+````
 
 ---
 
 ### Task 8: CI smoke test — scaffold each template via fake fetcher, assert package.json + tsconfig present
 
 **File:**
+
 - Create: `packages/create-0g-app/src/__tests__/sp8-scaffold-smoke.test.ts`
 
 - [ ] **Step 1: Write the smoke test**
@@ -3149,6 +3174,7 @@ output tree (package.json present + name matches)."
 ### Task 9: Release prep — changeset, DECISIONS, roadmap mark, CLAUDE.md sync, PR open + squash-merge
 
 **Files:**
+
 - Create: `.changeset/sp8-templates.md`
 - Modify: `docs/superpowers/DECISIONS.md`
 - Modify: `docs/specs/2026-05-20-essentials-roadmap.md`
@@ -3199,7 +3225,7 @@ new monorepo layout.
 
 E.g. `templates/chat/lib/message.ts`, `templates/ai-agent/src/agent.ts`,
 `templates/nft-with-storage/src/mint-flow.ts`. The `src/index.ts` (or
-`app/page.tsx` for Next templates) is the *thin entry* that wires real
+`app/page.tsx` for Next templates) is the _thin entry_ that wires real
 dependencies. The flow file accepts a `deps` bag so tests inject
 `mockStorageClient` / `mockComputeClient` / `fixtureAttestation` from
 `@foundryprotocol/0gkit-testing` with no network.
@@ -3240,7 +3266,7 @@ Expected diff:
 packages:
   - "apps/*"
   - "packages/*"
-  - "templates/*"   # ← new
+  - "templates/*" # ← new
 ```
 
 - [ ] **Step 5: Run the full monorepo gate locally**
@@ -3321,6 +3347,7 @@ git push
 ## Self-review (run before dispatching subagents)
 
 **Spec coverage:**
+
 - ✅ Five templates (chat, storage-app refresh, ai-agent, tee-attested-api, nft-with-storage) — Tasks 2-6
 - ✅ Wired into `create-0gkit-app --template` — Task 1
 - ✅ Vitest tests using `0gkit-testing` per template — Tasks 2-6 step 1/4
@@ -3332,6 +3359,7 @@ git push
 **Placeholder scan:** No TBD / TODO / "fill in" / "similar to Task N" in any step.
 
 **Type consistency:**
+
 - `runStorageFlow` return type is consistent in Task 2 step 3 + tests step 4.
 - `runAgent` `AgentResult` variants are consistent across Task 4 step 1 + 5.
 - `runMintFlow` `MintFlowResult` consistent across Task 6 step 1 + 8.
@@ -3339,6 +3367,7 @@ git push
 - `TEMPLATES` array length (9) consistent across Tasks 1 + 8.
 
 **Reality checks (must verify before implementation):**
+
 - `@foundryprotocol/0gkit-attestation` exports: confirm `verifyAttestation` (not `verifyEnvelope`) and `fetchTeeQuote` exist; adjust imports if names differ. Task 4 step 6 and Task 5 step 6 use the suspected names — the implementer **must** `grep` the package's `src/index.ts` first and update the import if needed. (Honesty rule: no fabrication.)
 - `Compute.inference` return shape — confirm it includes `{ choices, receipt, attestation }`. If `attestation` is at a different path, adjust Task 4 step 5 + step 6 + tests.
 - `Storage.upload` return — confirmed shape from SP7: `{ root, tx: { txHash, latencyMs } }` for live; `{ dryRun: true, estimate, result: { root, ... } }` for dry-run. Task 2 step 3 uses both.
@@ -3354,6 +3383,7 @@ If any reality check turns up a mismatch, fix the affected step inline before co
 **Plan complete and saved to `docs/superpowers/plans/2026-05-22-sp8-template-expansion.md`.**
 
 **Subagent-driven execution recommended.** Suggested dispatch:
+
 - Sequential: Task 1 (CLI scaffolding) — must land first.
 - Parallel: Tasks 2-6 (five templates) — one subagent each, after Task 1 lands.
 - Sequential: Tasks 7-9 (docs, CI smoke, release prep) — after all template tasks land.

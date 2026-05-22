@@ -25,9 +25,8 @@ async function main(): Promise<void> {
   const compute = new Compute({ network, signer });
 
   // STUB attestation source. Replace with your provider's real envelope feed.
-  const { fixtureAttestation } = await import(
-    "@foundryprotocol/0gkit-testing/fixtures"
-  );
+  const { fixtureAttestation } =
+    await import("@foundryprotocol/0gkit-testing/fixtures");
   let cachedAttestation: unknown = await fixtureAttestation();
   setInterval(async () => {
     try {

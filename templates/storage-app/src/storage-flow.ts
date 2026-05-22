@@ -79,8 +79,7 @@ export async function runStorageFlow(
   const fetched = await storage.download(live.root);
   log(`  Got ${fetched.length} bytes`);
 
-  const ok =
-    fetched.length === bytes.length && fetched.every((b, i) => b === bytes[i]);
+  const ok = fetched.length === bytes.length && fetched.every((b, i) => b === bytes[i]);
   if (!ok) return { ok: false, reason: "round-trip bytes did not match" };
 
   log("Round-trip OK.");

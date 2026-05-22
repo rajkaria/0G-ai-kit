@@ -310,7 +310,7 @@ template's own `package.json` after a local install.
 `templates/tee-attested-api/src/app.ts`,
 `templates/nft-with-storage/src/mint-flow.ts`.
 
-The `src/index.ts` (or `app/page.tsx`) is the *thin entry* that wires real
+The `src/index.ts` (or `app/page.tsx`) is the _thin entry_ that wires real
 dependencies. The flow file accepts a `deps` bag so tests can inject inline
 fakes that match the published `0gkit-*` API surface — bypassing the
 `0gkit-testing` mocks whose shape currently lags the real Storage/Compute
@@ -334,4 +334,5 @@ for the `log` dep) and where to plug a real provider attestation feed.
 **Why:** Honesty rule. Roadmap §SP8 listed SP10/SP11 as dependencies; we
 don't ship templates that import packages that don't exist, but we also
 don't ship templates that pretend the future doesn't exist. Inline TODOs
-+ a deps-injection seam make the migration mechanical when SP10/SP11 land.
+
+- a deps-injection seam make the migration mechanical when SP10/SP11 land.

@@ -10,7 +10,7 @@ Built on `@foundryprotocol/0gkit-storage@0.3.0`. Demos:
 
 ## What it does
 
-1. **Dry-run preflight** — `storage.upload(bytes, { dryRun: true })` returns the predicted Merkle root *and* the gas/fee estimate, **without** broadcasting.
+1. **Dry-run preflight** — `storage.upload(bytes, { dryRun: true })` returns the predicted Merkle root _and_ the gas/fee estimate, **without** broadcasting.
 2. **Dedup check** — if `storage.exists(predictedRoot)` is true, the funding tx is skipped entirely.
 3. **Live upload** — sends the funding tx, returns receipt + Merkle root.
 4. **Round-trip verify** — downloads by root and asserts byte-for-byte equality.

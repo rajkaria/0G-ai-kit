@@ -3,7 +3,11 @@ export type TemplateName =
   | "inference-app"
   | "attestation-verify"
   | "mcp-agent"
-  | "react-app";
+  | "react-app"
+  | "chat"
+  | "ai-agent"
+  | "tee-attested-api"
+  | "nft-with-storage";
 
 export type Network = "local" | "galileo";
 

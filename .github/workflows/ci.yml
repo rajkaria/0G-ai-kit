@@ -73,8 +73,12 @@ jobs:
 
       # Smoke the binary: should write package.json + .env.example into a
       # fresh tmpdir, exit 0, with --no-install / --no-git for speed. The
-      # package default pins templates to the matching v0.2.x release ref.
+      # package default pins templates to a release tag, but PR runs need
+      # to fetch against the branch's current SHA — the tag for this
+      # change hasn't been published yet.
       - name: Scaffold storage-app (local network, no install)
+        env:
+          OGKIT_TEMPLATE_REF: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
           WORK=$(mktemp -d)

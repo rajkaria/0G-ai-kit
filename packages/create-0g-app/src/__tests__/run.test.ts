@@ -129,6 +129,27 @@ describe("run() — non-interactive happy path", () => {
     expect(env).toContain("NETWORK=galileo");
     expect(env).toContain("https://evmrpc-testnet.0g.ai");
   });
+
+  it.each(["chat", "ai-agent", "tee-attested-api", "nft-with-storage"])(
+    "scaffolds SP8 template: %s",
+    async (template) => {
+      const cwd = mkdtempSync(join(tmpdir(), "cga-run-"));
+      const fetched: { name: string; dest: string }[] = [];
+      const deps = makeDeps({
+        cwd,
+        fetchTemplate: async ({ name, dest }) => {
+          fetched.push({ name, dest });
+          writeFileSync(join(dest, "package.json"), `{"name":"${name}"}`);
+        },
+      });
+      const code = await run(
+        argv("demo", "--template", template, "--no-install", "--no-git"),
+        deps
+      );
+      expect(code).toBe(0);
+      expect(fetched).toEqual([{ name: template, dest: join(cwd, "demo") }]);
+    }
+  );
 });
 
 describe("run() — validation errors", () => {

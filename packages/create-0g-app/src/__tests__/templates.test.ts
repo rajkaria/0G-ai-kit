@@ -5,15 +5,27 @@ import { join } from "node:path";
 import { TEMPLATES, fetchTemplate, isValidTemplateName } from "../templates.js";
 
 describe("templates catalogue", () => {
-  it("includes all 5 Phase-1 templates", () => {
+  it("includes all 9 archetype templates", () => {
     const names = TEMPLATES.map((t) => t.name);
-    expect(names).toContain("storage-app");
-    expect(names).toContain("inference-app");
-    expect(names).toContain("attestation-verify");
-    expect(names).toContain("mcp-agent");
-    expect(names).toContain("react-app");
-    expect(names).toHaveLength(5);
+    expect(names).toEqual([
+      "storage-app",
+      "inference-app",
+      "attestation-verify",
+      "mcp-agent",
+      "react-app",
+      "chat",
+      "ai-agent",
+      "tee-attested-api",
+      "nft-with-storage",
+    ]);
   });
+
+  it.each(["chat", "ai-agent", "tee-attested-api", "nft-with-storage"])(
+    "validates SP8 template name: %s",
+    (name) => {
+      expect(isValidTemplateName(name)).toBe(true);
+    }
+  );
 
   it("attaches a non-empty description to every template", () => {
     for (const t of TEMPLATES) {

@@ -4,7 +4,7 @@ import { ZeroGError } from "@foundryprotocol/0gkit-core";
 export class AnvilNotInstalledError extends ZeroGError {
   constructor() {
     super(
-      "CONFIG",
+      "CONFIG_MISSING_ENV",
       "anvil (from foundry) is required for `0g dev`. Install: curl -L https://foundry.paradigm.xyz | bash && foundryup",
       "After install, restart your shell so `anvil` is on PATH. Run `foundryup` later to update."
     );
@@ -15,7 +15,7 @@ export class AnvilNotInstalledError extends ZeroGError {
 export class AnvilStartTimeoutError extends ZeroGError {
   constructor(url: string) {
     super(
-      "NETWORK",
+      "CHAIN_RPC_UNREACHABLE",
       `anvil failed to come up on ${url} within 5s`,
       "Check whether another process is listening on the port (e.g. `lsof -i :8545`)."
     );

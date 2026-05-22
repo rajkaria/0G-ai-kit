@@ -354,3 +354,114 @@ describe("instrument0g — compute estimate + da estimate", () => {
     expect(span.attributes["0gkit.root"]).toMatch(/^0x[0-9a-f]{64}$/);
   });
 });
+
+// NOTE: the no-targets / auto path (defaultTargets() + setupSdkIfRequested)
+// dynamically imports `@foundryprotocol/0gkit-storage` et al. Those aren't
+// dependencies of THIS package (the whole point is to avoid a static edge),
+// so vitest's resolver can't fetch them inside this suite. The auto path is
+// exercised end-to-end by the `tee-attested-api` template's tests instead.
+// See docs/DECISIONS.md D32.
+
+describe("wrap.ts — edge cases", () => {
+  it("records exception with String(err) fallback when err.message is undefined", async () => {
+    class WeirdError extends Error {
+      // Force message to be undefined-ish at runtime.
+      override get message() {
+        return undefined as unknown as string;
+      }
+    }
+    class WeirdStorage {
+      network = "galileo";
+      async upload(): Promise<never> {
+        const e = new WeirdError() as Error & { code: string };
+        e.code = "STORAGE_UPLOAD_FAILED";
+        throw e;
+      }
+    }
+    await instrument0g({
+      mode: "attach",
+      targets: { storage: { class: WeirdStorage, methods: ["upload"] } },
+    });
+    await new WeirdStorage().upload().catch(() => {});
+    const span = exporter.getFinishedSpans()[0]!;
+    expect(span.status.code).toBe(2);
+    expect(span.attributes["0gkit.error_code"]).toBe("STORAGE_UPLOAD_FAILED");
+  });
+
+  it("records exception with no error code attribute when err.code is non-string", async () => {
+    class NoCodeStorage {
+      network = "galileo";
+      async upload(): Promise<never> {
+        // Code is a non-string — wrapper should skip setting 0gkit.error_code.
+        const e = new Error("plain") as Error & { code: number };
+        e.code = 42;
+        throw e;
+      }
+    }
+    await instrument0g({
+      mode: "attach",
+      targets: { storage: { class: NoCodeStorage, methods: ["upload"] } },
+    });
+    await new NoCodeStorage().upload().catch(() => {});
+    const span = exporter.getFinishedSpans()[0]!;
+    expect(span.status.code).toBe(2);
+    expect(span.attributes["0gkit.error_code"]).toBeUndefined();
+  });
+
+  it("DA.publish accepts a string payload and records its length", async () => {
+    class StringDA {
+      network = "galileo";
+      async publish(payload: string) {
+        return { digest: "0x00", gas: 0n, fee: BigInt(payload.length) * 100n };
+      }
+    }
+    await instrument0g({
+      mode: "attach",
+      targets: { da: { class: StringDA, methods: ["publish"] } },
+    });
+    await new StringDA().publish("hello-da-payload");
+    const span = exporter.getFinishedSpans()[0]!;
+    expect(span.attributes["0gkit.size_bytes"]).toBe("hello-da-payload".length);
+  });
+
+  it("maybeBigintString handles bigint, string, and number gas/fee values", async () => {
+    class MixedStorage {
+      network = "galileo";
+      async estimate(_bytes: number) {
+        return {
+          kind: "storage" as const,
+          sizeBytes: 0,
+          segments: 1,
+          gas: "80000", // string path
+          fee: 1_000_000_000, // number path
+        };
+      }
+    }
+    await instrument0g({
+      mode: "attach",
+      targets: { storage: { class: MixedStorage, methods: ["estimate"] } },
+    });
+    await new MixedStorage().estimate(0);
+    const span = exporter.getFinishedSpans()[0]!;
+    expect(span.attributes["0gkit.gas_native"]).toBe("80000");
+    expect(span.attributes["0gkit.fee_native"]).toBe("1000000000");
+  });
+
+  it("wrapMethod is a no-op when target is missing the method", async () => {
+    // Direct exercise of the !target || typeof target[method] !== "function"
+    // guard. We re-use the same FakeStorage but ask for a method that
+    // doesn't exist — the wrapper does nothing, and no span is emitted on
+    // the unrelated upload() call.
+    await instrument0g({
+      mode: "attach",
+      targets: {
+        storage: {
+          class: FakeStorage,
+          methods: ["nonexistentMethod" as never],
+        },
+      },
+    });
+    await new FakeStorage().upload(new Uint8Array(1));
+    expect(exporter.getFinishedSpans()).toHaveLength(0);
+  });
+});

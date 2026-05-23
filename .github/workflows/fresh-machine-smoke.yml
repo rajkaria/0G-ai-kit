@@ -1,0 +1,110 @@
+name: Fresh-machine smoke (published)
+
+# Tests the actual published-to-npm experience for a brand-new developer:
+# nothing local, no env overrides, just `npm create 0gkit-app@latest`. This
+# is the sentinel for the bug class where a published package's defaults
+# (template git ref, transitive deps, CLI bin name) drift from what works.
+#
+# Runs on:
+#   - daily schedule (catch breakage between releases)
+#   - manual workflow_dispatch (re-run after a release)
+#
+# NOT triggered on push / pull_request — the published npm tarball lags
+# behind main, so PR runs would always fail until the next release. The
+# `create-0gkit-app · scaffolds a project` job in ci.yml covers PR-time
+# template + scaffolder coverage by building the local source.
+#
+# Failures here mean: the latest tarball on npm is broken for fresh users.
+# Triage by running `npm create 0gkit-app@latest <name>` locally and
+# checking the actual error.
+
+on:
+  schedule:
+    # Daily at 03:17 UTC (off-peak for any of our preferred regions).
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+    inputs:
+      template:
+        description: "Template to scaffold (one of the 9 archetypes, or 'all')"
+        required: false
+        default: "all"
+        type: string
+
+jobs:
+  scaffold-and-install:
+    name: ${{ matrix.template }} on Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["20", "22", "24"]
+        template:
+          - storage-app
+          - ai-agent
+          - attestation-verify
+          - chat
+          - inference-app
+          - mcp-agent
+          - nft-with-storage
+          - react-app
+          - tee-attested-api
+        exclude:
+          - node: "20"
+            template: chat # chat uses Next.js 16 which requires Node 22+
+
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: npm create 0gkit-app@latest (fresh dev path)
+        run: |
+          set -euo pipefail
+          WORK=$(mktemp -d)
+          cd "$WORK"
+          # Exactly what a fresh dev runs. No env overrides. No prebuilt
+          # binary. Just `npm create 0gkit-app@latest`.
+          npm create -y 0gkit-app@latest demo -- \
+            --template ${{ matrix.template }} \
+            --network local \
+            --no-install \
+            --no-git
+          echo "=== scaffolded files ==="
+          find demo -maxdepth 3 -type f | sort | head -40
+          test -f demo/package.json
+          test -f demo/.env.example
+          # Template package.json must already pin against ^1.0.0 (or
+          # whatever's published) — never the pre-v1 ^0.x ranges.
+          if grep -E '"@foundryprotocol/0gkit-[^"]*"\s*:\s*"\^0\.' demo/package.json; then
+            echo "::error::Template pins pre-v1 (^0.x) ranges of 0gkit packages — published toolkit is v1+, this would install ancient code."
+            exit 1
+          fi
+
+      - name: npm install (real registry, native deps included)
+        run: |
+          set -euo pipefail
+          cd $(find /tmp -maxdepth 3 -name demo -type d | head -1)
+          # Use npm — pnpm/yarn lockfile resolution can mask
+          # underspecified ranges. The fresh dev case is npm.
+          npm install --no-audit --no-fund --loglevel=error
+
+      - name: Template-defined build step (if present)
+        run: |
+          set -euo pipefail
+          cd $(find /tmp -maxdepth 3 -name demo -type d | head -1)
+          if node -e "process.exit(require('./package.json').scripts?.build ? 0 : 1)"; then
+            npm run build
+          else
+            echo "Template has no build script — skipping."
+          fi
+
+      - name: Smoke `0g --version` (only if CLI is a dep)
+        run: |
+          set -euo pipefail
+          cd $(find /tmp -maxdepth 3 -name demo -type d | head -1)
+          if node -e "process.exit(require('./package.json').dependencies?.['@foundryprotocol/0gkit-cli'] ? 0 : 1)"; then
+            npx --no @foundryprotocol/0gkit-cli --version
+          else
+            echo "Template doesn't depend on 0gkit-cli — skipping --version check."
+          fi

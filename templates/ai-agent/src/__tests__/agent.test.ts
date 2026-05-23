@@ -1,24 +1,21 @@
 import { describe, expect, it, vi, afterEach } from "vitest";
-import type { ChatMessage, InferenceResult } from "@foundryprotocol/0gkit-compute";
-import { testWallet } from "@foundryprotocol/0gkit-testing";
+import { mockComputeClient, testWallet } from "@foundryprotocol/0gkit-testing";
+import type { ChatMessage } from "@foundryprotocol/0gkit-testing";
 import { JobRunner } from "@foundryprotocol/0gkit-jobs";
 import { MemoryBackend } from "@foundryprotocol/0gkit-jobs/backends/memory";
 import { buildStepJob, runAgent, type AgentDeps, type StepDeps } from "../agent.js";
 import { ToolRegistry } from "../tools.js";
 
-function fakeCompute(responses: string[]): StepDeps["compute"] {
+function sequencedCompute(responses: string[]): StepDeps["compute"] {
   let i = 0;
-  return {
-    inference: async (_args: { messages: ChatMessage[] }) => {
+  const client = mockComputeClient({
+    responder: (_messages: ChatMessage[]) => {
       const output = responses[Math.min(i, responses.length - 1)] ?? "";
       i += 1;
-      return {
-        output,
-        receipt: { txHash: `0x${i.toString(16).padStart(64, "0")}`, latencyMs: 1 },
-        raw: { mock: true },
-      } as InferenceResult;
+      return output;
     },
-  };
+  });
+  return { inference: (args) => client.inference(args) };
 }
 
 interface Harness {
@@ -49,7 +46,7 @@ async function makeHarness(
   const backend = new MemoryBackend();
   const runner = new JobRunner({ backend, signer: testWallet({ index: 0 }) });
   const stepJob = buildStepJob({
-    compute: fakeCompute(responses),
+    compute: sequencedCompute(responses),
     verifyStep: overrides.verifyStep ?? vi.fn().mockResolvedValue(true),
   });
   runner.register(stepJob);

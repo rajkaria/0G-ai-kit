@@ -5,7 +5,8 @@ import {
   InMemorySpanExporter,
   SimpleSpanProcessor,
 } from "@opentelemetry/sdk-trace-base";
-import type { InferenceResult } from "@foundryprotocol/0gkit-compute";
+import { mockComputeClient } from "@foundryprotocol/0gkit-testing";
+import type { ChatMessage } from "@foundryprotocol/0gkit-testing";
 import { buildApp } from "../app.js";
 
 const TRACER_NAME = "tee-attested-api";
@@ -27,16 +28,13 @@ afterEach(async () => {
 });
 
 function makeDeps() {
-  const inference = vi.fn(
-    async (_args: { messages: { role: string; content: string }[] }) =>
-      ({
-        output: "echo: hello",
-        receipt: { txHash: "0x1234", latencyMs: 1 },
-        raw: { mock: true },
-      }) as InferenceResult
-  );
+  const client = mockComputeClient({
+    receiptOverride: { txHash: "0x1234", latencyMs: 1 },
+  });
   return {
-    compute: { inference },
+    compute: {
+      inference: (args: { messages: ChatMessage[] }) => client.inference(args),
+    },
     getAttestation: vi
       .fn()
       .mockResolvedValue({ v: 1, signer: "0x0", signature: "0xbeef" }),

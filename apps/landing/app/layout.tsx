@@ -1,5 +1,17 @@
 import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+  display: "swap",
+});
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+  display: "swap",
+});
 
 const SITE_URL = "https://0gkit.com";
 const SITE_NAME = "0gkit";
@@ -77,7 +89,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#050507",
+  themeColor: "#000000",
   width: "device-width",
   initialScale: 1,
   colorScheme: "dark",
@@ -85,8 +97,19 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body>{children}</body>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${geist.variable} ${geistMono.variable}`}
+    >
+      <body
+        style={{
+          fontFamily:
+            "var(--font-geist), 'Regola Pro', ui-sans-serif, system-ui, sans-serif",
+        }}
+      >
+        {children}
+      </body>
     </html>
   );
 }

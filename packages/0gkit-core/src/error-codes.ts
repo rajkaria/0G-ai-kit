@@ -74,9 +74,8 @@ export function errorNamespace(code: ErrorCode): string {
  * The canonical base for every `ZeroGError.helpUrl`. Concatenated with the
  * error `code` to produce a stable, frozen-in-tarball remediation URL.
  *
- * Locked at the first v1.0.x patch — see `docs/DECISIONS.md` D38. The
- * historical base used in v1.0.0 tarballs is also a domain we control and
- * 301-redirects `/errors/*` here, so older installs keep resolving forever.
+ * See `docs/DECISIONS.md` D38. If this ever needs to move, only this
+ * constant changes — the URL is derived, never hard-coded at throw sites.
  */
 export const ERROR_HELP_BASE = "https://0gkit.com/errors/";
 

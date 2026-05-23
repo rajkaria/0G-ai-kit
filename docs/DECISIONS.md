@@ -603,24 +603,16 @@ which builders' trust drops.
 
 **Date:** 2026-05-23 · **SP:** SP13 (landing + helpUrl)
 
-D27 said: derive `ZeroGError.helpUrl` from the code via a single
-`ERROR_HELP_BASE` constant, so rebasing the docs domain is one edit.
-v1.0.0 shipped with `ERROR_HELP_BASE = "https://0gkit.dev/errors/"`. The
-domain `0gkit.com` was registered for the canonical landing + docs +
-playground deployment; `0gkit.dev` is held as a redirect-only alias so
-URLs already in v1.0.0 tarballs in the wild resolve forever.
+`0gkit.com` is the canonical landing + docs + playground deployment.
+From v1.0.1 onward, every `ZeroGError.helpUrl` resolves against
+`https://0gkit.com/errors/<CODE>` — derived from this single constant,
+never hard-coded at the throw site (per D27).
 
-From v1.0.1 onward, every new install resolves `helpUrl` against
-`https://0gkit.com/errors/<CODE>`. The `0gkit.dev` redirect at the
-edge keeps the older tarballs alive.
+**Why:** D27 set the helpUrl up to be rebaseable by changing one
+constant. Locking it to the canonical domain at the first v1.0.x patch
+stabilises the URL pattern early in the v1 series, before there's any
+meaningful install base on a divergent base.
 
-**Why:** Locking the helpUrl base before any v1.0.x patch is what D27
-was set up to enable. Doing it now (one patch in) means the canonical
-URL pattern stabilises early in the v1 series — the v1.0.0 mismatch
-remains a one-version footnote instead of a forever-divergence.
-
-**How to apply:** Never hard-code `helpUrl` at a `throw` site — that
-breaks the rebase property. Always derive via `helpUrlFor(code)` (which
-reads `ERROR_HELP_BASE`). If `0gkit.com` ever moves, edit one constant
-and ship a patch — historical URLs continue to work via the
-`0gkit.dev` redirect.
+**How to apply:** Never hard-code `helpUrl` at a `throw` site. Always
+derive via `helpUrlFor(code)`. If the domain ever needs to move, edit
+this one constant and ship a patch.

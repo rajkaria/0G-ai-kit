@@ -14,46 +14,41 @@ export default function OpengraphImage() {
         display: "flex",
         flexDirection: "column",
         background:
-          "radial-gradient(60% 50% at 50% 0%, #0e2530 0%, #050507 70%), #050507",
+          "radial-gradient(60% 50% at 50% 0%, #2a0a3e 0%, #000000 70%), #000000",
         padding: "80px",
-        color: "#e8e8ee",
+        color: "#fefefe",
         fontFamily: "system-ui, sans-serif",
         position: "relative",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "16px",
-        }}
-      >
+      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
         <div
           style={{
-            width: "56px",
-            height: "56px",
+            width: "64px",
+            height: "64px",
             borderRadius: "14px",
-            background: "linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%)",
+            background: "#000000",
+            border: "1.5px solid #9200e1",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            color: "#050507",
-            fontSize: "26px",
+            color: "#cb8aff",
+            fontSize: "36px",
             fontWeight: 800,
             fontFamily: "ui-monospace, Menlo, monospace",
             letterSpacing: "-0.05em",
           }}
         >
-          0g
+          Ø
         </div>
-        <div style={{ fontSize: "40px", fontWeight: 700, letterSpacing: "-0.02em" }}>
+        <div style={{ fontSize: "44px", fontWeight: 800, letterSpacing: "-0.02em" }}>
           0gkit
         </div>
         <div
           style={{
             marginLeft: "auto",
-            fontSize: "20px",
-            color: "#9ca0ad",
+            fontSize: "22px",
+            color: "#b8b8c2",
             display: "flex",
             alignItems: "center",
           }}
@@ -64,21 +59,22 @@ export default function OpengraphImage() {
 
       <div
         style={{
-          marginTop: "70px",
-          fontSize: "82px",
+          marginTop: "80px",
+          fontSize: "92px",
           fontWeight: 800,
-          lineHeight: 1.04,
-          letterSpacing: "-0.03em",
-          maxWidth: "1000px",
+          lineHeight: 1.02,
+          letterSpacing: "-0.035em",
+          maxWidth: "1040px",
           display: "flex",
           flexWrap: "wrap",
-          gap: "0 16px",
+          gap: "0 18px",
         }}
       >
         <span>Build on</span>
         <span
           style={{
-            background: "linear-gradient(135deg, #22d3ee 0%, #8b5cf6 100%)",
+            background:
+              "linear-gradient(135deg, #cb8aff 0%, #9200e1 50%, #b75fff 100%)",
             backgroundClip: "text",
             color: "transparent",
           }}
@@ -90,10 +86,10 @@ export default function OpengraphImage() {
 
       <div
         style={{
-          marginTop: "36px",
-          fontSize: "28px",
-          color: "#b3b8c5",
-          maxWidth: "950px",
+          marginTop: "40px",
+          fontSize: "30px",
+          color: "#b8b8c2",
+          maxWidth: "1000px",
           lineHeight: 1.35,
         }}
       >
@@ -111,20 +107,20 @@ export default function OpengraphImage() {
       >
         <div
           style={{
-            background: "#0c0d12",
-            border: "1px solid #22d3ee",
-            borderRadius: "12px",
-            padding: "18px 26px",
+            background: "#0a0a0c",
+            border: "1px solid #9200e1",
+            borderRadius: "14px",
+            padding: "20px 28px",
             fontFamily: "ui-monospace, Menlo, monospace",
-            fontSize: "26px",
-            color: "#22d3ee",
+            fontSize: "28px",
+            color: "#cb8aff",
             display: "flex",
             alignItems: "center",
-            gap: "12px",
-            boxShadow: "0 0 32px rgba(34, 211, 238, 0.25)",
+            gap: "14px",
+            boxShadow: "0 0 50px rgba(146, 0, 225, 0.45)",
           }}
         >
-          <span style={{ color: "#6b7187" }}>$</span>
+          <span style={{ color: "#6e6e7a" }}>$</span>
           npm create 0gkit-app@latest
         </div>
       </div>

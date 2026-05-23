@@ -1,44 +1,39 @@
 import { InstallCommand } from "./InstallCommand";
+import { HeroBackground } from "./HeroBackground";
 
 export function Hero() {
   return (
     <section
-      style={{ position: "relative", paddingTop: "5rem", paddingBottom: "5rem" }}
+      style={{
+        position: "relative",
+        paddingTop: "4.5rem",
+        paddingBottom: "5rem",
+        overflow: "hidden",
+      }}
     >
-      <div className="hero-glow" aria-hidden />
-      <div
-        className="bg-dots"
-        aria-hidden
-        style={{
-          position: "absolute",
-          inset: 0,
-          opacity: 0.35,
-          maskImage: "radial-gradient(60% 40% at 50% 30%, black 0%, transparent 80%)",
-          WebkitMaskImage:
-            "radial-gradient(60% 40% at 50% 30%, black 0%, transparent 80%)",
-        }}
-      />
+      <HeroBackground />
       <div
         className="container-x"
-        style={{ position: "relative", textAlign: "center" }}
+        style={{ position: "relative", textAlign: "center", zIndex: 1 }}
       >
         <a
           href="https://github.com/rajkaria/0gkit/releases/tag/v1.0.0"
           target="_blank"
           rel="noreferrer"
-          className="pill pill-accent"
-          style={{ marginBottom: "1.6rem" }}
+          className="pill pill-accent rise rise-d-1"
+          style={{ marginBottom: "1.8rem" }}
         >
           <span className="pill-dot" />
           v1.0.0 shipped — 18 packages on npm, API stable until v2 →
         </a>
 
         <h1
+          className="rise rise-d-2"
           style={{
             margin: "0 auto",
-            fontSize: "clamp(2.5rem, 6.5vw, 4.8rem)",
-            lineHeight: 1.04,
-            letterSpacing: "-0.035em",
+            fontSize: "clamp(2.6rem, 7vw, 5.2rem)",
+            lineHeight: 1.03,
+            letterSpacing: "-0.038em",
             fontWeight: 800,
             maxWidth: "20ch",
           }}
@@ -47,10 +42,11 @@ export function Hero() {
         </h1>
 
         <p
+          className="rise rise-d-3"
           style={{
-            margin: "1.4rem auto 0",
-            maxWidth: "640px",
-            fontSize: "clamp(1rem, 1.8vw, 1.18rem)",
+            margin: "1.6rem auto 0",
+            maxWidth: "660px",
+            fontSize: "clamp(1.02rem, 1.85vw, 1.2rem)",
             color: "var(--color-fg-dim)",
             lineHeight: 1.55,
           }}
@@ -61,7 +57,7 @@ export function Hero() {
             href="https://0g.ai"
             target="_blank"
             rel="noreferrer"
-            style={{ color: "var(--color-accent-2)" }}
+            style={{ color: "var(--color-brand-2)" }}
           >
             0G network
           </a>
@@ -70,8 +66,9 @@ export function Hero() {
         </p>
 
         <div
+          className="rise rise-d-4"
           style={{
-            marginTop: "2.2rem",
+            marginTop: "2.4rem",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -79,12 +76,13 @@ export function Hero() {
             flexWrap: "wrap",
           }}
         >
-          <InstallCommand />
+          <InstallCommand glow />
         </div>
 
         <div
+          className="rise rise-d-5"
           style={{
-            marginTop: "1.1rem",
+            marginTop: "1.2rem",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -110,8 +108,9 @@ export function Hero() {
         </div>
 
         <p
+          className="rise rise-d-5"
           style={{
-            marginTop: "1.4rem",
+            marginTop: "1.6rem",
             fontSize: "0.82rem",
             color: "var(--color-fg-muted)",
           }}

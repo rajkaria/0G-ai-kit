@@ -51,31 +51,13 @@ In each Vercel project's **Settings → Domains**:
 Vercel will show the exact DNS records needed (`A` for apex, `CNAME` for
 subdomains). Apply them at the domain registrar.
 
-### 3. Lock `0gkit.dev` as the v1.0.0 `helpUrl` preservation alias
-
-Every `ZeroGError` published in v1.0.0 tarballs carries a `helpUrl` of the
-shape `https://0gkit.dev/errors/<CODE>` — that constant is frozen in those
-tarballs forever (see [D38](./DECISIONS.md) and D27). Starting v1.0.1, new
-installs resolve `helpUrl` against `https://0gkit.com/errors/<CODE>`.
-
-To keep the URLs already in installed v1.0.0 packages working:
-
-1. **Register `0gkit.dev`** (any registrar — strongly recommended; the
-   alternative is ~6 months of broken `helpUrl` clicks for v1.0.0 users
-   until they upgrade to v1.0.1+).
-2. Add it as a **redirect-only domain** in the `0gkit-docs` Vercel project
-   (Settings → Domains → Add → `0gkit.dev` → Redirect To:
-   `https://0gkit.com`, status `308`).
-3. Verify a single error code: `curl -I https://0gkit.dev/errors/STORAGE_QUOTA_EXCEEDED`
-   should respond with `Location: https://0gkit.com/errors/STORAGE_QUOTA_EXCEEDED`.
-
-### 4. Environment variables
+### 3. Environment variables
 
 The landing page is fully static (no runtime env). The docs site is also
 static. The playground may need `OG_NETWORK` / `OG_RPC_URL` overrides if
 you point it at non-default endpoints — see `apps/playground/README.md`.
 
-### 5. Submit to Google Search Console
+### 4. Submit to Google Search Console
 
 Once `0gkit.com` is live, register the property at
 [search.google.com/search-console](https://search.google.com/search-console):

@@ -5,11 +5,13 @@ import { useCallback, useState } from "react";
 type InstallCommandProps = {
   command?: string;
   size?: "lg" | "md";
+  glow?: boolean;
 };
 
 export function InstallCommand({
   command = "npm create 0gkit-app@latest",
   size = "lg",
+  glow = false,
 }: InstallCommandProps) {
   const [copied, setCopied] = useState(false);
 
@@ -40,9 +42,10 @@ export function InstallCommand({
         fontFamily: "var(--font-mono)",
         fontSize: isLg ? "1.05rem" : "0.85rem",
         boxShadow: isLg
-          ? "0 0 0 1px color-mix(in srgb, var(--color-accent) 25%, transparent), 0 20px 40px -20px color-mix(in srgb, var(--color-accent) 40%, transparent)"
+          ? "0 0 0 1px color-mix(in srgb, var(--color-brand) 30%, transparent), 0 20px 60px -20px color-mix(in srgb, var(--color-brand) 70%, transparent)"
           : "none",
         maxWidth: "100%",
+        animation: glow ? "pulse-glow 3s ease-in-out infinite" : undefined,
       }}
     >
       <span aria-hidden style={{ color: "var(--color-fg-muted)" }}>

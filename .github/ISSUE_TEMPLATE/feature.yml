@@ -1,0 +1,47 @@
+name: Feature request
+description: Suggest a new capability or improvement.
+labels: ["enhancement", "triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you solving?
+      description: What can't you do today, or what's frustrating about the current behavior?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Sketch the API shape, command, or flow you'd like.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Workarounds you've tried, or other libraries that solve this.
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Which package?
+      options:
+        - "@foundryprotocol/0gkit-core"
+        - "@foundryprotocol/0gkit-storage"
+        - "@foundryprotocol/0gkit-compute"
+        - "@foundryprotocol/0gkit-da"
+        - "@foundryprotocol/0gkit-attestation"
+        - "@foundryprotocol/0gkit-chain"
+        - "@foundryprotocol/0gkit-wallet"
+        - "@foundryprotocol/0gkit-contracts"
+        - "@foundryprotocol/0gkit-indexer"
+        - "@foundryprotocol/0gkit-testing"
+        - "@foundryprotocol/0gkit-jobs"
+        - "@foundryprotocol/0gkit-observability"
+        - "@foundryprotocol/0gkit-cli"
+        - "@foundryprotocol/0gkit-react"
+        - "create-0gkit-app"
+        - docs
+        - other
+    validations:
+      required: true

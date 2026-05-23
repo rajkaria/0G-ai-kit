@@ -1,0 +1,26 @@
+title: "[HELP] "
+labels: ["help-wanted"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What are you trying to do?
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: What have you tried?
+  - type: input
+    id: version
+    attributes:
+      label: 0gkit version
+      placeholder: e.g. @foundryprotocol/0gkit-storage@0.3.0
+  - type: dropdown
+    id: network
+    attributes:
+      label: Network
+      options:
+        - galileo
+        - local (0g dev)
+        - other

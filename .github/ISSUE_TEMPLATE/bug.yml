@@ -1,0 +1,42 @@
+name: Bug report
+description: Something in 0gkit is broken.
+labels: ["bug", "triage"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: 0gkit version
+      placeholder: e.g. @foundryprotocol/0gkit-storage@0.3.0
+    validations:
+      required: true
+  - type: input
+    id: error-code
+    attributes:
+      label: Error code (if any)
+      placeholder: e.g. STORAGE_QUOTA_EXCEEDED
+      description: From `error.code`, or the URL the helpUrl lands you on.
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal repro
+      description: Smallest code + commands that triggers the bug.
+      render: typescript
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs actual
+      description: What did you expect to happen? What actually happened?
+    validations:
+      required: true
+  - type: dropdown
+    id: network
+    attributes:
+      label: Network
+      options:
+        - galileo
+        - local (0g dev)
+        - other (specify in repro)
+    validations:
+      required: true

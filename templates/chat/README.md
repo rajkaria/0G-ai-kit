@@ -86,3 +86,10 @@ network needed.
   once you don't need a privileged server key.
 - Migrate long uploads onto `@foundryprotocol/0gkit-jobs` (SP10) when it
   ships.
+
+## Deploy on Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Frajkaria%2F0gkit%2Ftree%2Fmain%2Ftemplates%2Fchat&project-name=0gkit-chat&env=NETWORK%2CPRIVATE_KEY&envDescription=See%200gkit.dev%20env%20vars&envLink=https%3A%2F%2F0gkit.dev%2Fgetting-started%2Fenv-vars)
+
+Vercel will fork the template into a new repository, prompt for the listed
+env vars, and deploy in under 60 seconds on Fluid Compute.

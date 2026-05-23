@@ -1,0 +1,93 @@
+# Contributing
+
+Thanks for helping build the neutral 0G toolkit. The canonical source for this
+guide lives at [CONTRIBUTING.md](https://github.com/rajkaria/0gkit/blob/main/CONTRIBUTING.md)
+in the repo — this page mirrors it for discoverability.
+
+## 1. Local setup
+
+```bash
+git clone https://github.com/rajkaria/0gkit.git
+cd 0gkit
+pnpm install
+pnpm --filter @foundryprotocol/0gkit-core build
+pnpm build
+```
+
+Requirements: Node `>=20.10`, pnpm `9.12.0`.
+
+See it working:
+
+```bash
+pnpm --filter @foundryprotocol/0gkit-cli dev -- dev
+```
+
+## 2. Running tests
+
+```bash
+pnpm test
+pnpm --filter @foundryprotocol/0gkit-storage test
+pnpm boundary:check
+pnpm docs:check
+pnpm templates:check
+```
+
+Each package targets 80% lines / 70% branches.
+
+## 3. Adding a template
+
+Templates live under `templates/` (workspace-excluded — see D24). Each is a
+standalone project that builds against published `@foundryprotocol/0gkit-*`
+versions.
+
+- Create `templates/<name>/` with `package.json`, `tsconfig.json`,
+  `vitest.config.ts`, `README.md`, `src/index.ts`, `src/<name>-flow.ts`
+  (testable surface, D25), and `src/__tests__/`.
+- Register in `packages/create-0g-app/src/types.ts` and the `TEMPLATES`
+  registry. Add a smoke case to the scaffolder tests.
+- Append a row with a Vercel deploy URL to
+  `apps/docs/app/templates/page.mdx`.
+
+## 4. Adding an error code
+
+Append the SCREAMING_SNAKE code to `ERROR_CODES` in `0gkit-core`, throw it via
+the right typed subclass, write a docs page at
+`apps/docs/app/errors/<CODE>/page.mdx`. `pnpm docs:check` enforces both.
+
+## 5. Writing a sub-project plan
+
+Plans live under `docs/superpowers/plans/` as `<YYYY-MM-DD>-<sp-N>-<slug>.md`.
+Use `superpowers:writing-plans` to draft. Tasks should be bite-sized: one test
+
+- one implementation + one commit each.
+
+Execute via `superpowers:subagent-driven-development` (same session, fresh
+subagent per task) or `superpowers:executing-plans` (parallel session).
+
+## 6. Changesets
+
+Every change to a published package needs a changeset:
+
+```bash
+pnpm changeset
+```
+
+Choose **patch** (bug fix), **minor** (additive), or **major** (breaking, with
+a `## Migration` section in the body).
+
+## 7. Sign-off (DCO)
+
+We require the [Developer Certificate of Origin](https://developercertificate.org/).
+Sign your commits:
+
+```bash
+git commit -s -m "feat: ..."
+```
+
+PRs without DCO sign-off won't merge.
+
+## 8. Code of Conduct
+
+By participating, you agree to abide by the
+[Code of Conduct](https://github.com/rajkaria/0gkit/blob/main/CODE_OF_CONDUCT.md).
+Report incidents to `conduct@foundryprotocol.xyz`.

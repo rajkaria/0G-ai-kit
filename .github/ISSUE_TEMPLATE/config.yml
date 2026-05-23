@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Help / general question
+    url: https://github.com/rajkaria/0gkit/discussions/categories/help
+    about: For "how do I" questions, use Discussions.
+  - name: Show and tell
+    url: https://github.com/rajkaria/0gkit/discussions/categories/show-and-tell
+    about: Built something with 0gkit? Share it here.
+  - name: Docs
+    url: https://0gkit.dev
+    about: Full reference + getting-started guides.

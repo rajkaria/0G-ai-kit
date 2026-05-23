@@ -25,8 +25,8 @@ export async function Hero() {
           className="pill pill-accent rise rise-d-1"
           style={{ marginBottom: "1.8rem" }}
         >
-          <span className="pill-dot" />
-          v{release.version} shipped — 18 packages on npm, API stable until v2 →
+          <span className="pill-dot" />v{release.version} shipped — 18 packages on npm,
+          API stable until v2 →
         </a>
 
         <h1

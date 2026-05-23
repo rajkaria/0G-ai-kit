@@ -43,8 +43,7 @@ export async function Nav() {
               padding: "0.15rem 0.55rem",
             }}
           >
-            <span className="pill-dot" />
-            v{release.version}
+            <span className="pill-dot" />v{release.version}
           </span>
         </a>
 

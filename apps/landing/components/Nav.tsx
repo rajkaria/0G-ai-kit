@@ -1,6 +1,8 @@
 import { Logo } from "./Logo";
+import { getLatestRelease } from "@/lib/version";
 
-export function Nav() {
+export async function Nav() {
+  const release = await getLatestRelease();
   return (
     <header
       style={{
@@ -42,7 +44,7 @@ export function Nav() {
             }}
           >
             <span className="pill-dot" />
-            v1.0.0
+            v{release.version}
           </span>
         </a>
 

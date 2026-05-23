@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { getLatestRelease } from "@/lib/version";
 import "./globals.css";
 
 const geist = Geist({
@@ -16,10 +17,11 @@ const geistMono = Geist_Mono({
 const SITE_URL = "https://0gkit.com";
 const SITE_NAME = "0Gkit";
 const TITLE = "0Gkit — The TypeScript Toolkit for the 0G Network";
-const DESCRIPTION =
-  "Build on 0G in 60 seconds. 0Gkit is the neutral, MIT-licensed TypeScript toolkit for storage, compute, DA, attestation, and chain. One install: `npm create 0gkit-app@latest`. 18 packages. v1.0.0 stable.";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const release = await getLatestRelease();
+  const DESCRIPTION = `Build on 0G in 60 seconds. 0Gkit is the neutral, MIT-licensed TypeScript toolkit for storage, compute, DA, attestation, and chain. One install: \`npm create 0gkit-app@latest\`. 18 packages. v${release.version} stable.`;
+  return {
   metadataBase: new URL(SITE_URL),
   title: {
     default: TITLE,
@@ -86,7 +88,8 @@ export const metadata: Metadata = {
     apple: "/icon.svg",
   },
   category: "Developer Tools",
-};
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#000000",

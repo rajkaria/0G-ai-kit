@@ -1,5 +1,28 @@
 # @foundryprotocol/0gkit-react
 
+## 1.0.1
+
+### Patch Changes
+
+- ab359ac: Rebase `ERROR_HELP_BASE` from `https://0gkit.dev/errors/` to
+  `https://0gkit.com/errors/` (D38). `0gkit.com` is the canonical landing +
+  docs + playground deployment going forward; `0gkit.dev` is held as a
+  redirect-only alias so URLs already in v1.0.0 tarballs continue to
+  resolve forever.
+
+  Every package.json `homepage` now points to https://0gkit.com so that
+  npm package pages link back to the canonical site.
+
+  No API surface changes — `ZeroGError.helpUrl` is still derived from
+  `ERROR_HELP_BASE` via `helpUrlFor(code)`; only the constant moves.
+
+- Updated dependencies [ab359ac]
+  - @foundryprotocol/0gkit-attestation@1.0.1
+  - @foundryprotocol/0gkit-compute@1.0.1
+  - @foundryprotocol/0gkit-core@1.0.1
+  - @foundryprotocol/0gkit-indexer@1.0.1
+  - @foundryprotocol/0gkit-storage@1.0.1
+
 ## 1.0.0
 
 ### Major Changes

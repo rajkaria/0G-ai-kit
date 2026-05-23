@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const alt =
-  "0gkit — The TypeScript Toolkit for the 0G Network. npm create 0gkit-app@latest";
+  "0Gkit — The TypeScript Toolkit for the 0G Network. npm create 0gkit-app@latest";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -42,7 +42,7 @@ export default function OpengraphImage() {
           Ø
         </div>
         <div style={{ fontSize: "44px", fontWeight: 800, letterSpacing: "-0.02em" }}>
-          0gkit
+          0Gkit
         </div>
         <div
           style={{

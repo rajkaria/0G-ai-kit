@@ -11,9 +11,9 @@ import { Footer } from "@/components/Footer";
 import { StructuredData } from "@/components/StructuredData";
 
 export const metadata: Metadata = {
-  title: "0gkit — The TypeScript Toolkit for the 0G Network",
+  title: "0Gkit — The TypeScript Toolkit for the 0G Network",
   description:
-    "Build on 0G in 60 seconds with 0gkit: the neutral, MIT-licensed TypeScript toolkit for storage, compute, DA, attestation, and chain. Install with `npm create 0gkit-app@latest`. 18 packages. v1.0.0 stable.",
+    "Build on 0G in 60 seconds with 0Gkit: the neutral, MIT-licensed TypeScript toolkit for storage, compute, DA, attestation, and chain. Install with `npm create 0gkit-app@latest`. 18 packages. v1.0.0 stable.",
   alternates: { canonical: "/" },
 };
 

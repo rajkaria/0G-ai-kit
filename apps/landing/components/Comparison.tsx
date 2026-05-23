@@ -75,14 +75,14 @@ export function Comparison() {
     <section className="section" style={{ background: "var(--color-bg-elev)" }}>
       <div className="container-x">
         <SectionHeader
-          kicker="0gkit vs raw 0G SDKs"
+          kicker="0Gkit vs raw 0G SDKs"
           title={
             <>
               Same network.{" "}
               <span className="text-gradient">Better developer ergonomics.</span>
             </>
           }
-          sub="0gkit doesn't hide the official 0G SDKs — every package re-exports them via `.raw()`. It just gives you the consistent surface you'd build yourself."
+          sub="0Gkit doesn't hide the official 0G SDKs — every package re-exports them via `.raw()`. It just gives you the consistent surface you'd build yourself."
         />
 
         <div
@@ -109,7 +109,7 @@ export function Comparison() {
           >
             <div style={{ padding: "0.85rem 1rem" }}>Concern</div>
             <div style={{ padding: "0.85rem 1rem", color: "var(--color-accent-2)" }}>
-              0gkit
+              0Gkit
             </div>
             <div style={{ padding: "0.85rem 1rem" }}>Raw 0G SDKs</div>
           </div>

@@ -51,7 +51,7 @@ export function Hero() {
             lineHeight: 1.55,
           }}
         >
-          <strong style={{ color: "var(--color-fg)" }}>0gkit</strong> is the neutral,
+          <strong style={{ color: "var(--color-fg)" }}>0Gkit</strong> is the neutral,
           MIT-licensed TypeScript toolkit for the entire{" "}
           <a
             href="https://0g.ai"

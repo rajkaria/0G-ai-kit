@@ -9,10 +9,10 @@ const SITE_URL = "https://0gkit.com";
 const SOFTWARE_APPLICATION = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "0gkit",
-  alternateName: ["create-0gkit-app", "@foundryprotocol/0gkit"],
+  name: "0Gkit",
+  alternateName: ["0gkit", "create-0gkit-app", "@foundryprotocol/0gkit"],
   description:
-    "The neutral, MIT-licensed TypeScript toolkit for the 0G network. Storage, compute, DA, attestation, and chain in one consistent surface. Install with `npm create 0gkit-app@latest`.",
+    "0Gkit is the neutral, MIT-licensed TypeScript toolkit for the 0G network. Storage, compute, DA, attestation, and chain in one consistent surface. Install with `npm create 0gkit-app@latest`.",
   url: SITE_URL,
   applicationCategory: "DeveloperApplication",
   applicationSubCategory: "Web3 SDK",
@@ -44,7 +44,7 @@ const SOFTWARE_APPLICATION = {
 const ORGANIZATION = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "0gkit",
+  name: "0Gkit",
   url: SITE_URL,
   logo: `${SITE_URL}/icon.svg`,
   sameAs: [
@@ -57,7 +57,7 @@ const ORGANIZATION = {
 const WEBSITE = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "0gkit",
+  name: "0Gkit",
   url: SITE_URL,
   potentialAction: {
     "@type": "SearchAction",
@@ -72,7 +72,7 @@ const FAQ = {
   mainEntity: [
     {
       "@type": "Question",
-      name: "How do I install 0gkit?",
+      name: "How do I install 0Gkit?",
       acceptedAnswer: {
         "@type": "Answer",
         text: "Run `npm create 0gkit-app@latest my-app`. The scaffolder picks a template, writes a network-aware `.env.example`, installs dependencies, and runs `git init`. From there it's `cd my-app && npm run dev`. Or install individual primitives like `npm i @foundryprotocol/0gkit-storage` if you already have an app.",
@@ -80,26 +80,26 @@ const FAQ = {
     },
     {
       "@type": "Question",
-      name: "What is 0gkit?",
+      name: "What is 0Gkit?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "0gkit is the neutral, MIT-licensed TypeScript toolkit for the 0G network. It gives you small, composable packages for every 0G capability — Storage, Compute (inference), Data Availability, TEE Attestation, and the native chain — plus a language-agnostic `0g` CLI, an MCP server for AI agents, and React hooks.",
+        text: "0Gkit is the neutral, MIT-licensed TypeScript toolkit for the 0G network. It gives you small, composable packages for every 0G capability — Storage, Compute (inference), Data Availability, TEE Attestation, and the native chain — plus a language-agnostic `0g` CLI, an MCP server for AI agents, and React hooks.",
       },
     },
     {
       "@type": "Question",
-      name: "Is 0gkit official?",
+      name: "Is 0Gkit official?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "0gkit is a community-built toolkit published under the `@foundryprotocol/0gkit-*` npm scope. It wraps the official 0G SDKs without hiding them — every primitive exposes a `.raw()` escape hatch back to the underlying SDK. The code is protocol-neutral and MIT-licensed.",
+        text: "0Gkit is a community-built toolkit published under the `@foundryprotocol/0gkit-*` npm scope. It wraps the official 0G SDKs without hiding them — every primitive exposes a `.raw()` escape hatch back to the underlying SDK. The code is protocol-neutral and MIT-licensed.",
       },
     },
     {
       "@type": "Question",
-      name: "Can I use 0gkit with the raw 0G SDKs?",
+      name: "Can I use 0Gkit with the raw 0G SDKs?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes. Every 0gkit primitive exposes a `.raw()` method that returns the underlying official SDK instance, so you can drop down to the raw API at any time. The toolkit is designed as a help, not a cage — you are never blocked.",
+        text: "Yes. Every 0Gkit primitive exposes a `.raw()` method that returns the underlying official SDK instance, so you can drop down to the raw API at any time. The toolkit is designed as a help, not a cage — you are never blocked.",
       },
     },
     {

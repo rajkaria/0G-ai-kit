@@ -21,7 +21,7 @@ export function Logo({ size = 32, variant = "mark" }: LogoProps) {
         <span
           style={{ fontWeight: 700, letterSpacing: "-0.015em", fontSize: size * 0.66 }}
         >
-          0gkit
+          0Gkit
         </span>
       </span>
     );
@@ -37,7 +37,7 @@ function Mark({ size }: { size: number }) {
       height={size}
       viewBox="0 0 64 64"
       xmlns="http://www.w3.org/2000/svg"
-      aria-label="0gkit"
+      aria-label="0Gkit"
       style={{ display: "block" }}
     >
       <defs>

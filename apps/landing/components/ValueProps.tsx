@@ -42,14 +42,14 @@ export function ValueProps() {
     <section className="section" id="why">
       <div className="container-x">
         <SectionHeader
-          kicker="Why 0gkit"
+          kicker="Why 0Gkit"
           title={
             <>
               Everything you need to ship on <span className="text-gradient">0G</span>,
               and nothing you don&apos;t.
             </>
           }
-          sub="The 0G network ships five separate SDKs, each with its own shape, its own error style, and no shared concept of a receipt or a cost. 0gkit unifies them — without hiding them."
+          sub="The 0G network ships five separate SDKs, each with its own shape, its own error style, and no shared concept of a receipt or a cost. 0Gkit unifies them — without hiding them."
         />
 
         <div

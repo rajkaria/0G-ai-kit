@@ -25,13 +25,13 @@ export function Nav() {
         <a
           href="/"
           style={{ display: "flex", alignItems: "center", gap: "0.65rem" }}
-          aria-label="0gkit home"
+          aria-label="0Gkit home"
         >
           <Logo size={28} />
           <span
             style={{ fontSize: "1.05rem", fontWeight: 700, letterSpacing: "-0.01em" }}
           >
-            0gkit
+            0Gkit
           </span>
           <span
             className="pill pill-accent"

@@ -14,16 +14,16 @@ const geistMono = Geist_Mono({
 });
 
 const SITE_URL = "https://0gkit.com";
-const SITE_NAME = "0gkit";
-const TITLE = "0gkit — The TypeScript Toolkit for the 0G Network";
+const SITE_NAME = "0Gkit";
+const TITLE = "0Gkit — The TypeScript Toolkit for the 0G Network";
 const DESCRIPTION =
-  "Build on 0G in 60 seconds. The neutral, MIT-licensed TypeScript toolkit for storage, compute, DA, attestation, and chain. One install: `npm create 0gkit-app@latest`. 18 packages. v1.0.0 stable.";
+  "Build on 0G in 60 seconds. 0Gkit is the neutral, MIT-licensed TypeScript toolkit for storage, compute, DA, attestation, and chain. One install: `npm create 0gkit-app@latest`. 18 packages. v1.0.0 stable.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: TITLE,
-    template: "%s — 0gkit",
+    template: "%s — 0Gkit",
   },
   description: DESCRIPTION,
   applicationName: SITE_NAME,
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     "0G AI chain",
     "0G SDK",
     "0G TypeScript",
-    "0gkit",
+    "0Gkit",
     "0G storage",
     "0G compute",
     "0G inference",
@@ -42,11 +42,11 @@ export const metadata: Metadata = {
     "TEE attestation",
     "verifiable AI",
     "decentralized AI",
-    "create 0gkit app",
+    "create 0Gkit app",
     "npm create 0gkit-app",
     "MCP 0G",
-    "0g chain developer toolkit",
-    "0g chain typescript",
+    "0G chain developer toolkit",
+    "0G chain typescript",
     "0G React hooks",
   ],
   authors: [{ name: "Foundry Protocol", url: "https://foundryprotocol.xyz" }],

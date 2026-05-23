@@ -24,7 +24,7 @@ export function Footer() {
           <div style={{ display: "flex", alignItems: "center", gap: "0.55rem" }}>
             <Logo size={26} />
             <strong style={{ color: "var(--color-fg)", fontSize: "1rem" }}>
-              0gkit
+              0Gkit
             </strong>
           </div>
           <p style={{ marginTop: "0.7rem", lineHeight: 1.55 }}>

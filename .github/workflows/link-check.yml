@@ -1,0 +1,100 @@
+name: Docs link check (live)
+
+# Crawls the live docs + landing sites and asserts no 404s. Catches the bug
+# class where helpUrl (https://0gkit.com/errors/<CODE>) starts 404'ing
+# because a deploy went wrong, a route was removed, or an outbound link
+# rotted.
+#
+# Runs on:
+#   - daily schedule
+#   - manual workflow_dispatch
+#   - push to main (catches breakage at merge time, before users notice)
+#
+# Uses lychee — fast Rust crawler, async, well-maintained.
+
+on:
+  schedule:
+    # Daily at 04:42 UTC (offset from fresh-machine-smoke to spread load).
+    - cron: "42 4 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "apps/landing/**"
+      - "apps/docs/**"
+      - "packages/0gkit-core/src/error-codes.ts"
+      - ".github/workflows/link-check.yml"
+
+jobs:
+  lychee:
+    name: lychee on ${{ matrix.target.label }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - label: "0gkit.com"
+            url: "https://0gkit.com"
+          - label: "docs.0gkit.com"
+            url: "https://docs.0gkit.com"
+          - label: "helpUrls (top-30 error codes)"
+            url: "" # special-cased below
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Crawl ${{ matrix.target.label }}
+        if: matrix.target.url != ''
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --max-redirects 5
+            --max-concurrency 8
+            --accept 200..=299,403,429
+            --exclude-path .github
+            --exclude '^mailto:'
+            ${{ matrix.target.url }}
+          fail: true
+
+      - name: Build the helpUrl list from packages/0gkit-core/src/error-codes.ts
+        if: matrix.target.label == 'helpUrls (top-30 error codes)'
+        run: |
+          set -euo pipefail
+          # Pull every uppercased SCREAMING_SNAKE code from the source of
+          # truth. Then compose the helpUrls and feed them to lychee.
+          node --input-type=module -e "
+            import { readFileSync } from 'node:fs';
+            const src = readFileSync('packages/0gkit-core/src/error-codes.ts', 'utf8');
+            const matches = src.match(/[A-Z][A-Z0-9_]{4,}/g) ?? [];
+            const codes = [...new Set(matches)].filter(c =>
+              /^(CONFIG|NETWORK|CHAIN|STORAGE|COMPUTE|DA|ATTESTATION|CONTRACTS|INDEXER|JOBS|OBSERVABILITY|WALLET)_[A-Z0-9_]+\$/.test(c)
+            );
+            const urls = codes.map(c => 'https://0gkit.com/errors/' + c);
+            console.error('Will check ' + urls.length + ' helpUrls');
+            console.log(urls.join('\n'));
+          " > /tmp/help-urls.txt
+          wc -l /tmp/help-urls.txt
+
+      - name: Crawl helpUrls
+        if: matrix.target.label == 'helpUrls (top-30 error codes)'
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --max-redirects 5
+            --max-concurrency 8
+            --accept 200..=299
+            /tmp/help-urls.txt
+          fail: true
+
+      - name: Save lychee output as artifact
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lychee-report-${{ matrix.target.label }}
+          path: |
+            ./lychee-out.md
+            /tmp/help-urls.txt
+          if-no-files-found: ignore

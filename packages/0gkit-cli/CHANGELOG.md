@@ -1,5 +1,20 @@
 # @foundryprotocol/0gkit-cli
 
+## 1.5.0
+
+### Patch Changes
+
+- Updated dependencies [f59b752]
+  - @foundryprotocol/0gkit-core@1.5.0
+  - @foundryprotocol/0gkit-attestation@1.5.0
+  - @foundryprotocol/0gkit-chain@1.5.0
+  - @foundryprotocol/0gkit-compute@1.5.0
+  - @foundryprotocol/0gkit-contracts@1.5.0
+  - @foundryprotocol/0gkit-da@1.5.0
+  - @foundryprotocol/0gkit-devnet@1.5.0
+  - @foundryprotocol/0gkit-observability@1.5.0
+  - @foundryprotocol/0gkit-storage@1.5.0
+
 ## 1.4.0
 
 ### Minor Changes

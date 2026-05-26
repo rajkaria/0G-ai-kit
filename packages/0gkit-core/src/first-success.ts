@@ -10,9 +10,14 @@ export function printFirstSuccess(
   args: FirstSuccessArgs,
   sink: (line: string) => void = (l) => console.log(l)
 ): void {
-  const heading = `${FIRST_SUCCESS_MARKER} ${args.op}`;
-  const idLine = `id: ${args.id}`;
-  const noteLine = args.note ? args.note : "";
+  const sanitize = (s: string) => s.replace(/[\r\n\t]/g, " ");
+  const op = sanitize(args.op);
+  const id = sanitize(args.id);
+  const note = args.note ? sanitize(args.note) : "";
+
+  const heading = `${FIRST_SUCCESS_MARKER} ${op}`;
+  const idLine = `id: ${id}`;
+  const noteLine = note;
   const width =
     Math.max(heading.length, idLine.length, noteLine.length, "First 0G action successful".length) +
     2;

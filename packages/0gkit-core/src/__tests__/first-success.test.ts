@@ -30,4 +30,29 @@ describe("printFirstSuccess", () => {
   it("FIRST_SUCCESS_MARKER is the documented contract token", () => {
     expect(FIRST_SUCCESS_MARKER).toBe("[0gkit:first-success]");
   });
+
+  it("renders the optional note line when provided", () => {
+    const out: string[] = [];
+    printFirstSuccess({ op: "x", id: "y", note: "saved 12 gas" }, (line) => out.push(line));
+    expect(out.some((l) => l.includes("saved 12 gas"))).toBe(true);
+  });
+
+  it("all banner lines have equal visual width", () => {
+    const out: string[] = [];
+    printFirstSuccess({ op: "compute.inference", id: "tx-1", note: "ok" }, (line) => out.push(line));
+    const widths = new Set(out.map((l) => [...l].length));
+    expect(widths.size).toBe(1);
+  });
+
+  it("sanitizes newlines in op/id/note so the box stays intact", () => {
+    const out: string[] = [];
+    printFirstSuccess(
+      { op: "storage.upload", id: "0xabc\n0xdef", note: "line1\nline2" },
+      (line) => out.push(line)
+    );
+    for (const l of out) {
+      // every emitted "line" must actually be one terminal line
+      expect(l).not.toContain("\n");
+    }
+  });
 });

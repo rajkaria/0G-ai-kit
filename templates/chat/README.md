@@ -93,3 +93,9 @@ network needed.
 
 Vercel will fork the template into a new repository, prompt for the listed
 env vars, and deploy in under 60 seconds on Fluid Compute.
+
+## What next?
+
+1. **Deploy** — `vercel deploy`. Configure `PRIVATE_KEY` + `NEXT_PUBLIC_MESSAGE_REGISTRY_ADDRESS` in the Vercel dashboard.
+2. **Extend** — per-room channels: keyed by a room id in the `MessagePosted` event topic; client-side signing via `0gkit-wallet-react` for true user identity.
+3. **Migrate to mainnet** — deploy `MessageRegistry` to aristotle, paste its address into both env files, redeploy.

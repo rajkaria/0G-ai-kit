@@ -24,7 +24,7 @@ function buildSlot(shape: ZodRawShape | undefined) {
   if (!shape) {
     return (_env?: Record<string, string | undefined>): Record<string, never> => ({});
   }
-  const obj = z.object(shape).strict();
+  const obj = z.object(shape);
   return (env?: Record<string, string | undefined>) => {
     const source = env ?? (typeof process !== "undefined" ? process.env : {});
     const picked: Record<string, string | undefined> = {};

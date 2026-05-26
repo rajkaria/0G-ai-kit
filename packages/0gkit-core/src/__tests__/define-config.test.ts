@@ -106,4 +106,28 @@ describe("define0GConfig", () => {
     const out = cfg.envExample();
     expect(out).toMatch(/PRIVATE_KEY=\s*$/m);
   });
+
+  it("falls back to process.env when called with no argument", () => {
+    const cfg = define0GConfig({ server: { ZEROG_NETWORK: z.enum(["galileo", "aristotle", "local"]) } });
+    const prev = process.env.ZEROG_NETWORK;
+    process.env.ZEROG_NETWORK = "aristotle";
+    try {
+      expect(cfg.server().ZEROG_NETWORK).toBe("aristotle");
+    } finally {
+      if (prev === undefined) delete process.env.ZEROG_NETWORK;
+      else process.env.ZEROG_NETWORK = prev;
+    }
+  });
+
+  it("envExample() emits the documented section headers per slot", () => {
+    const cfg = define0GConfig({
+      server: { ZEROG_NETWORK: z.string().default("galileo") },
+      client: { NEXT_PUBLIC_ZEROG_NETWORK: z.string().default("galileo") },
+      edge: { ZEROG_NETWORK: z.string().default("galileo") },
+    });
+    const out = cfg.envExample();
+    expect(out).toContain("# --- server (Node only) ---");
+    expect(out).toContain("# --- client (browser-safe, NEXT_PUBLIC_*) ---");
+    expect(out).toContain("# --- edge runtime ---");
+  });
 });

@@ -87,6 +87,10 @@ function makeDeps(over: {
     isTTY: false,
     noColor: true,
     write: over.write ?? (() => {}),
+    argv: [],
+    writeErr: () => {},
+    packageVersions: () => [],
+    now: () => new Date("2026-01-01T00:00:00.000Z"),
   };
 }
 

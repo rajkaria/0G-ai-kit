@@ -29,9 +29,10 @@ export async function detectLocalDevnet(
   try {
     const observed = await Promise.race<number | bigint>([
       probe.getChainId(),
-      new Promise<number>((_, rej) =>
-        setTimeout(() => rej(new Error("detectLocalDevnet timeout")), timeoutMs)
-      ),
+      new Promise<number>((_, rej) => {
+        const t = setTimeout(() => rej(new Error("detectLocalDevnet timeout")), timeoutMs);
+        t.unref?.();
+      }),
     ]);
     return BigInt(observed) === target;
   } catch {

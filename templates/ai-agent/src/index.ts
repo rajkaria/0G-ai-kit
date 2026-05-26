@@ -13,17 +13,36 @@
  * the inference (or a separate attestation endpoint).
  */
 import { Compute } from "@foundryprotocol/0gkit-compute";
-import { fromEnv } from "@foundryprotocol/0gkit-wallet";
-import { ZeroGError } from "@foundryprotocol/0gkit-core";
+import { fromPrivateKey } from "@foundryprotocol/0gkit-wallet";
+import {
+  ZeroGError,
+  detectLocalDevnet,
+  printFirstSuccess,
+} from "@foundryprotocol/0gkit-core";
 import { JobRunner } from "@foundryprotocol/0gkit-jobs";
 import { MemoryBackend } from "@foundryprotocol/0gkit-jobs/backends/memory";
 import { buildStepJob, runAgent } from "./agent.js";
 import { ToolRegistry } from "./tools.js";
+import { config } from "../0g.config.js";
 
 async function main(): Promise<void> {
-  const signer = await fromEnv();
-  const network = (process.env.ZEROG_NETWORK ?? "galileo") as "galileo" | "aristotle";
-  const compute = new Compute({ network, signer });
+  const env = config.server();
+  let network: "galileo" | "aristotle" | "local" = env.ZEROG_NETWORK;
+  if (network === "galileo" && (await detectLocalDevnet())) {
+    console.warn("[0gkit] Local devnet detected — using network=local.");
+    network = "local";
+  }
+
+  const signer = await fromPrivateKey(env.BROKER_KEY);
+  // Compute SDK currently accepts only "aristotle" | "galileo"; "local" is
+  // surfaced through unchanged so users hit a clear SDK error rather than a
+  // silent retarget to mainnet.
+  const compute = new Compute({
+    network: network as "galileo" | "aristotle",
+    signer,
+    ...(env.PROVIDER ? { provider: env.PROVIDER } : {}),
+    ...(env.MODEL ? { model: env.MODEL } : {}),
+  });
 
   const tools = new ToolRegistry();
   tools.register({
@@ -73,6 +92,15 @@ async function main(): Promise<void> {
         }`
       );
     }
+
+    if (result.kind === "final" && result.steps.length > 0) {
+      const firstReceipt = result.steps[0]?.receiptTxHash;
+      printFirstSuccess({
+        op: "compute.inference",
+        id: firstReceipt && firstReceipt.length > 0 ? firstReceipt : "ok",
+        note: `network=${network}`,
+      });
+    }
   } finally {
     await runner.stop({ drain: true, timeoutMs: 5000 });
   }
@@ -84,8 +112,11 @@ main().catch((err: unknown) => {
     if ("hint" in err && typeof err.hint === "string") {
       console.error(`Hint: ${err.hint}`);
     }
-  } else {
-    console.error(err);
+    if ("helpUrl" in err && typeof err.helpUrl === "string") {
+      console.error(`Help: ${err.helpUrl}`);
+    }
+    process.exit(1);
   }
+  console.error(err);
   process.exit(1);
 });

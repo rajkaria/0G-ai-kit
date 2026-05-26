@@ -115,8 +115,8 @@ main().catch((err: unknown) => {
     if ("helpUrl" in err && typeof err.helpUrl === "string") {
       console.error(`Help: ${err.helpUrl}`);
     }
-    process.exit(1);
+  } else {
+    console.error(err);
   }
-  console.error(err);
   process.exit(1);
 });
